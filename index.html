@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HAO Web</title>
+    <script type="module" crossorigin src="/assets/index-Dd5GGn8i.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D_0xLzZb.css">
+  </head>
+  <body>
+    <header class="app-chrome">
+      <nav class="menu-bar">
+        <button class="menu-item" data-menu="file">文件</button>
+        <button class="menu-item" data-menu="window">窗口</button>
+        <button class="menu-item" data-menu="help">帮助</button>
+        <button class="menu-item" data-menu="language">Language</button>
+      </nav>
+      <div class="tool-bar" aria-label="Main toolbar">
+        <button id="toolRender" class="tool-button blue" title="显示/重画">▤</button>
+        <button id="toolSave" class="tool-button green" title="导出图片">▣</button>
+        <button id="toolTile" class="tool-button gray" title="平铺">▰</button>
+        <button id="toolOverlap" class="tool-button stack" title="重叠">▣</button>
+        <button id="toolAxis" class="tool-button axis-icon" title="坐标轴"></button>
+        <button id="toolXOY" class="tool-button chart-icon" title="XOY 视图"></button>
+        <button id="toolYOZ" class="tool-button chart-icon alt" title="YOZ 视图"></button>
+        <button id="toolXOZ" class="tool-button chart-icon last" title="XOZ 视图"></button>
+      </div>
+      <div id="menuPopup" class="menu-popup" hidden></div>
+    </header>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <div class="sidebar-fit">
+        <div class="client-tabs">
+          <button class="tab active">氢原子轨道</button>
+          <button class="tab">杂化轨道</button>
+        </div>
+
+        <section class="client-panel">
+          <fieldset>
+            <legend>波函数</legend>
+            <div class="quantum-row">
+              <label><span>n=</span><input id="nInput" type="number" min="1" max="6" value="2" /></label>
+              <label><span>l=</span><input id="lInput" type="number" min="0" max="5" value="1" /></label>
+              <label><span>|m|=</span><input id="mInput" type="number" min="-5" max="5" value="1" /></label>
+            </div>
+            <div class="check-grid three">
+              <label class="check-row"><input id="cosTypeInput" type="checkbox" checked /><span>Cos型</span></label>
+              <label class="check-row"><input id="sinTypeInput" type="checkbox" /><span>Sin型</span></label>
+              <label class="check-row"><input id="cloudInput" type="checkbox" /><span>电子云</span></label>
+            </div>
+            <div class="select-action-row">
+              <select id="presetInput">
+                <option value="1,0,0">1s</option>
+                <option value="2,0,0">2s</option>
+                <option value="2,1,0">2Pz</option>
+                <option value="2,1,1" selected>2Px</option>
+                <option value="3,0,0">3s</option>
+                <option value="3,1,0">3Pz</option>
+                <option value="3,2,0">3dz2</option>
+                <option value="3,2,1">3dxz</option>
+                <option value="3,2,2">3dx2-y2</option>
+                <option value="4,3,0">4fz3</option>
+              </select>
+              <button id="renderButton" class="client-link-button">显示</button>
+            </div>
+            <label class="hidden-control">
+              <span>Nuclear charge Z</span>
+              <input id="zInput" type="number" min="1" max="10" value="1" />
+            </label>
+          </fieldset>
+
+          <fieldset>
+            <legend>轨道显示</legend>
+            <div class="check-grid three">
+              <label class="check-row"><input id="positiveLobeInput" type="checkbox" checked /><span>正瓣</span></label>
+              <label class="check-row"><input id="wireframeInput" type="checkbox" checked /><span>网格</span></label>
+              <label class="check-row"><input id="smoothInput" type="checkbox" /><span>光滑</span></label>
+              <label class="check-row"><input id="negativeLobeInput" type="checkbox" checked /><span>负瓣</span></label>
+              <label class="check-row"><input id="projectionInput" type="checkbox" /><span>投影</span></label>
+              <label class="check-row"><input id="paletteOneInput" type="checkbox" /><span>配色I</span></label>
+              <label class="check-row"><input id="xySliceInput" type="checkbox" /><span>xy截面</span></label>
+              <label class="check-row"><input id="quarterInput" type="checkbox" /><span>1/4角</span></label>
+              <label class="check-row"><input id="paletteTwoInput" type="checkbox" checked /><span>配色II</span></label>
+              <label class="check-row"><input id="yzSliceInput" type="checkbox" /><span>yz截面</span></label>
+              <label class="check-row"><input id="eighthInput" type="checkbox" /><span>1/8角</span></label>
+              <button id="colorProxyButton" class="client-link-button">颜色</button>
+              <label class="check-row"><input id="xzSliceInput" type="checkbox" /><span>xz截面</span></label>
+              <label class="check-row"><input id="threeQuarterInput" type="checkbox" /><span>3/4角</span></label>
+              <button id="axisProxyButton" class="client-link-button">坐标轴</button>
+            </div>
+            <div class="hidden-control">
+              <label>
+                <span>Display mode</span>
+                <select id="modeInput">
+                  <option value="marching" selected>Marching Cubes</option>
+                  <option value="surface">Radial surface</option>
+                  <option value="points">Point cloud</option>
+                </select>
+              </label>
+              <label>
+                <span>Slice plane</span>
+                <select id="sliceInput">
+                  <option value="none" selected>None</option>
+                  <option value="xoy">XOY</option>
+                  <option value="xoz">XOZ</option>
+                  <option value="yoz">YOZ</option>
+                </select>
+              </label>
+              <label class="check-row"><input id="nodeInput" type="checkbox" /><span>Show node surface</span></label>
+              <label class="check-row"><input id="axisInput" type="checkbox" checked /><span>Show axes</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>径向</legend>
+            <div class="check-grid four">
+              <label class="check-row"><input id="radialRInput" type="checkbox" /><span>R</span></label>
+              <label class="check-row"><input id="radialR2Input" type="checkbox" /><span>R2</span></label>
+              <label class="check-row"><input id="radialRdfInput" type="checkbox" checked /><span>RDF</span></label>
+              <label class="check-row muted"><input type="checkbox" disabled /><span>All</span></label>
+              <label class="check-row"><input id="radialSectionInput" type="checkbox" /><span>横截</span></label>
+              <label class="check-row"><input id="radialSideInput" type="checkbox" /><span>侧视</span></label>
+              <label class="check-row"><input id="radialCurveInput" type="checkbox" checked /><span>曲线</span></label>
+              <label class="check-row"><input id="radialAxisInput" type="checkbox" /><span>坐标</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>节面</legend>
+            <div class="check-grid three">
+              <label class="check-row muted"><input type="checkbox" disabled /><span>径向</span></label>
+              <label class="check-row muted"><input type="checkbox" disabled /><span>极向</span></label>
+              <label class="check-row"><input id="longitudeNodeInput" type="checkbox" /><span>经向</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>盒子</legend>
+            <div class="box-grid">
+              <span>尺寸</span>
+              <input id="boxSizeDisplay" type="number" value="26.40" step="0.1" />
+              <label class="check-row"><input id="boxInput" type="checkbox" /><span>显示盒子</span></label>
+
+              <span>格点数</span>
+              <input id="densityInput" type="number" min="20" max="140" step="2" value="60" />
+              <label class="check-row"><input id="grid3dInput" type="checkbox" /><span>3D网格</span></label>
+
+              <span>间隔</span>
+              <output id="intervalValue">0.367</output>
+              <label class="check-row muted"><input type="checkbox" disabled /><span>lambertW</span></label>
+
+              <span>等值面</span>
+              <input id="isoInput" type="number" min="0.0001" max="0.08" step="0.0001" value="0.02" />
+              <button id="presetButton" class="client-link-button">预设值</button>
+
+              <span>总概率</span>
+              <output id="probabilityValue">0.800</output>
+              <button id="redrawProxyButton" class="client-link-button">重画</button>
+            </div>
+            <label class="hidden-control">
+              <span>Box radius</span>
+              <input id="radiusInput" type="range" min="4" max="140" step="1" value="14" />
+            </label>
+            <label class="hidden-control">
+              <span>Opacity</span>
+              <input id="opacityInput" type="range" min="0.2" max="1" step="0.05" value="1" />
+            </label>
+            <label class="hidden-control">
+              <input id="desktopMatchInput" type="checkbox" checked />
+              <span>Desktop matched defaults</span>
+            </label>
+          </fieldset>
+
+          <div class="hidden-control">
+            <label>
+              <span>Positive phase</span>
+              <input id="positiveColorInput" type="color" value="#ab57ab" />
+            </label>
+            <label>
+              <span>Negative phase</span>
+              <input id="negativeColorInput" type="color" value="#219e9e" />
+            </label>
+            <label>
+              <span>Background</span>
+              <input id="backgroundColorInput" type="color" value="#668080" />
+            </label>
+            <output id="isoValue">auto</output>
+            <output id="densityValue">auto</output>
+            <output id="radiusValue">auto</output>
+            <output id="opacityValue">1.00</output>
+            <button id="screenshotButton">Export image</button>
+          </div>
+        </section>
+
+        <section class="client-panel sketch-launch-panel">
+          <button id="openActivityButton" class="client-link-button sketch-launch-button">课堂互动</button>
+        </section>
+
+        <section class="panel stats hidden-control">
+          <dl>
+            <div><dt>Name</dt><dd id="orbitalName">2p1</dd></div>
+            <div><dt>Positive points</dt><dd id="posCount">0</dd></div>
+            <div><dt>Negative points</dt><dd id="negCount">0</dd></div>
+            <div><dt>Nodes</dt><dd id="nodeText">-</dd></div>
+            <div><dt>Slice</dt><dd id="sliceText">None</dd></div>
+            <div><dt>Box radius</dt><dd id="boxText">auto</dd></div>
+            <div><dt>Isovalue</dt><dd id="isoText">auto</dd></div>
+          </dl>
+        </section>
+
+        <!--
+          Legacy controls are represented above with the same IDs so app.js can keep
+          using the current calculation/rendering pipeline.
+        -->
+        <template>
+          <label>
+            <span>Display mode</span>
+            <select id="modeInput">
+              <option value="marching" selected>Marching Cubes</option>
+              <option value="surface">Radial surface</option>
+              <option value="points">Point cloud</option>
+            </select>
+          </label>
+        </template>
+        </div>
+      </aside>
+
+      <section class="workspace">
+        <div class="view-grid">
+          <article class="qt-window" data-window-name="projection">
+            <header class="window-title">
+              <span>轨道投影</span>
+              <span class="window-controls">
+                <button type="button" class="window-control-btn" data-window-action="minimize" aria-label="最小化">－</button>
+                <button type="button" class="window-control-btn" data-window-action="maximize" aria-label="全屏">□</button>
+                <button type="button" class="window-control-btn" data-window-action="close" aria-label="关闭">×</button>
+              </span>
+            </header>
+            <div id="projectionViewer" class="viewer projection-viewer"></div>
+          </article>
+
+          <article class="qt-window main-window" data-window-name="orbital">
+            <header class="window-title">
+              <span id="viewerTitle">原子轨道</span>
+              <span class="window-controls">
+                <button type="button" class="window-control-btn" data-window-action="minimize" aria-label="最小化">－</button>
+                <button type="button" class="window-control-btn" data-window-action="maximize" aria-label="全屏">□</button>
+                <button type="button" class="window-control-btn" data-window-action="close" aria-label="关闭">×</button>
+              </span>
+            </header>
+            <div id="viewer" class="viewer"></div>
+            <div class="status-strip">
+              <span id="statusText">Ready</span>
+              <button id="resetCameraButton">Reset view</button>
+            </div>
+          </article>
+
+          <article class="qt-window" data-window-name="radial">
+            <header class="window-title">
+              <span>径向分布函数</span>
+              <span class="window-controls">
+                <button type="button" class="window-control-btn" data-window-action="minimize" aria-label="最小化">－</button>
+                <button type="button" class="window-control-btn" data-window-action="maximize" aria-label="全屏">□</button>
+                <button type="button" class="window-control-btn" data-window-action="close" aria-label="关闭">×</button>
+              </span>
+            </header>
+            <div id="radialViewer" class="viewer radial-viewer"></div>
+          </article>
+
+          <article class="qt-window" data-window-name="angular">
+            <header class="window-title">
+              <span>角向函数</span>
+              <span class="window-controls">
+                <button type="button" class="window-control-btn" data-window-action="minimize" aria-label="最小化">－</button>
+                <button type="button" class="window-control-btn" data-window-action="maximize" aria-label="全屏">□</button>
+                <button type="button" class="window-control-btn" data-window-action="close" aria-label="关闭">×</button>
+              </span>
+            </header>
+            <div id="angularViewer" class="viewer mini-viewer"></div>
+          </article>
+
+        </div>
+      </section>
+    </main>
+
+    <article id="sketchWindow" class="qt-window sketch-window floating-sketch closed" data-window-name="sketch">
+      <header class="window-title">
+        <span>手绘对比</span>
+        <span class="window-controls">
+          <button type="button" class="window-control-btn" data-window-action="minimize" aria-label="最小化">－</button>
+          <button type="button" class="window-control-btn" data-window-action="maximize" aria-label="全屏">□</button>
+          <button type="button" class="window-control-btn" data-window-action="close" aria-label="关闭">×</button>
+        </span>
+      </header>
+      <div class="sketch-panel">
+        <div class="sketch-tools">
+          <input id="sketchColorInput" type="color" value="#ffffff" aria-label="画笔颜色" />
+          <input id="sketchSizeInput" type="range" min="2" max="28" step="1" value="5" aria-label="画笔粗细" />
+          <button id="sketchPenButton" type="button" class="active">画笔</button>
+          <button id="sketchEraserButton" type="button">橡皮</button>
+          <button id="sketchClearButton" type="button">清空</button>
+        </div>
+        <canvas id="sketchCanvas"></canvas>
+      </div>
+    </article>
+
+    <article id="activityWindow" class="qt-window activity-window floating-activity closed" data-window-name="activity">
+      <header class="window-title">
+        <span id="activityTitle">课堂互动</span>
+        <span class="window-controls">
+          <button type="button" class="window-control-btn" data-window-action="minimize" aria-label="最小化">－</button>
+          <button type="button" class="window-control-btn" data-window-action="maximize" aria-label="全屏">□</button>
+          <button type="button" class="window-control-btn" data-window-action="close" aria-label="关闭">×</button>
+        </span>
+      </header>
+      <div class="activity-panel">
+        <nav class="activity-mode-bar" aria-label="课堂互动模式">
+          <button type="button" class="activity-mode-button active" data-activity-mode="predict">预测-验证</button>
+          <button type="button" class="activity-mode-button" data-activity-mode="score">预测评分</button>
+          <button type="button" class="activity-mode-button" data-activity-mode="diagnosis">错误诊断</button>
+          <button type="button" class="activity-mode-button" data-activity-mode="nodes">节点发现</button>
+          <button type="button" class="activity-mode-button" data-activity-mode="compare">轨道对比</button>
+          <button type="button" class="activity-mode-button" data-activity-mode="challenge">轨道配对</button>
+          <button type="button" class="activity-mode-button" data-activity-mode="explain">原理演示</button>
+          <button type="button" class="activity-mode-button" data-activity-mode="tablet">平板课堂</button>
+        </nav>
+
+        <section id="predictPane" class="activity-pane active">
+          <div class="activity-row">
+            <label>
+              <span>目标轨道</span>
+              <select id="predictTargetInput">
+                <option value="2,1,1">2Px</option>
+                <option value="2,1,0">2Pz</option>
+                <option value="3,2,0">3dz2</option>
+                <option value="3,2,1">3dxz</option>
+                <option value="3,2,-1">3dyz</option>
+                <option value="3,2,2">3dx2-y2</option>
+                <option value="3,2,-2">3dxy</option>
+              </select>
+            </label>
+            <button id="startPredictButton" type="button">开始预测</button>
+            <button id="verifyPredictButton" type="button">显示验证</button>
+          </div>
+          <p id="predictPrompt" class="activity-text">选择一个轨道，让学生先在画板中画出预测形状，再点击显示验证。</p>
+        </section>
+
+        <section id="scorePane" class="activity-pane" data-activity-pane="score">
+          <div class="activity-row compact">
+            <button id="scoreCurrentButton" type="button">评分当前预测</button>
+            <button id="scoreShowRubricButton" type="button">显示评分标准</button>
+            <button id="scoreResetButton" type="button">清空评分</button>
+          </div>
+          <div class="activity-card-grid">
+            <button type="button" class="activity-card" data-activity-mode="predict">
+              <strong>进入预测</strong>
+              <span>学生先画预测图，再进行自动/教师评分。</span>
+            </button>
+            <button type="button" class="activity-card" data-activity-mode="diagnosis">
+              <strong>查看诊断</strong>
+              <span>按节点数、相位、方向、对称性给出反馈。</span>
+            </button>
+          </div>
+          <p id="scorePrompt" class="activity-text">评分会根据当前目标轨道给出节点数、相位、方向和投影四项课堂反馈。</p>
+          <p class="activity-text">这里适合后续加入相似度评分：节点数量、正负相位区域、投影轮廓和坐标方向分别计分。</p>
+        </section>
+
+        <section id="diagnosisPane" class="activity-pane" data-activity-pane="diagnosis">
+          <div class="activity-row compact">
+            <button id="diagnoseNodesButton" type="button">节点诊断</button>
+            <button id="diagnosePhaseButton" type="button">相位诊断</button>
+            <button id="diagnoseProjectionButton" type="button">投影诊断</button>
+          </div>
+          <div class="activity-card-grid">
+            <button type="button" class="activity-card" data-diagnosis="nodes">
+              <strong>节点数检查</strong>
+              <span>判断是否漏掉径向节点或角向节点。</span>
+            </button>
+            <button type="button" class="activity-card" data-diagnosis="phase">
+              <strong>相位方向检查</strong>
+              <span>提示 Px/Py/Pz、D/F 轨道方向混淆。</span>
+            </button>
+          </div>
+          <p id="diagnosisPrompt" class="activity-text">选择诊断类型后，主视图会自动打开对应的节点、相位或投影显示。</p>
+          <p class="activity-text">错误诊断不占左侧空间，只在学生提交答案或挑战答错后显示。</p>
+        </section>
+
+        <section id="nodesPane" class="activity-pane" data-activity-pane="nodes">
+          <div class="activity-row compact">
+            <button id="nodeRevealButton" type="button">显示节点</button>
+            <button id="nodeHideButton" type="button">隐藏节点</button>
+            <button type="button" data-activity-mode="predict">预测节点</button>
+          </div>
+          <p class="activity-text">节点发现模式适合让学生先判断节点面位置，再显示真实节点结果。</p>
+        </section>
+
+        <section id="comparePane" class="activity-pane" data-activity-pane="compare">
+          <div class="activity-row compare-row">
+            <label>
+              <span>轨道 A</span>
+              <select id="compareAInput"></select>
+            </label>
+            <label>
+              <span>轨道 B</span>
+              <select id="compareBInput"></select>
+            </label>
+            <button id="compareApplyButton" type="button">开始对比</button>
+          </div>
+          <div class="compare-view-grid">
+            <div class="compare-view-card">
+              <header><span id="compareATitle">轨道 A</span><button id="compareLoadAButton" type="button">载入主视图</button></header>
+              <div id="compareAViewer" class="compare-viewer"></div>
+              <p id="compareANotes" class="compare-notes">选择轨道后点击开始对比。</p>
+            </div>
+            <div class="compare-view-card">
+              <header><span id="compareBTitle">轨道 B</span><button id="compareLoadBButton" type="button">载入主视图</button></header>
+              <div id="compareBViewer" class="compare-viewer"></div>
+              <p id="compareBNotes" class="compare-notes">选择轨道后点击开始对比。</p>
+            </div>
+          </div>
+          <p id="compareSummary" class="activity-text">用于比较同一角向类型在不同 n 下的径向节点差异，或比较不同角向轨道的节点面和相位方向。</p>
+        </section>
+
+        <section id="challengePane" class="activity-pane">
+          <div class="activity-row">
+            <button id="newChallengeButton" type="button">随机出题</button>
+            <label>
+              <span>你的答案</span>
+              <select id="challengeGuessInput">
+                <option value="2,1,1">2Px</option>
+                <option value="2,1,-1">2Py</option>
+                <option value="2,1,0">2Pz</option>
+                <option value="3,2,0">3dz2</option>
+                <option value="3,2,1">3dxz</option>
+                <option value="3,2,-1">3dyz</option>
+                <option value="3,2,2">3dx2-y2</option>
+                <option value="3,2,-2">3dxy</option>
+              </select>
+            </label>
+            <button id="revealChallengeButton" type="button">揭晓答案</button>
+          </div>
+          <p id="challengePrompt" class="activity-text">点击随机出题后，观察四个窗口中的轨道并选择名称。</p>
+        </section>
+
+        <section id="explainPane" class="activity-pane" data-activity-pane="explain">
+          <div class="explain-shell">
+            <div class="explain-controls">
+              <button id="explainRestartButton" type="button">重新讲解</button>
+              <button id="explainPrevButton" type="button">上一步</button>
+              <button id="explainPlayButton" type="button">播放</button>
+              <button id="explainNextButton" type="button">下一步</button>
+            </div>
+            <div class="explain-progress" aria-hidden="true"><span id="explainProgressFill"></span></div>
+            <div class="explain-stage">
+              <div>
+                <div id="explainStepBadge" class="explain-step-badge">第 1 步 / 5 步</div>
+                <h3 id="explainStepTitle">从波函数开始</h3>
+                <p id="explainStepText">选择一个轨道后，先把图像理解为径向部分和角向部分共同决定的结果。</p>
+              </div>
+              <div id="explainFormula" class="explain-formula">Ψ(r,θ,φ) = Rₙₗ(r) · Yₗᵐ(θ,φ)</div>
+            </div>
+            <div class="explain-cards">
+              <div class="explain-card">
+                <strong>正在看什么</strong>
+                <span id="explainObserveText">先观察四个窗口之间的对应关系。</span>
+              </div>
+              <div class="explain-card">
+                <strong>为什么这样画</strong>
+                <span id="explainReasonText">每个图都来自同一个波函数，只是取值方式不同。</span>
+              </div>
+            </div>
+            <p id="explainHintText" class="activity-text">演示会按当前左侧选中的轨道讲解；播放中可以随时暂停、旋转视图或切换到下一步。</p>
+          </div>
+        </section>
+
+        <section id="tabletPane" class="activity-pane" data-activity-pane="tablet">
+          <div class="activity-row compact">
+            <button id="tabletLargeButton" type="button">大按钮模式</button>
+            <button id="tabletRestoreButton" type="button">恢复布局</button>
+            <button id="tabletScreenshotButton" type="button">快速截图</button>
+          </div>
+          <div class="activity-card-grid">
+            <button type="button" class="activity-card" data-activity-mode="predict">
+              <strong>小组预测</strong>
+              <span>适合平板端学生先画、再验证。</span>
+            </button>
+            <button type="button" class="activity-card" data-activity-mode="challenge">
+              <strong>快速抢答</strong>
+              <span>适合课堂投屏随机出题。</span>
+            </button>
+          </div>
+          <p class="activity-text">平板课堂模式后续可以放大按钮、减少参数项，只保留旋转、选择、提交和截图。</p>
+        </section>
+      </div>
+    </article>
+
+  </body>
+</html>
