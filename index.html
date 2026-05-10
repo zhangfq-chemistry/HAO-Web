@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HAO Web</title>
-    <script type="module" crossorigin src="./assets/index-Cc4QyORW.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DNbLOY5n.css">
+    <script type="module" crossorigin src="./assets/index-zJwVwdOX.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-luC46jgf.css">
   </head>
   <body>
     <header class="app-chrome">
@@ -194,6 +194,7 @@
 
         <section class="client-panel sketch-launch-panel">
           <button id="openActivityButton" class="client-link-button sketch-launch-button">课堂互动</button>
+          <button id="annotationModeButton" class="client-link-button sketch-launch-button">讲解标注</button>
         </section>
 
         <section class="panel stats hidden-control">
@@ -237,6 +238,7 @@
               </span>
             </header>
             <div id="projectionViewer" class="viewer projection-viewer"></div>
+            <div class="annotation-layer" data-annotation-layer="projection"></div>
           </article>
 
           <article class="qt-window main-window" data-window-name="orbital">
@@ -249,6 +251,7 @@
               </span>
             </header>
             <div id="viewer" class="viewer"></div>
+            <div class="annotation-layer" data-annotation-layer="orbital"></div>
             <div class="status-strip">
               <span id="statusText">Ready</span>
               <button id="resetCameraButton">Reset view</button>
@@ -265,6 +268,7 @@
               </span>
             </header>
             <div id="radialViewer" class="viewer radial-viewer"></div>
+            <div class="annotation-layer" data-annotation-layer="radial"></div>
           </article>
 
           <article class="qt-window" data-window-name="angular">
@@ -277,11 +281,21 @@
               </span>
             </header>
             <div id="angularViewer" class="viewer mini-viewer"></div>
+            <div class="annotation-layer" data-annotation-layer="angular"></div>
           </article>
 
         </div>
       </section>
     </main>
+
+    <article id="annotationToolbar" class="annotation-toolbar closed" aria-label="讲解标注工具">
+      <button type="button" data-annotation-add="正相">正相</button>
+      <button type="button" data-annotation-add="负相">负相</button>
+      <button type="button" data-annotation-add="节点">节点</button>
+      <button type="button" data-annotation-add="投影平面">投影平面</button>
+      <button type="button" data-annotation-add="径向节点">径向节点</button>
+      <button id="annotationClearButton" type="button">清空标注</button>
+    </article>
 
     <article id="sketchWindow" class="qt-window sketch-window floating-sketch closed" data-window-name="sketch">
       <header class="window-title">
