@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HAO Web</title>
-    <script type="module" crossorigin src="./assets/index-BXIrKu8p.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-Baeq1VQm.css">
+    <script type="module" crossorigin src="./assets/index-B2T-4Kku.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DNpgCZrf.css">
   </head>
   <body>
     <header class="app-chrome">
@@ -194,6 +194,7 @@
 
         <section class="client-panel sketch-launch-panel">
           <button id="openActivityButton" class="client-link-button sketch-launch-button">课堂互动</button>
+          <button id="openFormulaButton" class="client-link-button sketch-launch-button">公式拆解</button>
           <button id="openSketchButton" class="client-link-button sketch-launch-button">画板</button>
           <button id="annotationModeButton" class="client-link-button sketch-launch-button">讲解标注</button>
         </section>
@@ -316,6 +317,43 @@
           <button id="sketchClearButton" type="button">清空</button>
         </div>
         <canvas id="sketchCanvas"></canvas>
+      </div>
+    </article>
+
+    <article id="formulaWindow" class="qt-window formula-window floating-formula closed" data-window-name="formula">
+      <header class="window-title">
+        <span>公式拆解</span>
+        <span class="window-controls">
+          <button type="button" class="window-control-btn" data-window-action="minimize" aria-label="最小化">－</button>
+          <button type="button" class="window-control-btn" data-window-action="maximize" aria-label="全屏">□</button>
+          <button type="button" class="window-control-btn" data-window-action="close" aria-label="关闭">×</button>
+        </span>
+      </header>
+      <div class="formula-panel">
+        <div class="formula-orbital">
+          <strong id="formulaOrbitalName">2Px</strong>
+          <span id="formulaQuantumText">n=2, l=1, m=1</span>
+        </div>
+        <div id="formulaMain" class="formula-main">Ψ(r,θ,φ) = R₂₁(r) · Y₁¹(θ,φ)</div>
+        <div class="formula-breakdown">
+          <section>
+            <h3>径向部分</h3>
+            <p id="formulaRadialText">Rₙₗ(r) 决定离原子核不同距离处的振幅变化。</p>
+          </section>
+          <section>
+            <h3>角向部分</h3>
+            <p id="formulaAngularText">Yₗᵐ(θ,φ) 决定轨道的方向、节面和正负相位。</p>
+          </section>
+          <section>
+            <h3>图像对应</h3>
+            <p id="formulaVisualText">原子轨道是 Ψ=±c 的等值面；电子云显示 |Ψ|² 的概率分布。</p>
+          </section>
+        </div>
+        <dl class="formula-facts">
+          <div><dt>径向节点</dt><dd id="formulaRadialNodes">0</dd></div>
+          <div><dt>角向节点</dt><dd id="formulaAngularNodes">1</dd></div>
+          <div><dt>相位颜色</dt><dd id="formulaPhaseText">正相/负相</dd></div>
+        </dl>
       </div>
     </article>
 
