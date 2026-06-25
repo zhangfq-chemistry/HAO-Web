@@ -1,0 +1,64 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+debug/
+release/
+output/
+
+# Backup files
+*.zip
+web_backup_*/
+backups/
+tmp/
+tmp_*/
+scratch/
+
+# Qt generated
+*.o
+*.obj
+*.moc
+*.qm
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+Makefile
+Makefile.*
+.qmake.stash
+.qtc_clangd/
+
+# Swap files
+*.swp
+*.swo
+*~
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Patch scripts (development tools)
+patch*.py
+patch*.cjs
+check*.py
+check*.cjs
+extract*.py
+test_*.cjs
+reformat_*.py
+resetCinematic.py
+build_hao_manuscripts.py
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Agents config
+.agents/
+
+# Publish helper
+publish-github-pages/

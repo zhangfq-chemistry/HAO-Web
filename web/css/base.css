@@ -1,0 +1,22 @@
+:root {
+  color-scheme: light;
+  font-family: "Segoe UI", "Microsoft YaHei", Arial, sans-serif;
+  background: var(--workspace-bg);
+  color: #17202a;
+  --chrome-height: 101px;
+  --sidebar-zoom: 1;
+  --workspace-bg: #7f7f7c;
+  --viewer-bg: #000000;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+

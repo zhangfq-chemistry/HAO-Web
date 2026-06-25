@@ -1,0 +1,24 @@
+HAO Windows notes
+=================
+
+The project has been adjusted for a stock Windows build:
+
+1. QtColorWidgets is no longer required.
+2. VTK source changes are no longer required.
+3. VTK is located through the VTK_ROOT environment variable.
+
+Recommended build flow:
+
+1. Install Qt 6 MinGW 64-bit.
+2. Build or install VTK 9.6 with the same MinGW toolchain and Qt support.
+3. Set environment variables:
+
+   setx QT_DIR C:\Qt\6.10.1\mingw_64
+   setx VTK_ROOT C:\VTK
+
+4. Open a new command prompt.
+5. Run check_windows_env.bat.
+6. Run build_windows.bat.
+7. Run run_windows.bat.
+
+See WINDOWS_RUN_GUIDE.md for details.
