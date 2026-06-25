@@ -1,0 +1,219 @@
+.app-chrome {
+  display: grid;
+  grid-template-rows: 48px 52px;
+  border-bottom: 1px solid #b8b8b8;
+  background: #f3f3f3;
+}
+
+.menu-bar {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  padding: 0 24px;
+  font-size: 20px;
+  color: #000000;
+}
+
+.menu-item {
+  width: auto;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #000000;
+  font: inherit;
+}
+
+.menu-item:hover,
+.menu-item.active {
+  color: #005fb8;
+}
+
+.menu-popup {
+  position: absolute;
+  top: 100px;
+  left: 20px;
+  z-index: 20;
+  min-width: 180px;
+  padding: 6px;
+  border: 1px solid #b8b8b8;
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+}
+
+.menu-popup button {
+  display: block;
+  width: 100%;
+  height: 32px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 0;
+  background: #ffffff;
+  text-align: left;
+  font-size: 16px;
+}
+
+.menu-popup button:hover {
+  background: #e8f2ff;
+}
+
+.fullscreen-exit-button {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 240;
+  height: 38px;
+  padding: 0 16px;
+  border: 1px solid #cfd8e3;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #17202a;
+  font-size: 16px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+}
+
+.fullscreen-exit-button:hover {
+  background: #eaf3ff;
+}
+
+body.app-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+body.app-fullscreen .app-chrome,
+body.app-fullscreen .app-chrome {
+  display: none;
+}
+
+body.app-fullscreen .app-shell {
+  grid-template-columns: clamp(300px, 24vw, 380px) minmax(0, 1fr);
+  height: 100vh;
+}
+
+body.app-fullscreen .sidebar {
+  display: block;
+  padding: 6px 8px;
+}
+
+body.app-fullscreen .workspace {
+  padding: 0px;
+}
+
+body.app-fullscreen .qt-window.maximized {
+  inset: 4px !important;
+}
+
+.tool-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 20px;
+  border-top: 1px solid #dedede;
+  background: #f7f7f7;
+}
+
+.tool-button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 38px;
+  border: 1px solid #d8d8d8;
+  border-radius: 6px;
+  background: #ffffff;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.tool-button:hover,
+.tool-button.active {
+  border-color: #7aa7e8;
+  background: #eaf3ff;
+}
+
+.tool-button.blue {
+  color: #3b82f6;
+}
+
+.tool-button.green {
+  color: #2ca65a;
+}
+
+.tool-button.gray {
+  color: #535862;
+}
+
+.tool-button.stack {
+  color: #5b8def;
+}
+
+.axis-icon::before,
+.chart-icon::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border-left: 2px solid #32d583;
+  border-bottom: 2px solid #32d583;
+}
+
+.axis-icon::after {
+  content: "";
+  position: absolute;
+  left: 15px;
+  bottom: 12px;
+  width: 26px;
+  height: 2px;
+  background: #ef4444;
+  transform: rotate(-45deg);
+  transform-origin: left center;
+}
+
+.chart-icon::after {
+  content: "";
+  position: absolute;
+  left: 17px;
+  bottom: 12px;
+  width: 22px;
+  height: 2px;
+  background: #ef4444;
+  transform: rotate(35deg);
+  transform-origin: left center;
+}
+
+.chart-icon.alt::after {
+  background: #3b82f6;
+  transform: rotate(48deg);
+}
+
+.chart-icon.last::after {
+  background: #3b82f6;
+  transform: rotate(28deg);
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 420px minmax(0, 1fr);
+  height: calc(100vh - var(--chrome-height));
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sidebar {
+  min-height: 0;
+  background: #f7f7f7;
+  border-right: 1px solid #c8c8c8;
+  padding: 12px 14px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+
+.sidebar-fit {
+  width: calc(100% / var(--sidebar-zoom));
+  height: var(--sidebar-fit-height, auto);
+  transform: scale(var(--sidebar-zoom));
+  transform-origin: top left;
+}
+
