@@ -1,154 +1,188 @@
-.app-chrome {
-  display: grid;
-  grid-template-rows: 48px 52px;
-  border-bottom: 1px solid #b8b8b8;
-  background: #f3f3f3;
+/* ---------- Layout Base (Plan C) ---------- */
+.app-viewport {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg-base);
 }
 
-.menu-bar {
+.app-chrome {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  z-index: 100;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 48px;
-  padding: 0 24px;
-  font-size: 20px;
-  color: #000000;
+  pointer-events: none; /* Let clicks pass through except on children */
 }
+.app-chrome > * {
+  pointer-events: auto;
+}
+
+
 
 .menu-item {
   width: auto;
-  height: 40px;
-  padding: 0;
+  height: 32px;
+  padding: 0 10px;
   border: 0;
+  border-radius: var(--radius-sm);
   background: transparent;
-  color: #000000;
+  color: var(--text-secondary);
   font: inherit;
+  font-size: 13px;
+  transition: all var(--transition-fast);
 }
 
 .menu-item:hover,
 .menu-item.active {
-  color: #005fb8;
+  color: var(--text);
+  background: var(--bg-hover);
 }
 
 .menu-popup {
   position: absolute;
-  top: 100px;
+  top: 48px; /* adjusted from var(--chrome-height) */
   left: 20px;
   z-index: 20;
   min-width: 180px;
-  padding: 6px;
-  border: 1px solid #b8b8b8;
-  background: #ffffff;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(12px);
 }
 
 .menu-popup button {
   display: block;
   width: 100%;
-  height: 32px;
-  padding: 0 12px;
+  height: 30px;
+  padding: 0 10px;
   border: 0;
-  border-radius: 0;
-  background: #ffffff;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
   text-align: left;
-  font-size: 16px;
+  font-size: 13px;
+  transition: background var(--transition-fast);
 }
 
 .menu-popup button:hover {
-  background: #e8f2ff;
+  background: var(--accent-bg);
 }
 
-.fullscreen-exit-button {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  z-index: 240;
-  height: 38px;
-  padding: 0 16px;
-  border: 1px solid #cfd8e3;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.94);
-  color: #17202a;
-  font-size: 16px;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
-}
-
-.fullscreen-exit-button:hover {
-  background: #eaf3ff;
-}
-
-body.app-fullscreen {
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-}
-
-body.app-fullscreen .app-chrome,
-body.app-fullscreen .app-chrome {
-  display: none;
-}
-
-body.app-fullscreen .app-shell {
-  grid-template-columns: clamp(300px, 24vw, 380px) minmax(0, 1fr);
-  height: 100vh;
-}
-
-body.app-fullscreen .sidebar {
-  display: block;
-  padding: 6px 8px;
-}
-
-body.app-fullscreen .workspace {
-  padding: 0px;
-}
-
-body.app-fullscreen .qt-window.maximized {
-  inset: 4px !important;
-}
-
+/* ─── Toolbar ─── */
 .tool-bar {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 20px;
-  border-top: 1px solid #dedede;
-  background: #f7f7f7;
+  gap: 4px;
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 
 .tool-button {
   position: relative;
   display: grid;
   place-items: center;
-  width: 48px;
-  height: 38px;
-  border: 1px solid #d8d8d8;
-  border-radius: 6px;
-  background: #ffffff;
-  font-size: 28px;
+  width: 36px;
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 20px;
   font-weight: 700;
+  transition: all var(--transition-fast);
 }
 
 .tool-button:hover,
 .tool-button.active {
-  border-color: #7aa7e8;
-  background: #eaf3ff;
+  border-color: var(--border);
+  background: var(--bg-hover);
+  color: var(--text);
 }
 
-.tool-button.blue {
-  color: #3b82f6;
+.tool-button.blue { color: var(--accent); }
+.tool-button.green { color: var(--positive-color); }
+.tool-button.gray { color: var(--text-muted); }
+.tool-button.stack { color: var(--accent); }
+
+/* ─── App Viewport (Plan C) ─── */
+.app-viewport {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg-base);
 }
 
-.tool-button.green {
-  color: #2ca65a;
+/* ─── Settings Drawer ─── */
+.settings-drawer {
+  position: absolute;
+  right: 16px;
+  top: 60px;
+  bottom: 90px;
+  width: 340px;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(24px);
+  border-radius: var(--radius-lg);
+  z-index: 100;
+  transform: translateX(0);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+  border: 1px solid var(--border);
 }
 
-.tool-button.gray {
-  color: #535862;
+.settings-drawer.closed {
+  transform: translateX(400px);
 }
 
-.tool-button.stack {
-  color: #5b8def;
+/* ─── View Dock ─── */
+.view-dock {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(24px);
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  z-index: 100;
 }
 
+.dock-btn {
+  padding: 8px 16px;
+  border-radius: 99px;
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.dock-btn.active {
+  background: var(--accent);
+  color: white;
+}
+
+/* ─── Legacy axis/chart icon support ─── */
 .axis-icon::before,
 .chart-icon::before {
   content: "";
@@ -191,29 +225,3 @@ body.app-fullscreen .qt-window.maximized {
   background: #3b82f6;
   transform: rotate(28deg);
 }
-
-.app-shell {
-  display: grid;
-  grid-template-columns: 420px minmax(0, 1fr);
-  height: calc(100vh - var(--chrome-height));
-  min-height: 0;
-  overflow: hidden;
-}
-
-.sidebar {
-  min-height: 0;
-  background: #f7f7f7;
-  border-right: 1px solid #c8c8c8;
-  padding: 12px 14px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-}
-
-.sidebar-fit {
-  width: calc(100% / var(--sidebar-zoom));
-  height: var(--sidebar-fit-height, auto);
-  transform: scale(var(--sidebar-zoom));
-  transform-origin: top left;
-}
-

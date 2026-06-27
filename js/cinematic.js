@@ -113,6 +113,10 @@ export async function playCinematicAnimation() {
   
   resetCinematicStateToStart();
   
+  // Enter Quad View mode for animation
+  const quadBtn = document.querySelector('.dock-btn[data-view="quad"]');
+  if (quadBtn) quadBtn.click();
+  
   cinematicActive = true;
   cinematicStepDuration = 6000;
   cinematicStartMs = performance.now();
@@ -128,6 +132,10 @@ export async function playCinematicAnimation() {
 export function stopCinematicAnimation() {
   cinematicActive = false;
   document.body.classList.remove("cinematic-mode");
+  
+  // Exit Quad View mode, go back to orbital
+  const orbitalBtn = document.querySelector('.dock-btn[data-view="orbital"]');
+  if (orbitalBtn) orbitalBtn.click();
   
   if (el.mainWindow) {
     el.mainWindow.style.removeProperty("position");
