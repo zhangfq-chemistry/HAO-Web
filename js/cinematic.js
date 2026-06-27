@@ -226,7 +226,9 @@ function resetCinematicStateToStart() {
   const scanSliceZ = document.getElementById("scanSliceZInput");
   if (scanSliceZ) {
     scanSliceZ.value = 100;
-    scanSliceZ.dispatchEvent(new Event('input'));
+    if (window.positiveObject && window.positiveObject.updateSliceZ) window.positiveObject.updateSliceZ(100);
+    if (window.negativeObject && window.negativeObject.updateSliceZ) window.negativeObject.updateSliceZ(100);
+    if (window.globalXYClipPlane) window.globalXYClipPlane.constant = 100;
   }
   setRadialWindowCinematic(false);
 }
@@ -280,12 +282,15 @@ export function processCinematicTick(timeMs) {
         const scanRadius = document.getElementById("scanRadiusInput");
         if (scanRadius) {
           scanRadius.value = 0;
-          scanRadius.dispatchEvent(new Event('input'));
+          if (window.positiveObject && window.positiveObject.updateRadiusScan) window.positiveObject.updateRadiusScan(0);
+          if (window.negativeObject && window.negativeObject.updateRadiusScan) window.negativeObject.updateRadiusScan(0);
         }
         const scanSliceZ = document.getElementById("scanSliceZInput");
         if (scanSliceZ) {
           scanSliceZ.value = 100;
-          scanSliceZ.dispatchEvent(new Event('input'));
+          if (window.positiveObject && window.positiveObject.updateSliceZ) window.positiveObject.updateSliceZ(100);
+          if (window.negativeObject && window.negativeObject.updateSliceZ) window.negativeObject.updateSliceZ(100);
+          if (window.globalXYClipPlane) window.globalXYClipPlane.constant = 100;
         }
       }
     }
@@ -378,7 +383,15 @@ export function processCinematicTick(timeMs) {
               val -= 5;
               if (val < -100) val = -100;
               scanSliceZ.value = val;
-              scanSliceZ.dispatchEvent(new Event('input'));
+              // Bypassing input event to save CPU, directly updating the volume shader!
+              if (window.positiveObject && window.positiveObject.updateSliceZ) {
+                  window.positiveObject.updateSliceZ(val);
+              }
+              if (window.negativeObject && window.negativeObject.updateSliceZ) {
+                  window.negativeObject.updateSliceZ(val);
+              }
+              // Also update the global clipping plane so everything else respects it
+              window.globalXYClipPlane.constant = val;
             }
             window._cinematicLastSliceMs = timeMs;
           }
@@ -411,8 +424,13 @@ export function processCinematicTick(timeMs) {
           if (val < 100) {
             val += 2;
             if (val > 100) val = 100;
-            scanRadius.value = val;
-            scanRadius.dispatchEvent(new Event('input'));
+              scanRadius.value = val;
+              if (window.positiveObject && window.positiveObject.updateRadiusScan) {
+                  window.positiveObject.updateRadiusScan(val);
+              }
+              if (window.negativeObject && window.negativeObject.updateRadiusScan) {
+                  window.negativeObject.updateRadiusScan(val);
+              }
           }
           window._cinematicLastRadiusMs = timeMs;
         }

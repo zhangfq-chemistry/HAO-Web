@@ -4,6 +4,7 @@ import * as THREE from "three";
 import { TrackballControls } from "three/examples/jsm/controls/TrackballControls.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { MarchingCubes } from "three/examples/jsm/objects/MarchingCubes.js";
+import { makeRaymarchedVolume } from "./js/raymarch.js";
 import { el } from "./js/dom.js";
 import { openSketchWindow, bindSketchPanel, redrawSketchCanvas, setSketchMode, beginSketchDrag, continueSketchDrag, endSketchDrag, sketchState , resizeSketchCanvas, registerSketchDeps } from "./js/sketch.js";
 import { bindPredictSketchPanel, resizePredictCanvas, clearPredictCanvas, redrawPredictCanvas, predictSketchState } from "./js/predict-sketch.js";
@@ -36,7 +37,7 @@ function handleWorkerMessage(e) {
 fillWorkers[0].onmessage = handleWorkerMessage;
 fillWorkers[1].onmessage = handleWorkerMessage;
 
-function runFillWorker(workerIdx, fieldBuffer, params, options, sign) {
+export function runFillWorker(workerIdx, fieldBuffer, params, options, sign) {
   return new Promise((resolve, reject) => {
     const jobId = nextJobId++;
     pendingJobs.set(jobId, { resolve, reject });
@@ -1645,24 +1646,8 @@ async function makeBaseMarchingSource(workerIdx, params, options, renderOptions,
 }
 
 async function makeMarchingCubes(workerIdx, params, options, sign, color) {
-  const hasCutBoundary = options.cutaway !== "none" || options.slice !== "none";
-  if (params.l === 0 && hasCutBoundary) {
-    const sMesh = makeSOrbitalCutMesh(params, options, sign, color);
-    if (sMesh) return sMesh;
-  }
-  const smoothDensity = options.smooth && !options.wireframe
-    ? Math.round(options.density * (hasCutBoundary ? 3 : 2))
-    : options.density;
-  const renderOptions = {
-    ...options,
-    density: Math.min(hasCutBoundary ? 220 : 180, Math.max(options.density, smoothDensity)),
-  };
-  const mesh = await makeBaseMarchingSource(workerIdx, params, options, renderOptions, sign, color);
-  const signedOptions = { ...options, _capSign: sign, _skipCaps: params.l === 0 };
-  const angleCut = makeAngleCutMesh(mesh, signedOptions, color, params);
-  if (angleCut) return angleCut;
-  if (clippingPlanesForOptions(options).length) return makeClosedClippedMesh(mesh, signedOptions, color, params);
-  return makeStaticMarchingMesh(mesh, options, color);
+  // Use our new shader volume renderer!
+  return await makeRaymarchedVolume(workerIdx, params, options, sign, color);
 }
 
 function makeNodeSurface(params, options) {
@@ -3039,10 +3024,19 @@ function updateRelationOverlays() {
     let axis = "z";
     if (state.slicePlane === "xoz") axis = "y";
     if (state.slicePlane === "yoz") axis = "x";
-    relationSliceCap = makeCutPlaneMesh(readParams(), state.options, axis, null, newClip, 0.75);
-    if (relationSliceCap) {
-      relationSliceCap.name = "relationSliceCap";
-      scene.add(relationSliceCap);
+    
+    // Disable CPU marching cubes slice cap because our Shader Volume handles it natively!
+    // relationSliceCap = makeCutPlaneMesh(readParams(), state.options, axis, null, newClip, 0.75);
+    // if (relationSliceCap) {
+    //   relationSliceCap.name = "relationSliceCap";
+    //   scene.add(relationSliceCap);
+    // }
+    
+    if (window.positiveObject && window.positiveObject.updateSliceZ) {
+        window.positiveObject.updateSliceZ(newClip);
+    }
+    if (window.negativeObject && window.negativeObject.updateSliceZ) {
+        window.negativeObject.updateSliceZ(newClip);
     }
   }
   
