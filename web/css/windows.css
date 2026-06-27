@@ -1,82 +1,22 @@
-.workspace {
-  padding: 4px;
-}
-
-body.app-fullscreen .qt-window.maximized {
-  inset: 4px !important;
-}
-
-.tool-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 20px;
-  border-top: 1px solid #dedede;
-  background: #f7f7f7;
-}
-
-.tool-button {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 38px;
-  border: 1px solid #d8d8d8;
-  border-radius: 6px;
-  background: #ffffff;
-  font-size: 28px;
-  font-weight: 700;
-}
+/* ==========================================================================
+   windows.css — Dark-theme component styles
+   All colors reference CSS variables defined in base.css
+   ========================================================================== */
 
 .tool-button:hover,
 .tool-button.active {
-  border-color: #7aa7e8;
-  background: #eaf3ff;
+  border-color: var(--accent);
+  background: var(--accent-bg);
 }
 
-.tool-button.blue {
-  color: #3b82f6;
-}
-
-.tool-button.green {
-  color: #2ca65a;
-}
-
-.tool-button.gray {
-  color: #535862;
-}
-
-.tool-button.stack {
-  color: #5b8def;
-}
+.tool-button.blue  { color: var(--accent); }
+.tool-button.green { color: var(--positive-color); }
+.tool-button.gray  { color: var(--text-secondary); }
+.tool-button.stack { color: var(--accent); }
 
 
 
-.app-shell {
-  display: grid;
-  grid-template-columns: 420px minmax(0, 1fr);
-  height: calc(100vh - var(--chrome-height));
-  min-height: 0;
-  overflow: hidden;
-}
-
-.sidebar {
-  min-height: 0;
-  background: #f7f7f7;
-  border-right: 1px solid #c8c8c8;
-  padding: 12px 14px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-}
-
-.sidebar-fit {
-  width: calc(100% / var(--sidebar-zoom));
-  height: var(--sidebar-fit-height, auto);
-  transform: scale(var(--sidebar-zoom));
-  transform-origin: top left;
-}
-
+/* ---------- 2. Typography ---------- */
 h1,
 h2,
 p {
@@ -84,46 +24,38 @@ p {
 }
 
 h1 {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .brand p {
   margin-top: 3px;
-  font-size: 12px;
-  color: #667085;
+  font-size: 11px;
+  color: var(--text-muted);
 }
 
+/* ---------- 3. Panels ---------- */
 .panel {
-  border-top: 1px solid #e5eaf2;
-  padding: 18px 0;
+  border-top: 1px solid var(--border-light);
+  padding: 14px 0;
 }
 
 .panel h2 {
   margin-bottom: 14px;
-  font-size: 13px;
+  font-size: 11px;
   text-transform: uppercase;
-  color: #475467;
+  color: var(--text-muted);
 }
 
+/* ---------- 4. Labels ---------- */
 label {
   display: grid;
-  gap: 7px;
-  margin-bottom: 14px;
-  font-size: 13px;
-  color: #344054;
+  gap: 5px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
-.check-row {
-  grid-template-columns: 18px 1fr;
-  align-items: center;
-  gap: 9px;
-}
-
-.check-row input {
-  width: 16px;
-  height: 16px;
-}
-
+/* ---------- 5. Inputs ---------- */
 input,
 select {
   width: 100%;
@@ -132,12 +64,13 @@ select {
 input[type="number"],
 input[type="color"],
 select {
-  height: 34px;
-  border: 1px solid #dfe3ea;
-  border-radius: 6px;
-  padding: 0 10px;
+  height: 30px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0 8px;
   font: inherit;
-  background: #ffffff;
+  background: var(--bg-input);
+  color: var(--text);
 }
 
 input[type="color"] {
@@ -145,33 +78,42 @@ input[type="color"] {
 }
 
 input[type="range"] {
-  accent-color: #175cd3;
+  accent-color: var(--accent);
 }
 
 output {
-  color: #175cd3;
+  color: var(--accent);
   font-weight: 600;
+  font-size: 12px;
 }
 
+/* ---------- 6. Buttons ---------- */
 button {
-  height: 36px;
-  border: 1px solid #cfd8e3;
-  border-radius: 6px;
-  background: #ffffff;
-  color: #17202a;
+  height: 30px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text);
   font: inherit;
   cursor: pointer;
+  transition: all var(--transition-fast);
 }
 
+button:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+}
+
+/* ---------- 7. Tablet mode ---------- */
 body.tablet-mode button {
-  min-height: 46px;
-  font-size: 18px;
+  min-height: 42px;
+  font-size: 16px;
 }
 
 body.tablet-mode input[type="number"],
 body.tablet-mode select {
   min-height: 42px;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 body.tablet-mode .check-row input {
@@ -184,62 +126,98 @@ body.tablet-mode .activity-window {
   height: min(760px, calc(100vh - 80px));
 }
 
+/* ---------- 8. Client tabs ---------- */
 .client-tabs {
-  display: flex;
-  align-items: flex-end;
-  height: 38px;
-  margin-left: 2px;
+  display: none;
 }
 
 .tab {
   width: 128px;
   height: 38px;
-  border: 1px solid #e2e2e2;
+  border: 1px solid var(--border);
   border-bottom: 0;
-  border-radius: 7px 7px 0 0;
-  background: #ffffff;
-  color: #6b7280;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background: var(--bg-elevated);
+  color: var(--text-muted);
   font-size: 20px;
 }
 
 .tab.active {
-  color: #000000;
+  color: var(--text);
 }
 
+/* ---------- 9. Client panel ---------- */
 .client-panel {
   padding: 0;
-  background: #ffffff;
+  background: transparent;
 }
 
+/* ---------- 10. Fieldset / Accordion ---------- */
 fieldset {
   position: relative;
-  margin: 0 0 10px;
-  padding: 18px 12px 12px;
-  border: 1px solid #4f4f4f;
-  border-radius: 6px;
-  background: #ffffff;
+  margin: 0 0 2px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  overflow: hidden;
+  transition: max-height var(--transition-slow);
 }
 
 legend {
-  padding: 0 5px;
-  color: #000000;
-  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 10px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  user-select: none;
 }
 
+legend:hover {
+  background: var(--bg-hover);
+}
+
+legend::after {
+  content: '\25B8';
+  font-size: 10px;
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+}
+
+fieldset.open legend::after {
+  transform: rotate(90deg);
+}
+
+fieldset .field-content {
+  display: none;
+  padding: 6px 10px 10px;
+}
+
+fieldset.open .field-content {
+  display: block;
+}
+
+/* ---------- 11. Quantum row ---------- */
 .quantum-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 
 .quantum-row label {
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   margin: 0;
-  color: #000000;
-  font-size: 20px;
+  color: var(--text);
+  font-size: 13px;
 }
 
 .quantum-row input {
@@ -247,9 +225,10 @@ legend {
   text-align: center;
 }
 
+/* ---------- 12. Check grid ---------- */
 .check-grid {
   display: grid;
-  gap: 8px 14px;
+  gap: 4px 8px;
   align-items: center;
 }
 
@@ -265,61 +244,93 @@ legend {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+/* ---------- 13. Check row ---------- */
 .check-row {
-  grid-template-columns: 28px 1fr;
+  grid-template-columns: 18px 1fr;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
   margin: 0;
-  color: #000000;
-  font-size: 20px;
+  color: var(--text);
+  font-size: 12px;
 }
 
 .check-row input {
-  width: 26px;
-  height: 26px;
-  accent-color: #0078bf;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-input);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
 }
 
-.muted {
-  color: #9aa1aa;
+.check-row input:checked {
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
+.check-row input:checked::after {
+  content: '\2713';
+  position: absolute;
+  top: -1px;
+  left: 2px;
+  font-size: 12px;
+  color: white;
+  font-weight: bold;
+}
+
+.check-row input:hover {
+  border-color: var(--accent);
+}
+
+/* ---------- 14. Select action row ---------- */
 .select-action-row {
   display: grid;
-  grid-template-columns: 1fr 174px;
-  gap: 14px;
-  margin-top: 12px;
+  grid-template-columns: 1fr 120px;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .select-action-row select,
 .box-grid input,
 .box-grid output {
-  height: 34px;
-  font-size: 20px;
+  height: 30px;
+  font-size: 13px;
 }
 
+/* ---------- 15. Client link button ---------- */
 .client-link-button {
-  height: 34px;
-  border-color: #e5e7eb;
-  background: #ffffff;
-  color: #0000ff;
-  font-size: 20px;
+  height: 30px;
+  border-color: var(--border);
+  background: var(--bg-elevated);
+  color: var(--accent);
+  font-size: 12px;
+  transition: all var(--transition-fast);
 }
 
+.client-link-button:hover {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+}
+
+/* ---------- 16. Color row ---------- */
 .color-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 42px;
   align-items: center;
   gap: 8px;
   min-width: 0;
-  height: 34px;
+  height: 30px;
   margin: 0;
   padding: 0 8px;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  background: #ffffff;
-  color: #0000ff;
-  font-size: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  color: var(--accent);
+  font-size: 12px;
 }
 
 .color-row input[type="color"] {
@@ -329,95 +340,99 @@ legend {
   padding: 1px;
 }
 
-.relation-panel {
-  border-color: #777777;
-  padding-bottom: 8px;
-}
-
-.relation-panel legend {
-  color: #000000;
-}
+/* ---------- 17. Relation panel ---------- */
 
 .relation-panel .check-grid {
-  gap: 6px 10px;
+  gap: 4px 8px;
 }
 
 .relation-panel .check-row {
-  grid-template-columns: 22px minmax(0, 1fr);
-  gap: 6px;
-  font-size: 15px;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 4px;
+  font-size: 12px;
 }
 
 .relation-panel .check-row input {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
 }
 
+/* ---------- 18. Range row ---------- */
 .range-row {
   display: grid;
-  grid-template-columns: 54px minmax(0, 1fr) 42px;
+  grid-template-columns: 40px minmax(0, 1fr) 36px;
   align-items: center;
-  gap: 6px;
-  margin: 6px 0 0;
-  color: #000000;
-  font-size: 15px;
+  gap: 4px;
+  margin: 4px 0 0;
+  color: var(--text);
+  font-size: 12px;
 }
 
 .range-row input[type="range"] {
   width: 100%;
-  height: 20px;
+  height: 16px;
 }
 
 .range-row output {
-  color: #175cd3;
-  font-size: 14px;
+  color: var(--accent);
+  font-size: 11px;
   font-weight: 600;
   text-align: right;
 }
 
+/* ---------- 19. Box grid ---------- */
 .box-grid {
   display: grid;
-  grid-template-columns: 64px 154px 1fr;
-  gap: 9px 12px;
+  grid-template-columns: 50px 120px 1fr;
+  gap: 6px 8px;
   align-items: center;
-  font-size: 20px;
+  font-size: 13px;
 }
 
 .box-grid output {
   display: grid;
   align-items: center;
-  padding: 0 10px;
-  border: 1px solid #dfe3ea;
-  border-radius: 6px;
-  color: #667085;
-  background: #ffffff;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  background: var(--bg-input);
 }
 
+/* ---------- 20. Hidden control ---------- */
 .hidden-control {
   display: none;
 }
 
+/* ---------- 21. Sketch launch panel ---------- */
 .sketch-launch-panel {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
-  padding: 0 0 14px;
+  gap: 4px;
+  padding: 4px 0 8px;
 }
 
 .sketch-launch-button {
   width: 100%;
-  height: 38px;
+  height: 30px;
   margin-bottom: 0;
+  font-size: 11px;
 }
 
+/* ---------- 22. Primary button ---------- */
 .primary-button {
   width: 100%;
-  border-color: #175cd3;
-  background: #175cd3;
+  border-color: var(--accent);
+  background: var(--accent);
   color: white;
   font-weight: 600;
 }
 
+.primary-button:hover {
+  background: var(--accent-hover);
+}
+
+/* ---------- 23. Stats ---------- */
 .stats dl {
   margin: 0;
 }
@@ -425,87 +440,77 @@ legend {
 .stats div {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
-  padding: 7px 0;
-  border-bottom: 1px solid #eef2f7;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .stats dt {
-  color: #667085;
+  color: var(--text-muted);
 }
 
 .stats dd {
   margin: 0;
   font-weight: 600;
   text-align: right;
+  color: var(--text);
 }
 
+/* ---------- 24. Workspace & view grid ---------- */
 .workspace {
   height: 100%;
   min-height: 0;
   min-width: 0;
-  padding: 0px;
+  padding: 0;
   background: var(--workspace-bg);
   overflow: hidden;
 }
 
-.view-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(320px, 1fr));
-  grid-template-rows: repeat(2, minmax(0, 1fr));
-  gap: 0px;
+.view-container {
   width: 100%;
   height: 100%;
-  min-height: 0;
-}
-
-.view-grid.overlap-layout {
-  display: block;
   position: relative;
 }
 
-.view-grid.overlap-layout .qt-window {
-  position: absolute;
-  width: min(58%, 620px);
-  height: min(46%, 430px);
-}
-
-.view-grid.overlap-layout .qt-window:nth-child(1) {
-  left: 0;
-  top: 0;
-}
-
-.view-grid.overlap-layout .qt-window:nth-child(2) {
-  left: 7%;
-  top: 8%;
-}
-
-.view-grid.overlap-layout .qt-window:nth-child(3) {
-  left: 14%;
-  top: 16%;
-}
-
-.view-grid.overlap-layout .qt-window:nth-child(4) {
-  left: 21%;
-  top: 24%;
-}
-
+/* ---------- 26. Qt window (Plan C immersive) ---------- */
 .qt-window {
-  position: relative;
-  display: grid;
-  grid-template-rows: 32px minmax(0, 1fr);
-  min-width: 0;
-  min-height: 0;
-  border: 1px solid #d8d8d8;
-  border-right-color: #f4f4f4;
-  border-bottom-color: #f4f4f4;
-  background: var(--viewer-bg);
-  box-shadow: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #bcbcbc;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+  border: none;
+  background: var(--bg-base);
 }
 
+.qt-window.active {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 10;
+}
+
+.qt-window[class*="floating-"] {
+  position: fixed;
+  inset: auto;
+  opacity: 1;
+  pointer-events: auto;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--viewer-bg);
+  box-shadow: var(--shadow-lg);
+  display: grid;
+  grid-template-rows: 28px minmax(0, 1fr);
+  width: auto;
+  height: auto;
+  transition: none;
+}
+
+/* ---------- 30. Annotation layer ---------- */
 .annotation-layer {
   position: absolute;
-  inset: 32px 0 0;
+  inset: 28px 0 0;
   z-index: 8;
   pointer-events: none;
   overflow: hidden;
@@ -525,15 +530,15 @@ body.annotation-mode .annotation-layer {
   min-width: 92px;
   max-width: 220px;
   padding: 6px 10px 6px 6px;
-  border: 1px solid rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--border);
   border-radius: 999px;
-  background: rgba(18, 24, 38, 0.72);
-  color: #ffffff;
+  background: rgba(22, 27, 34, 0.85);
+  color: var(--text);
   font-size: 15px;
   line-height: 1.2;
   cursor: grab;
   user-select: none;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+  box-shadow: var(--shadow-md);
 }
 
 .annotation-note:active {
@@ -544,7 +549,7 @@ body.annotation-mode .annotation-layer {
   content: "";
   width: 18px;
   height: 2px;
-  background: #ffffff;
+  background: var(--text);
   transform: rotate(-28deg);
   transform-origin: right center;
 }
@@ -556,8 +561,8 @@ body.annotation-mode .annotation-layer {
   top: calc(50% + 7px);
   width: 8px;
   height: 8px;
-  border-left: 2px solid #ffffff;
-  border-bottom: 2px solid #ffffff;
+  border-left: 2px solid var(--text);
+  border-bottom: 2px solid var(--text);
   transform: rotate(17deg);
 }
 
@@ -575,9 +580,10 @@ body.annotation-mode .annotation-layer {
 }
 
 .annotation-note.radial {
-  background: rgba(23, 92, 211, 0.78);
+  background: rgba(56, 139, 253, 0.78);
 }
 
+/* ---------- 31. Annotation toolbar ---------- */
 .annotation-toolbar {
   position: fixed;
   left: 50%;
@@ -585,13 +591,14 @@ body.annotation-mode .annotation-layer {
   z-index: 160;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  max-width: min(760px, calc(100vw - 24px));
-  padding: 8px;
-  border: 1px solid #cfd8e3;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
+  gap: 6px;
+  max-width: min(700px, calc(100vw - 24px));
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-overlay);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-lg);
   transform: translateX(-50%);
 }
 
@@ -600,32 +607,34 @@ body.annotation-mode .annotation-layer {
 }
 
 .annotation-toolbar button {
-  height: 30px;
-  padding: 0 10px;
-  border-radius: 5px;
-  font-size: 14px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
 }
 
+/* ---------- 37. Annotation mode button ---------- */
 body.annotation-mode #annotationModeButton {
-  border-color: #175cd3;
-  background: #eaf3ff;
-  color: #175cd3;
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  color: var(--accent);
 }
 
-.qt-window.minimized {
-  grid-template-rows: 32px;
+/* ---------- 29. Window states ---------- */
+.qt-window[class*="floating-"].minimized {
+  grid-template-rows: 28px;
   align-self: start;
-  height: 32px;
-  min-height: 32px;
+  height: 28px !important;
+  min-height: 28px !important;
 }
 
-.qt-window.minimized .viewer,
-.qt-window.minimized .sketch-panel,
-.qt-window.minimized .box-panel,
-.qt-window.minimized .activity-panel,
-.qt-window.minimized .formula-panel,
-.qt-window.minimized .animation-panel,
-.qt-window.minimized .status-strip {
+.qt-window[class*="floating-"].minimized .viewer,
+.qt-window[class*="floating-"].minimized .sketch-panel,
+.qt-window[class*="floating-"].minimized .box-panel,
+.qt-window[class*="floating-"].minimized .activity-panel,
+.qt-window[class*="floating-"].minimized .formula-panel,
+.qt-window[class*="floating-"].minimized .animation-panel,
+.qt-window[class*="floating-"].minimized .status-strip {
   display: none;
 }
 
@@ -633,15 +642,17 @@ body.annotation-mode #annotationModeButton {
   display: none;
 }
 
-.qt-window.maximized {
-  position: fixed;
-  inset: 8px !important;
-  z-index: 100;
+.qt-window[class*="floating-"].maximized {
+  position: fixed !important;
+  inset: 4px !important;
+  z-index: 100 !important;
   width: auto !important;
   height: auto !important;
-  resize: none;
+  resize: none !important;
+  border-radius: var(--radius-md) !important;
 }
 
+/* ---------- 32. Floating windows ---------- */
 .floating-sketch {
   position: fixed;
   left: 470px;
@@ -706,16 +717,6 @@ body.annotation-mode #annotationModeButton {
 
 .floating-box.maximized .window-title {
   cursor: default;
-}
-
-.box-panel {
-  padding: 12px;
-  background: #f7f7f7;
-  overflow: auto;
-}
-
-.box-window .box-grid {
-  margin: 0;
 }
 
 .floating-activity {
@@ -789,21 +790,24 @@ body.annotation-mode #annotationModeButton {
   cursor: default;
 }
 
-.window-title {
+/* ---------- 27. Window title ---------- */
+.qt-window[class*="floating-"] .window-title {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 120px;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  height: 32px;
-  padding: 0 10px;
-  background: #fbfbfb;
-  color: #9aa1aa;
-  font-size: 18px;
-  text-align: center;
-  border-bottom: 1px solid #dddddd;
+  height: 28px;
+  padding: 0 8px;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(8px);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 500;
+  border-bottom: 1px solid var(--border-light);
+  user-select: none;
 }
 
-.window-title > span:not(.qt-badge):first-child {
+.qt-window[class*="floating-"] .window-title > span:not(.qt-badge):first-child {
   grid-column: 1;
 }
 
@@ -814,48 +818,56 @@ body.annotation-mode #annotationModeButton {
   width: 24px;
   height: 20px;
   border-radius: 2px;
-  background: #35d67b;
-  color: #ffffff;
+  background: var(--positive-color);
+  color: var(--text);
   font-size: 14px;
   font-weight: 700;
 }
 
-.window-controls {
+/* ---------- 28. Window controls ---------- */
+.qt-window[class*="floating-"] .window-controls {
   grid-column: 2;
   justify-self: end;
-  display: grid;
-  grid-template-columns: repeat(3, 32px);
-  align-items: center;
-  justify-items: center;
+  display: flex;
   gap: 2px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
   white-space: nowrap;
 }
 
-.window-control-btn {
+.qt-window[class*="floating-"]:hover .window-controls {
+  opacity: 1;
+}
+
+.qt-window[class*="floating-"] .window-control-btn {
+  width: 22px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 28px;
+  transition: all var(--transition-fast);
   padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: #000000;
-  font-size: 24px;
-  line-height: 1;
 }
 
-.window-control-btn:hover {
-  background: #e8eef8;
+.qt-window[class*="floating-"] .window-control-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text);
 }
 
-.window-control-btn[data-window-action="close"]:hover {
-  background: #e81123;
-  color: #ffffff;
+.qt-window[class*="floating-"] .window-control-btn[data-window-action="close"]:hover {
+  background: rgba(248, 81, 73, 0.3);
+  color: #f85149;
 }
 
+/* ---------- Viewer ---------- */
 .viewer {
   position: relative;
+  height: 100%;
   min-height: 0;
   background: var(--viewer-bg);
 }
@@ -883,45 +895,95 @@ body.annotation-mode #annotationModeButton {
   position: relative;
 }
 
+/* ---------- 33. Box panel ---------- */
+.box-panel {
+  padding: 10px;
+  background: var(--bg-surface);
+  overflow: auto;
+}
+
+.box-window .box-grid {
+  margin: 0;
+}
+
+/* ---------- 34. Status strip ---------- */
 .status-strip {
-  display: none;
-  position: absolute;
-  right: 12px;
-  bottom: 10px;
+  display: flex;
   align-items: center;
-  gap: 8px;
-  color: #ffffff;
-  font-size: 12px;
+  justify-content: space-between;
+  height: 24px;
+  padding: 0 8px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-light);
+  font-size: 11px;
+  color: var(--text-muted);
 }
 
 .status-strip button {
-  height: 28px;
-  padding: 0 10px;
-  background: rgba(255, 255, 255, 0.84);
+  height: 20px;
+  padding: 0 6px;
+  font-size: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
 }
 
-/* Cinematic Mode for Generation Animation */
+#resetCameraButton {
+  height: 20px;
+  padding: 0 6px;
+  font-size: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+}
+
+/* ---------- 35. Muted ---------- */
+.muted {
+  color: var(--text-muted);
+}
+
+/* ---------- 36. Cinematic mode ---------- */
 body.cinematic-mode {
   overflow: hidden;
 }
-body.cinematic-mode .app-chrome { display: none !important; }
-body.cinematic-mode .app-shell { 
+
+body.cinematic-mode .app-chrome {
+  display: none !important;
+}
+
+body.cinematic-mode .app-shell {
   grid-template-columns: 1fr !important;
   height: 100vh !important;
 }
-body.cinematic-mode .sidebar { display: none !important; }
-body.cinematic-mode .status-strip { display: none !important; }
-body.cinematic-mode .annotation-layer { display: none !important; }
-body.cinematic-mode .annotation-toolbar { display: none !important; }
-body.cinematic-mode .view-grid {
-  display: grid !important;
-  grid-template-columns: 1fr !important;
-  grid-template-rows: 1fr !important;
-  gap: 0 !important;
+
+body.cinematic-mode .sidebar {
+  display: none !important;
+}
+
+body.cinematic-mode .status-strip {
+  display: none !important;
+}
+
+body.cinematic-mode .annotation-layer {
+  display: none !important;
+}
+
+body.cinematic-mode .annotation-toolbar {
+  display: none !important;
+}
+
+body.cinematic-mode .view-container {
+  display: block !important;
   width: 100% !important;
   height: 100% !important;
 }
-body.cinematic-mode .view-grid > article:not(.main-window) { display: none !important; }
+
+body.cinematic-mode .view-container > article:not(.main-window) {
+  display: none !important;
+}
+
 body.cinematic-mode .main-window {
   position: relative !important;
   width: 100% !important;
@@ -939,18 +1001,20 @@ body.cinematic-mode .main-window {
   border-radius: 0 !important;
   z-index: 10 !important;
 }
-body.cinematic-mode .main-window .window-title { display: none !important; }
+
+
+
 body.cinematic-mode .main-window .viewer {
   border: none !important;
   border-radius: 0 !important;
-  background: #000000 !important; /* cinematic black background */
+  background: var(--viewer-bg) !important;
 }
 
-/* Cinematic Overlay */
+/* Cinematic overlay */
 .cinematic-overlay {
   position: fixed;
   inset: 0;
-  z-index: 2000; /* above everything */
+  z-index: 2000;
   pointer-events: none;
   display: flex;
   flex-direction: column;
@@ -960,65 +1024,74 @@ body.cinematic-mode .main-window .viewer {
   opacity: 0;
   transition: opacity 0.8s ease;
 }
+
 .cinematic-overlay.visible {
   opacity: 1;
 }
+
 .cinematic-content {
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
+  background: rgba(22, 27, 34, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   padding: 24px 40px;
   max-width: 800px;
   text-align: center;
-  color: #fff;
+  color: var(--text);
   transform: translateY(20px);
   transition: transform 0.8s ease, opacity 0.8s ease;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-lg);
 }
+
 .cinematic-overlay.visible .cinematic-content {
   transform: translateY(0);
 }
+
 .cinematic-content h2 {
   margin: 0 0 12px 0;
   font-size: 28px;
   font-weight: 600;
   letter-spacing: 1px;
 }
+
 .cinematic-content p {
   margin: 0;
   font-size: 18px;
   line-height: 1.5;
-  color: #e2e8f0;
+  color: var(--text-secondary);
 }
+
 .cinematic-formula {
   position: absolute;
   right: 10%;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(13, 17, 23, 0.75);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   padding: 30px;
-  color: #fff;
+  color: var(--text);
   font-size: 24px;
   font-family: serif;
   opacity: 0;
   transition: opacity 1.2s ease;
 }
+
 .cinematic-formula.visible {
   opacity: 1;
 }
+
 .cinematic-formula-eq {
   margin-bottom: 20px;
   font-size: 32px;
   text-align: center;
-  border-bottom: 1px solid rgba(255,255,255,0.3);
+  border-bottom: 1px solid var(--border);
   padding-bottom: 15px;
 }
+
 .cinematic-controls {
   position: absolute;
   top: 20px;
@@ -1027,20 +1100,235 @@ body.cinematic-mode .main-window .viewer {
   display: flex;
   gap: 12px;
 }
+
 .cinematic-controls button {
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: #fff;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border);
+  color: var(--text);
   padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.3s;
-}
-.cinematic-controls button:hover {
-  background: rgba(255,255,255,0.2);
+  transition: all var(--transition-normal);
 }
 
+.cinematic-controls button:hover {
+  background: var(--bg-hover);
+}
+.status-strip button {
+  height: 20px;
+  padding: 0 6px;
+  font-size: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+}
+
+#resetCameraButton {
+  height: 20px;
+  padding: 0 6px;
+  font-size: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+}
+
+/* ---------- 35. Muted ---------- */
+.muted {
+  color: var(--text-muted);
+}
+
+/* ---------- 36. Cinematic mode ---------- */
+body.cinematic-mode {
+  overflow: hidden;
+}
+
+body.cinematic-mode .app-chrome {
+  display: none !important;
+}
+
+body.cinematic-mode .app-shell {
+  grid-template-columns: 1fr !important;
+  height: 100vh !important;
+}
+
+body.cinematic-mode .sidebar {
+  display: none !important;
+}
+
+body.cinematic-mode .status-strip {
+  display: none !important;
+}
+
+body.cinematic-mode .annotation-layer {
+  display: none !important;
+}
+
+body.cinematic-mode .annotation-toolbar {
+  display: none !important;
+}
+
+body.cinematic-mode .view-container {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+body.cinematic-mode .view-container > article:not(.main-window) {
+  display: none !important;
+}
+
+body.cinematic-mode .main-window {
+  position: relative !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  inset: auto !important;
+  transform: none !important;
+  grid-area: 1 / 1 / -1 / -1 !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  z-index: 10 !important;
+}
+
+
+
+body.cinematic-mode .main-window .viewer {
+  border: none !important;
+  border-radius: 0 !important;
+  background: var(--viewer-bg) !important;
+}
+
+/* Cinematic overlay */
+.cinematic-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding-bottom: 8%;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.cinematic-overlay.visible {
+  opacity: 1;
+}
+
+.cinematic-content {
+  background: rgba(22, 27, 34, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px 40px;
+  max-width: 800px;
+  text-align: center;
+  color: var(--text);
+  transform: translateY(20px);
+  transition: transform 0.8s ease, opacity 0.8s ease;
+  box-shadow: var(--shadow-lg);
+}
+
+.cinematic-overlay.visible .cinematic-content {
+  transform: translateY(0);
+}
+
+.cinematic-content h2 {
+  margin: 0 0 12px 0;
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.cinematic-content p {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.cinematic-formula {
+  position: absolute;
+  right: 10%;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(13, 17, 23, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  color: var(--text);
+  font-size: 24px;
+  font-family: serif;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+.cinematic-formula.visible {
+  opacity: 1;
+}
+
+.cinematic-formula-eq {
+  margin-bottom: 20px;
+  font-size: 32px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 15px;
+}
+
+.cinematic-controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  pointer-events: none;
+  display: flex;
+  gap: 12px;
+}
+
+.cinematic-controls button {
+  background: var(--bg-overlay);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.cinematic-controls button:hover {
+  background: var(--bg-hover);
+}
 
 .cinematic-overlay.visible .cinematic-controls {
   pointer-events: auto;
+}
+
+.view-container.quad-view {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 4px;
+  background: var(--bg-surface);
+}
+
+.view-container.quad-view > .qt-window {
+  position: relative !important;
+  inset: auto !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--border-light) !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
 }

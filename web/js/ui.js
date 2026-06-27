@@ -22,6 +22,71 @@ document.addEventListener("fullscreenchange", () => {
 export function initUI(api) {
   Object.assign(window, api);
   bindAppUI();
+  initDrawerAndDock();
+  initAccordion();
+}
+
+/* ─── Drawer and Dock Logic (Plan C) ─── */
+function initDrawerAndDock() {
+  const drawer = document.getElementById("settingsDrawer");
+  const toggleBtn = document.getElementById("toggleDrawerBtn");
+
+  toggleBtn?.addEventListener("click", () => {
+    drawer?.classList.toggle("closed");
+    setTimeout(() => window.dispatchEvent(new Event("resize")), 450); // wait for animation
+  });
+
+  const dock = document.getElementById("viewDock");
+  if (!dock) return;
+  dock.addEventListener("click", (e) => {
+    const btn = e.target.closest(".dock-btn");
+    if (!btn) return;
+    
+    if (btn.id === "openAnimationButton") {
+      if (window.playCinematicAnimation) window.playCinematicAnimation();
+      return;
+    }
+
+    // Update active button
+    dock.querySelectorAll(".dock-btn:not(#openAnimationButton)").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    const viewName = btn.dataset.view;
+    const container = document.querySelector(".view-container");
+    
+    if (viewName === "quad") {
+      container.classList.add("quad-view");
+      document.querySelectorAll(".view-container > .qt-window:not(.floating-palette):not(.floating-sketch):not(.floating-activity)").forEach(win => {
+        win.classList.add("active");
+      });
+    } else {
+      container.classList.remove("quad-view");
+      // Hide all main viewers, show selected
+      document.querySelectorAll(".view-container > .qt-window:not(.floating-palette):not(.floating-sketch):not(.floating-activity)").forEach(win => {
+        if (win.dataset.windowName === viewName) {
+          win.classList.add("active");
+        } else {
+          win.classList.remove("active");
+        }
+      });
+    }
+    
+    // Trigger resize so ThreeJS canvas updates its aspect ratio
+    window.dispatchEvent(new Event("resize"));
+  });
+}
+
+function initAccordion() {
+  const panel = document.querySelector(".client-panel");
+  if (!panel) return;
+  panel.addEventListener("click", (event) => {
+    const legend = event.target.closest("legend");
+    if (!legend) return;
+    const fieldset = legend.parentElement;
+    if (fieldset) {
+      fieldset.classList.toggle("open");
+    }
+  });
 }
 
 export function beginFloatingDrag(event, win) {
@@ -311,11 +376,8 @@ export function toggleBox() {
 }
 
 export function setWindowLayout(mode) {
-  reopenViewWindows({ restoreLayout: true });
-  const overlap = mode === "overlap";
-  el.viewGrid.classList.toggle("overlap-layout", overlap);
-  el.toolTile?.classList.toggle("active", !overlap);
-  el.toolOverlap?.classList.toggle("active", overlap);
+  // Legacy layout function, removed in Plan C.
+  // We no longer have a view grid to toggle.
   resizeAfterLayoutChange();
 }
 
@@ -349,32 +411,57 @@ export function handleWindowControl(button) {
 export function setPlaneView(plane) {
   const radius = getCurrentViewRadius();
   const angularRadius = Math.max(3, getCurrentAngularRadius());
+  const projectionRadius = typeof getCurrentProjectionRadius !== "undefined" ? getCurrentProjectionRadius() : radius;
+  const radialRadius = typeof getCurrentRadialRadius !== "undefined" ? getCurrentRadialRadius() : radius;
+  
   const mainDistance = cameraDistanceForRadius(radius);
   const angularDistance = cameraDistanceForRadius(angularRadius, 40);
+  const projDistance = cameraDistanceForRadius(projectionRadius);
+  const radialDistance = typeof cameraDistanceForRadius !== "undefined" ? cameraDistanceForRadius(radialRadius) : radialRadius * 1.5;
+
   if (plane === "xoy") {
     camera.up.set(0, 1, 0);
     angularCamera.up.set(0, 1, 0);
     camera.position.set(0, 0, mainDistance);
     angularCamera.position.set(0, 0, angularDistance);
+    if (window.projectionCamera) { projectionCamera.up.set(0, 1, 0); projectionCamera.position.set(0, 0, projDistance); }
+    if (window.radialCamera) { radialCamera.up.set(0, 1, 0); radialCamera.position.set(0, 0, radialDistance); }
   } else if (plane === "yoz") {
     camera.up.set(0, 1, 0);
     angularCamera.up.set(0, 1, 0);
     camera.position.set(mainDistance, 0, 0);
     angularCamera.position.set(angularDistance, 0, 0);
+    if (window.projectionCamera) { projectionCamera.up.set(0, 1, 0); projectionCamera.position.set(projDistance, 0, 0); }
+    if (window.radialCamera) { radialCamera.up.set(0, 1, 0); radialCamera.position.set(radialDistance, 0, 0); }
   } else if (plane === "xoz") {
     camera.up.set(0, 0, 1);
     angularCamera.up.set(0, 0, 1);
     camera.position.set(0, -mainDistance, 0);
     angularCamera.position.set(0, -angularDistance, 0);
+    if (window.projectionCamera) { projectionCamera.up.set(0, 0, 1); projectionCamera.position.set(0, -projDistance, 0); }
+    if (window.radialCamera) { radialCamera.up.set(0, 0, 1); radialCamera.position.set(0, -radialDistance, 0); }
   }
+  
   camera.lookAt(0, 0, 0);
   angularCamera.lookAt(0, 0, 0);
+  if (window.projectionCamera) projectionCamera.lookAt(0, 0, 0);
+  if (window.radialCamera) radialCamera.lookAt(0, 0, 0);
+  
   updateCameraFrustum(radius);
   updateAngularFrustum(angularRadius);
+  if (window.updateProjectionFrustum) updateProjectionFrustum(projectionRadius);
+  if (window.updateRadialFrustum) updateRadialFrustum(radialRadius);
+  
   controls.target.set(0, 0, 0);
   angularControls.target.set(0, 0, 0);
+  if (window.projectionControls) projectionControls.target.set(0, 0, 0);
+  if (window.radialControls) radialControls.target.set(0, 0, 0);
+  
   controls.update();
   angularControls.update();
+  if (window.projectionControls) projectionControls.update();
+  if (window.radialControls) radialControls.update();
+  
   el.toolXOY?.classList.toggle("active", plane === "xoy");
   el.toolYOZ?.classList.toggle("active", plane === "yoz");
   el.toolXOZ?.classList.toggle("active", plane === "xoz");
