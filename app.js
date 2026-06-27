@@ -139,7 +139,12 @@ let animationRadialCamera = null;
 const compareViews = [];
 
 
-function applyBackgroundColor(color = el.backgroundColor?.value || "#000000") {
+function applyBackgroundColor(color) {
+  if (document.documentElement.classList.contains("theme-light")) {
+    color = "#e9ecef";
+  } else if (!color) {
+    color = el.backgroundColor?.value || "#000000";
+  }
   document.documentElement.style.setProperty("--viewer-bg", color);
   const background = new THREE.Color(color);
   scene.background = background.clone();
@@ -171,36 +176,38 @@ function mountRelationControls() {
   fieldset.className = "relation-panel";
   fieldset.innerHTML = `
     <legend data-i18n="legend_relation">关联</legend>
-    <div class="check-grid two">
-      <label class="check-row"><input id="relationModeInput" type="checkbox" /><span data-i18n="lbl_relation_mode">关联模式</span></label>
-      <label class="check-row"><input id="syncRotationInput" type="checkbox" checked /><span data-i18n="lbl_sync_rotation">同步空间视角</span></label>
+    <div class="field-content">
+      <div class="check-grid two">
+        <label class="check-row"><input id="relationModeInput" type="checkbox" /><span data-i18n="lbl_relation_mode">关联模式</span></label>
+        <label class="check-row"><input id="syncRotationInput" type="checkbox" checked /><span data-i18n="lbl_sync_rotation">同步空间视角</span></label>
+      </div>
+      <label class="range-row" style="display: flex; align-items: center;">
+        <span data-i18n="lbl_radius_r" style="margin-right: 6px;">半径 r</span>
+        <input id="scanRadiusInput" type="range" min="0" max="100" step="1" value="45" style="flex:1; margin-right: 6px;" />
+        <output id="scanRadiusValue" style="min-width: 32px; text-align: right;">45%</output>
+        <button id="playScanRadiusBtn" type="button" style="margin-left: 6px; padding: 2px 8px; background: var(--button-bg); color: var(--button-text); border: none; border-radius: 4px; cursor: pointer;">▶</button>
+      </label>
+      <label class="range-row">
+        <span data-i18n="lbl_dir_theta">方向 θ</span>
+        <input id="scanThetaInput" type="range" min="0" max="180" step="1" value="90" />
+        <output id="scanThetaValue">90°</output>
+      </label>
+      <label class="range-row">
+        <span data-i18n="lbl_dir_phi">方向 φ</span>
+        <input id="scanPhiInput" type="range" min="0" max="360" step="1" value="0" />
+        <output id="scanPhiValue">0°</output>
+      </label>
+      <label class="range-row" style="display: flex; align-items: center;">
+        <select id="scanSlicePlaneInput" style="margin-right: 6px; width: auto; background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 4px; padding: 2px;">
+          <option value="xoy">XY 切片</option>
+          <option value="xoz">XZ 切片</option>
+          <option value="yoz">YZ 切片</option>
+        </select>
+        <input id="scanSliceZInput" type="range" min="-100" max="100" step="1" value="0" style="flex:1; margin-right: 6px;" />
+        <output id="scanSliceZValue" style="min-width: 28px; text-align: right;">0</output>
+        <button id="playScanSliceBtn" type="button" style="margin-left: 6px; padding: 2px 8px; background: var(--button-bg); color: var(--button-text); border: none; border-radius: 4px; cursor: pointer;">▶</button>
+      </label>
     </div>
-    <label class="range-row" style="display: flex; align-items: center;">
-      <span data-i18n="lbl_radius_r" style="margin-right: 6px;">半径 r</span>
-      <input id="scanRadiusInput" type="range" min="0" max="100" step="1" value="45" style="flex:1; margin-right: 6px;" />
-      <output id="scanRadiusValue" style="min-width: 32px; text-align: right;">45%</output>
-      <button id="playScanRadiusBtn" type="button" style="margin-left: 6px; padding: 2px 8px; background: var(--button-bg); color: var(--button-text); border: none; border-radius: 4px; cursor: pointer;">▶</button>
-    </label>
-    <label class="range-row">
-      <span data-i18n="lbl_dir_theta">方向 θ</span>
-      <input id="scanThetaInput" type="range" min="0" max="180" step="1" value="90" />
-      <output id="scanThetaValue">90°</output>
-    </label>
-    <label class="range-row">
-      <span data-i18n="lbl_dir_phi">方向 φ</span>
-      <input id="scanPhiInput" type="range" min="0" max="360" step="1" value="0" />
-      <output id="scanPhiValue">0°</output>
-    </label>
-    <label class="range-row" style="display: flex; align-items: center;">
-      <select id="scanSlicePlaneInput" style="margin-right: 6px; width: auto; background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 4px; padding: 2px;">
-        <option value="xoy">XY 切片</option>
-        <option value="xoz">XZ 切片</option>
-        <option value="yoz">YZ 切片</option>
-      </select>
-      <input id="scanSliceZInput" type="range" min="-100" max="100" step="1" value="0" style="flex:1; margin-right: 6px;" />
-      <output id="scanSliceZValue" style="min-width: 28px; text-align: right;">0</output>
-      <button id="playScanSliceBtn" type="button" style="margin-left: 6px; padding: 2px 8px; background: var(--button-bg); color: var(--button-text); border: none; border-radius: 4px; cursor: pointer;">▶</button>
-    </label>
   `;
   anchorFieldset.insertAdjacentElement("afterend", fieldset);
   Object.assign(el, {
@@ -2302,7 +2309,7 @@ async function renderOrbital(forceResetCamera = false) {
     updateRelationRadiusMax(options);
 
     el.orbitalName.textContent = name;
-    el.viewerTitle.textContent = `原子轨道  ${name}`;
+    if (el.viewerTitle) el.viewerTitle.textContent = `原子轨道  ${name}`;
     el.nodeText.textContent = nodeSummary(params.n, params.l);
     el.sliceText.textContent = options.slice.toUpperCase();
     el.boxText.textContent = options.radius.toFixed(2);
@@ -3421,7 +3428,6 @@ function addRadialNodeMarkers(group, params, options, meta) {
 }
 
 function renderRadialView(params, options) {
-  radialScene.background = new THREE.Color(options.backgroundColor);
   const samples = params.n >= 5 ? 260 : 190;
   const rings = params.n >= 5 ? 132 : 96;
   const radialExtent = relationEnabled()
@@ -4302,13 +4308,15 @@ el.toolSave?.addEventListener("click", () => {
   UI.closeMenu();
   UI.exportImage();
 });
-el.toolTile?.addEventListener("click", () => {
+const toolThemeBtn = document.getElementById("toolTheme");
+toolThemeBtn?.addEventListener("click", () => {
   UI.closeMenu();
-  UI.setWindowLayout("tile");
-});
-el.toolOverlap?.addEventListener("click", () => {
-  UI.closeMenu();
-  UI.setWindowLayout("overlap");
+  document.documentElement.classList.toggle("theme-light");
+  const isLight = document.documentElement.classList.contains("theme-light");
+  toolThemeBtn.textContent = isLight ? "🌞" : "🌗";
+  
+  const defaultBg = el.backgroundColor?.value || "#000000";
+  applyBackgroundColor(isLight ? "#ffffff" : defaultBg);
 });
   el.toolAxis?.addEventListener("click", () => {
     console.log("[DEBUG] User clicked #toolAxis button.");
@@ -4339,6 +4347,9 @@ setTimeout(() => {
 bindPredictSketchPanel();
   UI.bindAppUI();
   Activities.initializeActivityOptions();
+  document.getElementById("openAnimationButton")?.addEventListener("click", () => {
+    playCinematicAnimation();
+  });
   resize();
   UI.setWindowLayout("tile");
   applyDesktopDefaultsToControls();
@@ -4989,6 +5000,14 @@ UI.initUI({
   openBoxWindow: typeof openBoxWindow !== 'undefined' ? openBoxWindow : null,
   getCurrentAngularRadius: () => typeof currentAngularRadius !== 'undefined' ? currentAngularRadius : 4,
   getCurrentViewRadius: () => typeof currentViewRadius !== 'undefined' ? currentViewRadius : 10,
+  getCurrentProjectionRadius: () => typeof currentProjectionRadius !== 'undefined' ? currentProjectionRadius : 10,
+  getCurrentRadialRadius: () => typeof currentRadialRadius !== 'undefined' ? currentRadialRadius : 5.3,
+  updateProjectionFrustum: typeof updateProjectionFrustum !== 'undefined' ? updateProjectionFrustum : null,
+  updateRadialFrustum: typeof updateRadialFrustum !== 'undefined' ? updateRadialFrustum : null,
+  projectionCamera: typeof projectionCamera !== 'undefined' ? projectionCamera : null,
+  radialCamera: typeof radialCamera !== 'undefined' ? radialCamera : null,
+  projectionControls: typeof projectionControls !== 'undefined' ? projectionControls : null,
+  radialControls: typeof radialControls !== 'undefined' ? radialControls : null,
   pauseGenerationAnimation: typeof pauseGenerationAnimation !== 'undefined' ? pauseGenerationAnimation : null,
   drawGenerationAnimation: typeof drawGenerationAnimation !== 'undefined' ? drawGenerationAnimation : null,
   controls: typeof controls !== 'undefined' ? controls : null,
