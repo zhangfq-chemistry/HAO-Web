@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { runFillWorker } from "./app.js";
+import { runFillWorker } from "../app.js";
 
 const vertexShader = `
 varying vec3 vOrigin;
