@@ -2,18 +2,14 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hydrogen-like MO Viewer (v3.2)</title>
-    <link rel="stylesheet" href="./styles.css?v=66" />
-    <link rel="stylesheet" href="./css/windows.css?v=66" />
+    <link rel="stylesheet" href="./styles.css" />
     <script type="importmap">
       {
         "imports": {
-          "three": "https://unpkg.com/three@0.165.0/build/three.module.js",
-          "three/examples/jsm/": "https://unpkg.com/three@0.165.0/examples/jsm/"
+          "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+          "three/examples/jsm/": "https://unpkg.com/three@0.160.0/examples/jsm/"
         }
       }
     </script>
@@ -29,72 +25,55 @@
       <div class="tool-bar" aria-label="Main toolbar">
         <button id="toolRender" class="tool-button blue" title="显示/重画">▤</button>
         <button id="toolSave" class="tool-button green" title="导出图片">▣</button>
-        <button id="toolTheme" class="tool-button" title="切换主题">🌗</button>
+        <button id="toolTile" class="tool-button gray" title="平铺">▰</button>
+        <button id="toolOverlap" class="tool-button stack" title="重叠">▣</button>
         <button id="toolAxis" class="tool-button" title="坐标轴" data-i18n-title="title_axis">
-          <svg viewBox="0 0 24 24" width="18" height="18">
-            <path d="M12 14 L12 4" stroke="#3fb950" stroke-width="2" stroke-linecap="round"/>
-            <path d="M12 14 L21 19" stroke="#f85149" stroke-width="2" stroke-linecap="round"/>
-            <path d="M12 14 L5 19" stroke="#d29922" stroke-width="2" stroke-linecap="round"/>
+          <svg viewBox="0 0 24 24" width="22" height="22">
+            <path d="M12 14 L12 4" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 14 L21 19" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 14 L5 19" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
           </svg>
         </button>
         <button id="toolXOY" class="tool-button" title="XOY 视图" data-i18n-title="title_xoy">
-          <svg viewBox="-3 -3 30 30" width="18" height="18">
-            <path d="M12 12 L21 17 L21 7 L12 2 Z" fill="rgba(88,166,255,0.15)" stroke="#8b949e" stroke-width="1" stroke-linejoin="round"/>
-            <path d="M12 12 L3 17" stroke="#8b949e" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M12 12 L12 2" stroke="#3fb950" stroke-width="2" stroke-linecap="round"/>
-            <path d="M12 12 L21 17" stroke="#f85149" stroke-width="2" stroke-linecap="round"/>
-            <text x="9" y="0" font-size="8" font-family="sans-serif" fill="#3fb950" font-weight="bold">y</text>
-            <text x="22" y="24" font-size="8" font-family="sans-serif" fill="#f85149" font-weight="bold">x</text>
+          <svg viewBox="0 0 24 24" width="22" height="22">
+            <path d="M12 12 L12 2 M12 12 L21 17 M12 12 L3 17" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M12 12 L21 17 L12 22 L3 17 Z" fill="rgba(59, 130, 246, 0.3)" stroke="#3b82f6" stroke-width="1.5" stroke-linejoin="round"/>
           </svg>
         </button>
         <button id="toolYOZ" class="tool-button" title="YOZ 视图" data-i18n-title="title_yoz">
-          <svg viewBox="-3 -3 30 30" width="18" height="18">
-            <path d="M12 12 L3 17 L3 7 L12 2 Z" fill="rgba(88,166,255,0.15)" stroke="#8b949e" stroke-width="1" stroke-linejoin="round"/>
-            <path d="M12 12 L21 17" stroke="#8b949e" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M12 12 L12 2" stroke="#3fb950" stroke-width="2" stroke-linecap="round"/>
-            <path d="M12 12 L3 17" stroke="#d29922" stroke-width="2" stroke-linecap="round"/>
-            <text x="9" y="0" font-size="8" font-family="sans-serif" fill="#3fb950" font-weight="bold">y</text>
-            <text x="-2" y="24" font-size="8" font-family="sans-serif" fill="#d29922" font-weight="bold">z</text>
+          <svg viewBox="0 0 24 24" width="22" height="22">
+            <path d="M12 12 L12 2 M12 12 L21 17 M12 12 L3 17" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M12 12 L21 17 L21 7 L12 2 Z" fill="rgba(59, 130, 246, 0.3)" stroke="#3b82f6" stroke-width="1.5" stroke-linejoin="round"/>
           </svg>
         </button>
         <button id="toolXOZ" class="tool-button" title="XOZ 视图" data-i18n-title="title_xoz">
-          <svg viewBox="-3 -3 30 30" width="18" height="18">
-            <path d="M12 12 L21 17 L12 22 L3 17 Z" fill="rgba(88,166,255,0.15)" stroke="#8b949e" stroke-width="1" stroke-linejoin="round"/>
-            <path d="M12 12 L12 2" stroke="#8b949e" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M12 12 L21 17" stroke="#f85149" stroke-width="2" stroke-linecap="round"/>
-            <path d="M12 12 L3 17" stroke="#d29922" stroke-width="2" stroke-linecap="round"/>
-            <text x="22" y="24" font-size="8" font-family="sans-serif" fill="#f85149" font-weight="bold">x</text>
-            <text x="-2" y="24" font-size="8" font-family="sans-serif" fill="#d29922" font-weight="bold">z</text>
+          <svg viewBox="0 0 24 24" width="22" height="22">
+            <path d="M12 12 L12 2 M12 12 L21 17 M12 12 L3 17" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M12 12 L3 17 L3 7 L12 2 Z" fill="rgba(59, 130, 246, 0.3)" stroke="#3b82f6" stroke-width="1.5" stroke-linejoin="round"/>
           </svg>
         </button>
-        <button id="toggleDrawerBtn" class="tool-button" style="margin-left: auto;">⚙</button>
       </div>
       <div id="menuPopup" class="menu-popup" hidden></div>
     </header>
-    <main class="app-viewport">
-      <aside id="settingsDrawer" class="settings-drawer closed">
+    <main class="app-shell">
+      <aside class="sidebar">
         <div class="sidebar-fit">
         <div class="client-tabs">
           <button class="tab active" data-i18n="tab_orbital">氢原子轨道</button>
         </div>
 
         <section class="client-panel">
-          <fieldset class="open">
+          <fieldset>
             <legend data-i18n="legend_wavefunction">波函数</legend>
-            <div class="field-content">
             <div class="quantum-row">
               <label><span>n=</span><input id="nInput" type="number" min="1" max="6" value="2" /></label>
               <label><span>l=</span><input id="lInput" type="number" min="0" max="5" value="1" /></label>
               <label><span>|m|=</span><input id="mInput" type="number" min="-5" max="5" value="1" /></label>
             </div>
             <div class="check-grid three">
-              <label class="check-row"><input id="cosTypeInput" type="checkbox" checked autocomplete="off" /><span data-i18n="lbl_cos_type">Cos型</span></label>
-              <label class="check-row"><input id="sinTypeInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_sin_type">Sin型</span></label>
-              <label class="check-row" style="display: flex; align-items: center;">
-                <input id="cloudInput" type="checkbox" autocomplete="off" />
-                <span data-i18n="lbl_electron_cloud" style="white-space: nowrap;">电子云</span>
-                <button id="samplePlayBtn" class="action-button icon-button" title="播放动态采样" style="margin-left:5px; padding:2px 8px; font-size:12px; height: 24px; line-height: 1; border: 1px solid rgba(255,255,255,0.5); border-radius: 4px; background: rgba(0,0,0,0.2); color: #fff; cursor: pointer;">▶</button>
-              </label>
+              <label class="check-row"><input id="cosTypeInput" type="checkbox" checked /><span data-i18n="lbl_cos_type">Cos型</span></label>
+              <label class="check-row"><input id="sinTypeInput" type="checkbox" /><span data-i18n="lbl_sin_type">Sin型</span></label>
+              <label class="check-row"><input id="cloudInput" type="checkbox" /><span data-i18n="lbl_electron_cloud">电子云</span></label>
             </div>
             <div class="select-action-row">
               <select id="presetInput">
@@ -115,25 +94,23 @@
               <span>Nuclear charge Z</span>
               <input id="zInput" type="number" min="1" max="10" value="1" />
             </label>
-            </div>
           </fieldset>
 
-          <fieldset class="open">
+          <fieldset>
             <legend data-i18n="legend_display">轨道显示</legend>
-            <div class="field-content">
             <div class="check-grid three">
-              <label class="check-row"><input id="positiveLobeInput" type="checkbox" checked autocomplete="off" /><span data-i18n="lbl_positive_lobe">正瓣</span></label>
-              <label class="check-row"><input id="negativeLobeInput" type="checkbox" checked autocomplete="off" /><span data-i18n="lbl_negative_lobe">负瓣</span></label>
-              <label class="check-row"><input id="wireframeInput" type="checkbox" checked autocomplete="off" /><span data-i18n="lbl_wireframe">网格</span></label>
-              <label class="check-row"><input id="smoothInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_smooth">光滑</span></label>
-              <label class="check-row"><input id="projectionInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_projection">投影</span></label>
-              <label class="check-row"><input id="projection3dInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_projection3d">3D切片</span></label>
-              <label class="check-row"><input id="xySliceInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_slice_xy">xy截面</span></label>
-              <label class="check-row"><input id="yzSliceInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_slice_yz">yz截面</span></label>
-              <label class="check-row"><input id="xzSliceInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_slice_xz">xz截面</span></label>
-              <label class="check-row"><input id="quarterInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_cut_1_4">1/4角</span></label>
-              <label class="check-row"><input id="eighthInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_cut_1_8">1/8角</span></label>
-              <label class="check-row"><input id="threeQuarterInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_cut_3_4">3/4角</span></label>
+              <label class="check-row"><input id="positiveLobeInput" type="checkbox" checked /><span data-i18n="lbl_positive_lobe">正瓣</span></label>
+              <label class="check-row"><input id="negativeLobeInput" type="checkbox" checked /><span data-i18n="lbl_negative_lobe">负瓣</span></label>
+              <label class="check-row"><input id="wireframeInput" type="checkbox" checked /><span data-i18n="lbl_wireframe">网格</span></label>
+              <label class="check-row"><input id="smoothInput" type="checkbox" /><span data-i18n="lbl_smooth">光滑</span></label>
+              <label class="check-row"><input id="projectionInput" type="checkbox" /><span data-i18n="lbl_projection">投影</span></label>
+              <span></span>
+              <label class="check-row"><input id="xySliceInput" type="checkbox" /><span data-i18n="lbl_slice_xy">xy截面</span></label>
+              <label class="check-row"><input id="yzSliceInput" type="checkbox" /><span data-i18n="lbl_slice_yz">yz截面</span></label>
+              <label class="check-row"><input id="xzSliceInput" type="checkbox" /><span data-i18n="lbl_slice_xz">xz截面</span></label>
+              <label class="check-row"><input id="quarterInput" type="checkbox" /><span data-i18n="lbl_cut_1_4">1/4角</span></label>
+              <label class="check-row"><input id="eighthInput" type="checkbox" /><span data-i18n="lbl_cut_1_8">1/8角</span></label>
+              <label class="check-row"><input id="threeQuarterInput" type="checkbox" /><span data-i18n="lbl_cut_3_4">3/4角</span></label>
             </div>
             
 
@@ -155,44 +132,39 @@
                   <option value="yoz">YOZ</option>
                 </select>
               </label>
-              <label class="check-row"><input id="nodeInput" type="checkbox" autocomplete="off" /><span>Show node surface</span></label>
-              <label class="check-row"><input id="axisInput" type="checkbox" checked autocomplete="off" /><span>Show axes</span></label>
-            </div>
+              <label class="check-row"><input id="nodeInput" type="checkbox" /><span>Show node surface</span></label>
+              <label class="check-row"><input id="axisInput" type="checkbox" checked /><span>Show axes</span></label>
             </div>
           </fieldset>
 
           <fieldset>
             <legend data-i18n="legend_radial">径向</legend>
-            <div class="field-content">
             <div class="check-grid four">
-              <label class="check-row"><input id="radialRInput" type="checkbox" autocomplete="off" /><span>R</span></label>
-              <label class="check-row"><input id="radialR2Input" type="checkbox" autocomplete="off" /><span>R2</span></label>
-              <label class="check-row"><input id="radialRdfInput" type="checkbox" checked autocomplete="off" /><span>RDF</span></label>
-              <label class="check-row muted"><input type="checkbox" disabled autocomplete="off" /><span>All</span></label>
-              <label class="check-row"><input id="radialSectionInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_radial_section">横截</span></label>
-              <label class="check-row"><input id="radialSideInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_radial_side">侧视</span></label>
-              <label class="check-row"><input id="radialCurveInput" type="checkbox" checked autocomplete="off" /><span data-i18n="lbl_radial_curve">曲线</span></label>
-              <label class="check-row"><input id="radialAxisInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_radial_axis">坐标</span></label>
-            </div>
+              <label class="check-row"><input id="radialRInput" type="checkbox" /><span>R</span></label>
+              <label class="check-row"><input id="radialR2Input" type="checkbox" /><span>R2</span></label>
+              <label class="check-row"><input id="radialRdfInput" type="checkbox" checked /><span>RDF</span></label>
+              <label class="check-row muted"><input type="checkbox" disabled /><span>All</span></label>
+              <label class="check-row"><input id="radialSectionInput" type="checkbox" /><span data-i18n="lbl_radial_section">横截</span></label>
+              <label class="check-row"><input id="radialSideInput" type="checkbox" /><span data-i18n="lbl_radial_side">侧视</span></label>
+              <label class="check-row"><input id="radialCurveInput" type="checkbox" checked /><span data-i18n="lbl_radial_curve">曲线</span></label>
+              <label class="check-row"><input id="radialAxisInput" type="checkbox" /><span data-i18n="lbl_radial_axis">坐标</span></label>
             </div>
           </fieldset>
 
           <fieldset>
             <legend data-i18n="legend_nodes">节面</legend>
-            <div class="field-content">
             <div class="check-grid three">
-              <label class="check-row"><input id="radialNodeInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_node_radial">径向</span></label>
-              <label class="check-row"><input id="polarNodeInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_node_polar">极向</span></label>
-              <label class="check-row"><input id="longitudeNodeInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_node_azimuthal">经向</span></label>
-            </div>
+              <label class="check-row"><input id="radialNodeInput" type="checkbox" /><span data-i18n="lbl_node_radial">径向</span></label>
+              <label class="check-row"><input id="polarNodeInput" type="checkbox" /><span data-i18n="lbl_node_polar">极向</span></label>
+              <label class="check-row"><input id="longitudeNodeInput" type="checkbox" /><span data-i18n="lbl_node_azimuthal">经向</span></label>
             </div>
           </fieldset>
 
           <div class="hidden-control">
             <label>
               <span>Hidden input placeholder to preserve indices</span>
-              <input id="paletteOneInput" type="checkbox" autocomplete="off" />
-              <input id="paletteTwoInput" type="checkbox" checked autocomplete="off" />
+              <input id="paletteOneInput" type="checkbox" />
+              <input id="paletteTwoInput" type="checkbox" checked />
             </label>
             <output id="isoValue">auto</output>
             <output id="densityValue">auto</output>
@@ -232,49 +204,73 @@
               <option value="marching" selected>Marching Cubes</option>
               <option value="surface">Radial surface</option>
               <option value="points">Point cloud</option>
-              <option value="projection3d">3D 投影切片 (3D Projection)</option>
             </select>
           </label>
         </template>
         </div>
       </aside>
 
-      <div class="view-container">
-        <article class="qt-window" data-window-name="projection">
-          <div id="projectionViewer" class="viewer projection-viewer"></div>
-          <div class="annotation-layer" data-annotation-layer="projection"></div>
-        </article>
+      <section class="workspace">
+        <div class="view-grid">
+          <article class="qt-window" data-window-name="projection">
+            <header class="window-title">
+              <span data-i18n="title_projection">轨道投影</span>
+              <span class="window-controls">
+                <button type="button" class="window-control-btn" data-window-action="minimize" aria-label="最小化">－</button>
+                <button type="button" class="window-control-btn" data-window-action="maximize" aria-label="全屏">□</button>
+                <button type="button" class="window-control-btn" data-window-action="close" aria-label="关闭">×</button>
+              </span>
+            </header>
+            <div id="projectionViewer" class="viewer projection-viewer"></div>
+            <div class="annotation-layer" data-annotation-layer="projection"></div>
+          </article>
 
-        <article class="qt-window main-window active" data-window-name="orbital">
-          <div id="viewer" class="viewer"></div>
-          <div class="annotation-layer" data-annotation-layer="orbital"></div>
-          <div class="status-strip">
-            <span id="statusText">Ready</span>
-            <button id="resetCameraButton">Reset view</button>
-          </div>
-        </article>
+          <article class="qt-window main-window" data-window-name="orbital">
+            <header class="window-title">
+              <span id="viewerTitle" data-i18n="title_orbital">原子轨道</span>
+              <span class="window-controls">
+                <button type="button" class="window-control-btn" data-window-action="minimize" aria-label="最小化">－</button>
+                <button type="button" class="window-control-btn" data-window-action="maximize" aria-label="全屏">□</button>
+                <button type="button" class="window-control-btn" data-window-action="close" aria-label="关闭">×</button>
+              </span>
+            </header>
+            <div id="viewer" class="viewer"></div>
+            <div class="annotation-layer" data-annotation-layer="orbital"></div>
+            <div class="status-strip">
+              <span id="statusText">Ready</span>
+              <button id="resetCameraButton">Reset view</button>
+            </div>
+          </article>
 
-        <article class="qt-window" data-window-name="radial">
-          <div id="radialViewer" class="viewer radial-viewer"></div>
-          <div class="annotation-layer" data-annotation-layer="radial"></div>
-        </article>
+          <article class="qt-window" data-window-name="radial">
+            <header class="window-title">
+              <span data-i18n="title_radial">径向分布函数</span>
+              <span class="window-controls">
+                <button type="button" class="window-control-btn" data-window-action="minimize" aria-label="最小化">－</button>
+                <button type="button" class="window-control-btn" data-window-action="maximize" aria-label="全屏">□</button>
+                <button type="button" class="window-control-btn" data-window-action="close" aria-label="关闭">×</button>
+              </span>
+            </header>
+            <div id="radialViewer" class="viewer radial-viewer"></div>
+            <div class="annotation-layer" data-annotation-layer="radial"></div>
+          </article>
 
-        <article class="qt-window" data-window-name="angular">
-          <div id="angularViewer" class="viewer mini-viewer"></div>
-          <div class="annotation-layer" data-annotation-layer="angular"></div>
-        </article>
-      </div>
+          <article class="qt-window" data-window-name="angular">
+            <header class="window-title">
+              <span data-i18n="title_angular">角向函数</span>
+              <span class="window-controls">
+                <button type="button" class="window-control-btn" data-window-action="minimize" aria-label="最小化">－</button>
+                <button type="button" class="window-control-btn" data-window-action="maximize" aria-label="全屏">□</button>
+                <button type="button" class="window-control-btn" data-window-action="close" aria-label="关闭">×</button>
+              </span>
+            </header>
+            <div id="angularViewer" class="viewer mini-viewer"></div>
+            <div class="annotation-layer" data-annotation-layer="angular"></div>
+          </article>
+
+        </div>
+      </section>
     </main>
-
-    <nav id="viewDock" class="view-dock">
-      <button class="dock-btn active" data-view="orbital">原子轨道</button>
-      <button class="dock-btn" data-view="projection">轨道投影</button>
-      <button class="dock-btn" data-view="radial">径向分布</button>
-      <button class="dock-btn" data-view="angular">角向函数</button>
-      <div style="width: 1px; height: 20px; background: var(--border-light); margin: 0 4px; align-self: center;"></div>
-      <button class="dock-btn" data-view="quad">四宫格</button>
-      <button class="dock-btn" id="openAnimationButton" style="color: var(--accent);">生成动画</button>
-    </nav>
 
     <article id="annotationToolbar" class="annotation-toolbar closed" aria-label="讲解标注工具">
       <button type="button" data-annotation-add="正相" data-i18n="btn_anno_pos">正相</button>
@@ -319,15 +315,15 @@
         <div class="box-grid">
           <span data-i18n="lbl_box_size">尺寸</span>
           <input id="boxSizeDisplay" type="number" value="26.40" step="0.1" />
-          <label class="check-row"><input id="boxInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_show_box">显示盒子</span></label>
+          <label class="check-row"><input id="boxInput" type="checkbox" /><span data-i18n="lbl_show_box">显示盒子</span></label>
 
           <span data-i18n="lbl_grid_pts">格点数</span>
           <input id="densityInput" type="number" min="20" max="200" step="2" value="90" />
-          <label class="check-row"><input id="grid3dInput" type="checkbox" autocomplete="off" /><span data-i18n="lbl_3d_grid">3D网格</span></label>
+          <label class="check-row"><input id="grid3dInput" type="checkbox" /><span data-i18n="lbl_3d_grid">3D网格</span></label>
 
           <span data-i18n="lbl_interval">间隔</span>
           <output id="intervalValue">0.367</output>
-          <label class="check-row muted"><input type="checkbox" disabled autocomplete="off" /><span>lambertW</span></label>
+          <label class="check-row muted"><input type="checkbox" disabled /><span>lambertW</span></label>
 
           <span data-i18n="lbl_isovalue">等值面</span>
           <input id="isoInput" type="number" min="0.0001" max="0.08" step="0.0001" value="0.02" />
@@ -368,27 +364,53 @@
       </div>
     </article>
 
-    <div id="cinematicOverlay" class="cinematic-overlay">
-      <div class="cinematic-controls">
-        <button id="cinematicPlayBtn" data-i18n="btn_play">播放 / 暂停</button>
-        <button id="cinematicExportBtn" data-i18n="btn_export">导出视频</button>
-        <button id="cinematicExitBtn" data-i18n="btn_cancel">退出</button>
-      </div>
-      <div class="cinematic-progress-bar" style="position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); width: 60%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden; pointer-events: none;">
-        <div id="cinematicProgressFill" style="width: 0%; height: 100%; background: #00d2ff; transition: width 0.1s linear;"></div>
-      </div>
-      <div class="cinematic-formula" id="cinematicFormula">
-        <div class="cinematic-formula-eq" id="cinematicFormulaEq"></div>
-        <div style="display: flex; gap: 40px; font-size: 16px;">
-          <div id="cinematicFormulaRadial"></div>
-          <div id="cinematicFormulaAngular"></div>
+    <article id="animationWindow"  class="qt-window animation-window floating-animation closed" data-window-name="animation">
+      <header class="window-title">
+        <span data-i18n="win_animation">轨道生成动画</span>
+        <span class="window-controls">
+          <button type="button" class="window-control-btn" data-window-action="minimize" aria-label="最小化">－</button>
+          <button type="button" class="window-control-btn" data-window-action="maximize" aria-label="全屏">□</button>
+          <button type="button" class="window-control-btn" data-window-action="close" aria-label="关闭">×</button>
+        </span>
+      </header>
+      <div class="animation-panel">
+        <div class="animation-head">
+          <span id="animationStepBadge">第 1 步 / 6 步</span>
+          <strong id="animationTitle" data-i18n="txt_anim_start">动画生成开始</strong>
+        </div>
+        <div style="position: relative; width: 100%; height: 100%; min-height: 400px;" id="animationContainer">
+          <canvas id="animationCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
+          <div id="animFormulaOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; display: none; align-items: flex-start; justify-content: center; padding-top: 40px; box-sizing: border-box;">
+            <div style="background: rgba(0,0,0,0.6); padding: 15px; border-radius: 8px; color: #fff; font-size: 24px; font-family: serif; text-align: center; border: 1px solid rgba(255,255,255,0.2);">
+              <div style="margin-bottom: 10px;" id="animFormulaEq"></div>
+              <div style="display: flex; gap: 40px; font-size: 16px;">
+                <div id="animFormulaRadial"></div>
+                <div id="animFormulaAngular"></div>
+              </div>
+            </div>
+          </div>
+          <div id="animationExportOverlay" class="animation-export-overlay" style="display: none;">
+            <div class="animation-export-modal">
+              <h4 data-i18n="txt_export_warn_title">导出提示</h4>
+              <p data-i18n="txt_export_warn_desc">视频导出期间，请保持此页面在前台显示。<br/>请勿切换标签页或最小化浏览器，否则可能导致录制卡顿或跳帧。</p>
+              <div class="animation-export-actions">
+                <button id="cancelExportButton" class="client-link-button" data-i18n="btn_cancel">取消</button>
+                <button id="confirmExportButton" class="client-link-button active" data-i18n="btn_confirm_export">继续导出</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p id="animationText" class="animation-text" data-i18n="txt_anim_desc">将当前的各个不同视角统一起来。</p>
+        <div class="animation-progress"><span id="animationProgressFill"></span></div>
+        <div class="animation-controls">
+          <button id="animationRestartButton" type="button" data-i18n="btn_restart">重播</button>
+          <button id="animationPrevButton" type="button" data-i18n="btn_prev">上一步</button>
+          <button id="animationPlayButton" type="button" data-i18n="btn_play">播放</button>
+          <button id="animationNextButton" type="button" data-i18n="btn_next">下一步</button>
+          <button id="animationExportButton" type="button" data-i18n="btn_export">导出视频</button>
         </div>
       </div>
-      <div class="cinematic-content">
-        <h2 id="cinematicTitle">动画生成开始</h2>
-        <p id="cinematicText">将当前的各个不同视角统一起来。</p>
-      </div>
-    </div>
+    </article>
 
     <article id="activityWindow" class="qt-window activity-window floating-activity closed" data-window-name="activity">
       <header class="window-title">
@@ -556,6 +578,11 @@
               <span>适合课堂投屏随机出题。</span>
             </button>
           </div>
-    <script type="module" src="./app.js"></script>
+          <p class="activity-text">平板课堂模式后续可以放大按钮、减少参数项，只保留旋转、选择、提交和截图。</p>
+        </section>
+      </div>
+    </article>
+
+    <script type="module" src="./app.js?v=31"></script>
   </body>
 </html>
