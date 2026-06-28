@@ -1,0 +1,12 @@
+uic ./UI/mainwindow.ui  -o ui_mainwindow.h
+uic ./UI/AOProperty.ui  -o ui_AOProperty.h
+uic ./UI/HBAOProperty.ui -o ui_HBAOProperty.h
+uic ./UI/about.ui -o ui_about.h
+uic ./UI/AxisProperty.ui -o ui_AxisProperty.h
+qmake
+qmake
+rm  ./HAO-Viewer
+make -j8
+./HAO-Viewer
+
+

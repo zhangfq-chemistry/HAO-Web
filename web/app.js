@@ -15,7 +15,7 @@ registerSketchDeps({
 });
 import { initAxes, scene, camera, renderer, controls, angularScene, angularCamera, angularRenderer, angularControls, projectionScene, projectionCamera, projectionRenderer, projectionControls, radialScene, radialCamera, radialRenderer, radialControls, axesGroup, angularAxesGroup, setAngularAxesGroup, setAxesGroup, recoverAllViewerControls, refreshAllViewerControls, rebuildMainControls, rebuildAngularControls, refreshViewerControls, recoverViewerControls, makeFreeRotationControls, bindViewerControlRecovery, setAxesVisibility, getAngularAxesGroup , makeLabelSprite, makeCylinderBetween, makeAxisCone, makeAxisGroup, makeRadialAxisGroup} from "./js/renderers.js";
 
-import { initCinematic, cinematicActive, processCinematicTick, playCinematicAnimation, stopCinematicAnimation, exportCinematicVideo, toggleCinematicPlayback } from "./js/cinematic.js";
+import { initCinematic, cinematicActive, processCinematicTick, playCinematicAnimation, stopCinematicAnimation, exportCinematicVideo, toggleCinematicPlayback, jumpToCinematicStep, applyCinematicVisualState } from "./js/cinematic.js";
 // ---- Web Worker Setup ----
 const fillWorkers = [
   new Worker(new URL("./js/worker.js", import.meta.url), { type: "module" }),
@@ -1894,8 +1894,12 @@ function robustWavefunctionScale(values, fallback) {
   return Math.max(fallback, absValues[percentileIndex]);
 }
 
-function makeCutPlaneMesh(params, options, plane, forcedSign = null, offset = 0, brightnessMultiplier = 1.0) {
-  const samples = Math.max(160, Math.min(params.n >= 5 ? 420 : 320, Math.round(options.density * (params.n >= 5 ? 5.4 : 4.4))));
+function makeCutPlaneMesh(params, options, plane, forcedSign = null, offset = 0, brightnessMultiplier = 1.0, fastMode = false) {
+  let samples = Math.max(96, Math.min(params.n >= 5 ? 144 : 120, Math.round(options.density * 2.5)));
+  if (fastMode) samples = 32;
+  if (typeof cinematicActive !== "undefined" && cinematicActive) {
+    samples = Math.min(samples, 64);
+  }
   const radius = options.radius;
   function pointFor(a, b) {
     if (plane === "x") return [offset, a, b];
@@ -3039,11 +3043,31 @@ function updateRelationOverlays() {
     let axis = "z";
     if (state.slicePlane === "xoz") axis = "y";
     if (state.slicePlane === "yoz") axis = "x";
-    relationSliceCap = makeCutPlaneMesh(readParams(), state.options, axis, null, newClip, 0.75);
-    if (relationSliceCap) {
-      relationSliceCap.name = "relationSliceCap";
-      scene.add(relationSliceCap);
+    
+    // Instantly generate a very low LOD cap so the cross-section doesn't vanish while dragging
+    let existingCap = scene.getObjectByName("relationSliceCap");
+    if (existingCap) {
+      disposeSceneObject(scene, existingCap);
     }
+    const instantCap = makeCutPlaneMesh(readParams(), state.options, axis, null, newClip, 0.75, true);
+    if (instantCap) {
+      instantCap.name = "relationSliceCap";
+      scene.add(instantCap);
+    }
+    
+    // Debounce the high-quality cap replacement
+    clearTimeout(window._capDebounceTimer);
+    window._capDebounceTimer = setTimeout(() => {
+      let capToReplace = scene.getObjectByName("relationSliceCap");
+      if (capToReplace) {
+        disposeSceneObject(scene, capToReplace);
+      }
+      const highQualityCap = makeCutPlaneMesh(readParams(), state.options, axis, null, newClip, 0.75, false);
+      if (highQualityCap) {
+        highQualityCap.name = "relationSliceCap";
+        scene.add(highQualityCap);
+      }
+    }, 60);
   }
   
   addRelationOrbital(state);
@@ -3101,20 +3125,21 @@ function desktopProjectionPlane(params) {
   return "xoy";
 }
 
-
-
-function sampleProjectionSlice(params, options, plane, size) {
+function sampleProjectionSlice(params, options, plane, size, fastMode = false) {
+  let actualSize = size;
+  if (fastMode) actualSize = Math.min(size, 30);
+  
   const rows = [];
   const radius = options.radius;
   let maxAbs = 0;
   let maxPositive = 0;
   let minNegative = 0;
 
-  for (let yIndex = 0; yIndex < size; yIndex += 1) {
+  for (let yIndex = 0; yIndex < actualSize; yIndex += 1) {
     const row = [];
-    const b = -radius + (2 * radius * yIndex) / (size - 1);
-    for (let xIndex = 0; xIndex < size; xIndex += 1) {
-      const a = -radius + (2 * radius * xIndex) / (size - 1);
+    const b = -radius + (2 * radius * yIndex) / (actualSize - 1);
+    for (let xIndex = 0; xIndex < actualSize; xIndex += 1) {
+      const a = -radius + (2 * radius * xIndex) / (actualSize - 1);
       let value = 0;
       const zOffset = options.sliceOffset || 0;
       if (plane === "xoy") value = clientPsi(params, a, b, zOffset);
@@ -3131,14 +3156,19 @@ function sampleProjectionSlice(params, options, plane, size) {
   return { data: { rows, maxAbs, maxPositive, minNegative }, scale: 1 };
 }
 
-function makeIntegratedProjection3D(params, options) {
+function makeIntegratedProjection3D(params, options, fastMode = false) {
   const group = new THREE.Group();
   const desktopGrid = desktopBoxAndIso(params).gridSize;
-  const size = desktopGrid * 2 + 1;
+  let size = Math.min(desktopGrid * 2 + 1, 90);
+  if (fastMode) size = Math.min(size, 30);
+  // Apply Dynamic LOD: vastly reduce computation when cinematic is active
+  if (typeof cinematicActive !== "undefined" && cinematicActive && !fastMode) {
+    size = Math.min(size, 81);
+  }
   const isRelationMode = (typeof el !== 'undefined' && el.relationMode?.checked);
   const plane = (isRelationMode && el.scanSlicePlane) ? el.scanSlicePlane.value : (options.slice !== "none" ? options.slice : desktopProjectionPlane(params));
   
-  const { data } = sampleProjectionSlice(params, options, plane, size);
+  const { data } = sampleProjectionSlice(params, options, plane, size, fastMode);
   const globalMax = getGlobalMaxPsi(params, options);
   const projectionScale = (globalMax.maxPos > 1e-12 ? globalMax.maxPos : globalMax.maxAbs || 1) / 0.9;
   const vertices = [];
@@ -3198,6 +3228,28 @@ function makeIntegratedProjection3D(params, options) {
   );
   mesh.name = "integratedProjectionMountain";
   group.add(mesh);
+  
+  const flatVertices = [];
+  for (let i = 0; i < vertices.length; i += 3) {
+    if (plane === "xoy") {
+       flatVertices.push(vertices[i], vertices[i+1], surfaceZ);
+    } else if (plane === "xoz") {
+       flatVertices.push(vertices[i], surfaceZ, vertices[i+2]);
+    } else if (plane === "yoz") {
+       flatVertices.push(surfaceZ, vertices[i+1], vertices[i+2]);
+    }
+  }
+  const flatGeometry = new THREE.BufferGeometry();
+  flatGeometry.setAttribute("position", new THREE.Float32BufferAttribute(flatVertices, 3));
+  flatGeometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+  flatGeometry.setIndex(indices);
+  flatGeometry.computeVertexNormals();
+  const flatMesh = new THREE.Mesh(
+    flatGeometry,
+    new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide, transparent: true, opacity: 0.78 })
+  );
+  flatMesh.name = "integratedProjectionFlat";
+  group.add(flatMesh);
   
   const box = makeBoundaryBox(options.radius);
   box.name = "integratedProjectionBox";
@@ -3292,13 +3344,18 @@ function getGlobalMaxPsi(params, options) {
   return result;
 }
 
-function renderProjectionView(params, options) {
+function renderProjectionView(params, options, fastMode = false) {
   projectionScene.background = new THREE.Color(options.backgroundColor);
   const group = new THREE.Group();
   const desktopGrid = desktopBoxAndIso(params).gridSize;
-  const size = desktopGrid * 2 + 1;
+  let size = Math.min(desktopGrid * 2 + 1, 90);
+  if (fastMode) size = Math.min(size, 30);
+  // Apply Dynamic LOD: vastly reduce computation when cinematic is active
+  if (typeof cinematicActive !== "undefined" && cinematicActive && !fastMode) {
+    size = Math.min(size, 81);
+  }
   const projectionPlane = (el.relationMode?.checked && el.scanSlicePlane) ? el.scanSlicePlane.value : (options.slice !== "none" ? options.slice : desktopProjectionPlane(params));
-  const { data } = sampleProjectionSlice(params, options, projectionPlane, size);
+  const { data } = sampleProjectionSlice(params, options, projectionPlane, size, fastMode);
   
   const globalMax = getGlobalMaxPsi(params, options);
   const projectionScale = (globalMax.maxPos > 1e-12 ? globalMax.maxPos : globalMax.maxAbs || 1) / 0.9;
@@ -3627,7 +3684,8 @@ function renderRadialView(params, options) {
     scene.add(group);
     group.position.set(options.radius * 2.2, 0, 0);
     group.rotation.y = -Math.PI / 6; // slightly angle it for better 3D visibility
-    group.scale.set(0.8, 0.8, 0.8);
+    const s = Math.max(0.8, options.radius * 0.08);
+    group.scale.set(s, s, s);
   } else {
     radialScene.add(group);
   }
@@ -3876,7 +3934,78 @@ initCinematic({
   getIsoMeshes: () => [positiveObject, negativeObject, sliceObject, projectionSurfaceObject, mainProjection3dObject].filter(Boolean),
   getRadialProjectionObject: () => radialProjectionObject,
   getRelationOrbitalObject: () => relationOrbitalObject,
-  getControls: () => controls
+  getAngularObjects: () => [angularPositiveObject, angularNegativeObject].filter(Boolean),
+  getScene: () => typeof scene !== "undefined" ? scene : null,
+  getControls: () => controls,
+  getGlobalXYClipPlane: () => globalXYClipPlane,
+  getRadius: () => readOptions().radius,
+  updateProjectionsFast: () => {
+    const params = readParams();
+    const options = readOptions();
+    clearProjectionObjects();
+    renderProjectionView(params, options, true); // fast mode
+    if (options.showProjection3d) {
+      if (mainProjection3dObject) {
+        if (typeof disposeSceneObject === "function") disposeSceneObject(typeof scene !== "undefined" ? scene : null, mainProjection3dObject);
+        mainProjection3dObject = null;
+      }
+      const newProj = makeIntegratedProjection3D(params, options, true); // fast mode
+      if (newProj) {
+        newProj.name = "integratedProjection3DGroup";
+        newProj.visible = true;
+        scene.add(newProj);
+        mainProjection3dObject = newProj;
+      }
+    }
+    if (typeof applyCinematicVisualState === "function") {
+      applyCinematicVisualState();
+    }
+  },
+  updateProjectionsHighQuality: () => {
+    const params = readParams();
+    const options = readOptions();
+    clearProjectionObjects();
+    renderProjectionView(params, options, false);
+    if (options.showProjection3d) {
+      if (mainProjection3dObject) {
+        if (typeof disposeSceneObject === "function") disposeSceneObject(typeof scene !== "undefined" ? scene : null, mainProjection3dObject);
+        mainProjection3dObject = null;
+      }
+      const newProj = makeIntegratedProjection3D(params, options, false);
+      if (newProj) {
+        newProj.name = "integratedProjection3DGroup";
+        newProj.visible = true;
+        scene.add(newProj);
+        mainProjection3dObject = newProj;
+      }
+    }
+    if (typeof applyCinematicVisualState === "function") {
+      applyCinematicVisualState();
+    }
+  },
+  setDrawRange: (start, count) => {
+     const currentPercent = count / 100;
+     if (typeof radialSurfaceObject !== 'undefined' && radialSurfaceObject) {
+         const rings = radialSurfaceObject.userData.rings;
+         const currentRings = Math.max(1, Math.round(currentPercent * rings));
+         radialSurfaceObject.geometry.setDrawRange(start, currentRings * 128 * 6);
+     }
+     if (typeof radialSideObject !== 'undefined' && radialSideObject) {
+         const rings = radialSideObject.userData.rings;
+         const currentRings = Math.max(1, Math.round(currentPercent * rings));
+         radialSideObject.geometry.setDrawRange(start, currentRings * radialSideObject.userData.sideAngles * 6);
+     }
+     if (typeof radialCurveObject !== 'undefined' && radialCurveObject) {
+         const samples = radialCurveObject.userData.samples;
+         const currentSamples = Math.max(1, Math.round(currentPercent * samples));
+         const totalPoints = samples * 2 + 1;
+         const segmentsPerSample = radialCurveObject.geometry.parameters.tubularSegments / totalPoints;
+         const centerSegment = radialCurveObject.geometry.parameters.tubularSegments / 2;
+         const visSegs = currentSamples * segmentsPerSample;
+         const startSeg = Math.max(0, Math.floor(centerSegment - visSegs));
+         radialCurveObject.geometry.setDrawRange(startSeg * 8 * 6, Math.ceil(visSegs * 2) * 8 * 6);
+     }
+  }
 });
 function explanationSteps() {
   const params = readParams();
@@ -4228,25 +4357,28 @@ for (const input of [
       updateRelationOverlays();
       
       if (input === el.scanSliceZ) {
-        const params = readParams();
-        const options = readOptions();
-        
-        clearProjectionObjects();
-        renderProjectionView(params, options);
-        
-        if (options.showProjection3d) {
-          if (mainProjection3dObject) {
-            if (typeof disposeSceneObject === "function") disposeSceneObject(typeof scene !== "undefined" ? scene : null, mainProjection3dObject);
-            mainProjection3dObject = null;
+        clearTimeout(window._projectionDebounceTimer);
+        window._projectionDebounceTimer = setTimeout(() => {
+          const params = readParams();
+          const options = readOptions();
+          
+          clearProjectionObjects();
+          renderProjectionView(params, options);
+          
+          if (options.showProjection3d) {
+            if (mainProjection3dObject) {
+              if (typeof disposeSceneObject === "function") disposeSceneObject(typeof scene !== "undefined" ? scene : null, mainProjection3dObject);
+              mainProjection3dObject = null;
+            }
+            const newProj = makeIntegratedProjection3D(params, options);
+            if (newProj) {
+              newProj.name = "integratedProjection3DGroup";
+              newProj.visible = true;
+              scene.add(newProj);
+              mainProjection3dObject = newProj;
+            }
           }
-          const newProj = makeIntegratedProjection3D(params, options);
-          if (newProj) {
-            newProj.name = "integratedProjection3DGroup";
-            newProj.visible = true;
-            scene.add(newProj);
-            mainProjection3dObject = newProj;
-          }
-        }
+        }, 50);
       }
       return;
     }
@@ -4984,6 +5116,7 @@ UI.initUI({
   setTabletMode: typeof setTabletMode !== 'undefined' ? setTabletMode : null,
   playCinematicAnimation: typeof playCinematicAnimation !== 'undefined' ? playCinematicAnimation : null,
   toggleCinematicPlayback: typeof toggleCinematicPlayback !== 'undefined' ? toggleCinematicPlayback : null,
+  jumpToCinematicStep: typeof jumpToCinematicStep !== 'undefined' ? jumpToCinematicStep : null,
   exportCinematicVideo: typeof exportCinematicVideo !== 'undefined' ? exportCinematicVideo : null,
   stopCinematicAnimation: typeof stopCinematicAnimation !== 'undefined' ? stopCinematicAnimation : null,
   openFormulaWindow: typeof openFormulaWindow !== 'undefined' ? openFormulaWindow : null,

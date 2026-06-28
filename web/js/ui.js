@@ -548,6 +548,17 @@ export function bindAppUI() {
   window.addEventListener("blur", recoverAllViewerControls);
   el.annotationModeButton?.addEventListener("click", toggleAnnotationMode);
   document.getElementById("cinematicPlayBtn")?.addEventListener("click", toggleCinematicPlayback);
+  
+  const stepBtns = document.querySelectorAll("#cinematicStepBtns .step-btn");
+  stepBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const stepIdx = parseInt(btn.dataset.step, 10);
+      if (!isNaN(stepIdx) && window.jumpToCinematicStep) {
+        window.jumpToCinematicStep(stepIdx);
+      }
+    });
+  });
+
   document.getElementById("cinematicExportBtn")?.addEventListener("click", exportCinematicVideo);
   document.getElementById("cinematicExitBtn")?.addEventListener("click", stopCinematicAnimation);
   el.openFormulaButton?.addEventListener("click", openFormulaWindow);

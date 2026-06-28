@@ -2,6 +2,7 @@ import { el } from "./dom.js";
 import { formulaSummary } from "./formula.js";
 import { orbitalLabel } from "../orbitals.js";
 import { controls } from "./renderers.js";
+import * as THREE from "three";
 
 let api = {
   resizeAfterLayoutChange: () => {},
@@ -13,7 +14,12 @@ let api = {
   getCloudNegativeObject: () => null,
   getIsoMeshes: () => [],
   getRadialProjectionObject: () => null,
-  getRelationOrbitalObject: () => null
+  getRelationOrbitalObject: () => null,
+  getAngularObjects: () => [],
+  getScene: () => null,
+  getGlobalXYClipPlane: () => null,
+  getRadius: () => 5,
+  setDrawRange: (start, count) => {}
 };
 
 export function initCinematic(appApi) {
@@ -53,19 +59,89 @@ function generationSteps() {
 export let cinematicActive = false;
 let cinematicExporting = false;
 let cinematicStartMs = 0;
-let cinematicStepDuration = 6000;
 let cinematicState = { step: 0, localProgress: 0 };
+let cinematicAngularGroup = null;
+
+function getStepDurations() {
+  // Configurable durations for each step (in milliseconds)
+  // Step 0: Overview
+  // Step 1: Transparency mapping
+  // Step 2: Z-axis slice scanning
+  // Step 3: Radial distribution scan
+  // Step 4: Formulas
+  return [8000, 8000, 18000, 24000, 10000];
+}
+
+function getCinematicTimeline(elapsed) {
+  const durs = getStepDurations();
+  let acc = 0;
+  for (let i = 0; i < durs.length; i++) {
+    if (elapsed < acc + durs[i]) {
+      return { step: i, progress: (elapsed - acc) / durs[i], stepStart: acc, stepDur: durs[i] };
+    }
+    acc += durs[i];
+  }
+  return { step: durs.length, progress: 1, stepStart: acc, stepDur: 0 };
+}
 let cinematicChunks = [];
 let savedUIState = null;
 
 export function toggleCinematicPlayback() {
   if (cinematicExporting) return;
+  
+  // If we are at the end, restart from the beginning
+  const totalSteps = typeof generationSteps !== 'undefined' ? generationSteps().length : 5;
+  if (!cinematicActive && cinematicState.step >= totalSteps - 1 && cinematicState.localProgress >= 1) {
+    cinematicStartMs = performance.now();
+    cinematicState.step = 0;
+    cinematicState.localProgress = 0;
+    resetCinematicStateToStart();
+  }
+
   cinematicActive = !cinematicActive;
-  if (cinematicActive) cinematicStartMs = performance.now() - (cinematicState.step * cinematicStepDuration + cinematicState.localProgress * cinematicStepDuration);
+  
+  const btn = document.getElementById("cinematicPlayBtn");
+  if (btn) btn.textContent = cinematicActive ? "暂停" : "播放";
+
+  if (cinematicActive) {
+    const durs = getStepDurations();
+    let acc = 0;
+    for (let i = 0; i < cinematicState.step; i++) acc += durs[i];
+    cinematicStartMs = performance.now() - (acc + cinematicState.localProgress * durs[cinematicState.step]);
+  } else {
+    // When pausing, redraw the high-quality mountains ONLY if we are in step 2 (where they are visible)
+    if (typeof api !== "undefined" && api.updateProjectionsHighQuality) {
+      if (cinematicState.step === 2) {
+        api.updateProjectionsHighQuality();
+      }
+    }
+  }
+}
+
+export function jumpToCinematicStep(stepIndex) {
+  if (cinematicExporting) return;
+  const durs = getStepDurations();
+  if (stepIndex < 0 || stepIndex >= durs.length) return;
+  
+  let acc = 0;
+  for (let i = 0; i < stepIndex; i++) acc += durs[i];
+  
+  cinematicStartMs = performance.now() - acc;
+  cinematicState.step = stepIndex;
+  cinematicState.localProgress = 0;
+  
+  resetCinematicStateToStart();
+  
+  if (!cinematicActive) {
+    toggleCinematicPlayback();
+  }
 }
 
 export async function playCinematicAnimation() {
   if (cinematicActive) return;
+  
+  const btn = document.getElementById("cinematicPlayBtn");
+  if (btn) btn.textContent = "暂停";
   
   savedUIState = {
     cloud: el.cloud.checked,
@@ -111,6 +187,72 @@ export async function playCinematicAnimation() {
   
   await api.renderOrbital();
   
+  const angularObjects = api.getAngularObjects ? api.getAngularObjects() : [];
+  if (angularObjects.length > 0) {
+    cinematicAngularGroup = new THREE.Group();
+    cinematicAngularGroup.name = "cinematicAngularGroup";
+    angularObjects.forEach(obj => {
+      const clone = obj.clone();
+      
+      if (clone.material) {
+        clone.material = clone.material.clone();
+        clone.material.side = THREE.DoubleSide; // ensure inside is visible during scan
+        clone.userData.uThetaProgress = { value: 0.0 };
+        clone.userData.uPhiProgress = { value: 0.0 };
+        clone.material.onBeforeCompile = (shader) => {
+          shader.uniforms.uThetaProgress = clone.userData.uThetaProgress;
+          shader.uniforms.uPhiProgress = clone.userData.uPhiProgress;
+          
+          shader.vertexShader = `
+            varying vec3 vLocalPosAngular;
+            ${shader.vertexShader}
+          `.replace(
+            `#include <begin_vertex>`,
+            `
+            #include <begin_vertex>
+            vLocalPosAngular = position;
+            `
+          );
+          
+          shader.fragmentShader = `
+            varying vec3 vLocalPosAngular;
+            uniform float uThetaProgress;
+            uniform float uPhiProgress;
+            ${shader.fragmentShader}
+          `.replace(
+            `#include <clipping_planes_fragment>`,
+            `
+            #include <clipping_planes_fragment>
+            
+            vec3 pAng = normalize(vLocalPosAngular);
+            float thetaAng = acos(pAng.y);
+            float phiAng = atan(pAng.z, pAng.x);
+            if (phiAng < 0.0) phiAng += 2.0 * 3.14159265359;
+            
+            float phiMod = mod(phiAng, 3.14159265359);
+            // Thick meridian slice (0.3 rad)
+            bool isMeridian = (phiMod <= 0.3 || phiMod >= 3.14159265359 - 0.3);
+            
+            if (uPhiProgress < 0.001) {
+               if (!isMeridian) discard;
+               if (thetaAng > uThetaProgress * 3.14159265359) discard;
+            } else {
+               if (!isMeridian && phiAng > uPhiProgress * 2.0 * 3.14159265359) discard;
+            }
+            `
+          );
+        };
+      }
+      
+      clone.scale.setScalar(1); 
+      cinematicAngularGroup.add(clone);
+    });
+    cinematicAngularGroup.scale.setScalar(0.001);
+    cinematicAngularGroup.visible = false;
+    const scene = api.getScene ? api.getScene() : null;
+    if (scene) scene.add(cinematicAngularGroup);
+  }
+
   resetCinematicStateToStart();
   
   // Enter Quad View mode for animation
@@ -118,7 +260,6 @@ export async function playCinematicAnimation() {
   if (quadBtn) quadBtn.click();
   
   cinematicActive = true;
-  cinematicStepDuration = 6000;
   cinematicStartMs = performance.now();
   cinematicState.step = 0;
   
@@ -132,6 +273,12 @@ export async function playCinematicAnimation() {
 export function stopCinematicAnimation() {
   cinematicActive = false;
   document.body.classList.remove("cinematic-mode");
+  
+  if (cinematicAngularGroup) {
+    const scene = api.getScene ? api.getScene() : null;
+    if (scene) scene.remove(cinematicAngularGroup);
+    cinematicAngularGroup = null;
+  }
   
   // Exit Quad View mode, go back to orbital
   const orbitalBtn = document.querySelector('.dock-btn[data-view="orbital"]');
@@ -216,13 +363,19 @@ function resetCinematicStateToStart() {
   const isoMeshes = api.getIsoMeshes();
   if (cloudPos) cloudPos.visible = false;
   if (cloudNeg) cloudNeg.visible = false;
-  isoMeshes.forEach(m => m.traverse(c => {
-    if (c.material) {
-      c.material.transparent = true;
-      c.material.opacity = 0;
-      c.material.needsUpdate = true;
+  isoMeshes.forEach(m => {
+    if (m.name === "integratedProjection3DGroup") {
+      m.position.set(0, 0, 0);
     }
-  }));
+    m.traverse(c => {
+      if (c.material) {
+        c.material.transparent = true;
+        c.material.opacity = 0;
+        c.material.needsUpdate = true;
+      }
+      c.position.set(0, 0, 0);
+    });
+  });
   const scanSliceZ = document.getElementById("scanSliceZInput");
   if (scanSliceZ) {
     scanSliceZ.value = 100;
@@ -236,13 +389,16 @@ export function processCinematicTick(timeMs) {
   
   const totalSteps = generationSteps().length;
   let elapsed = timeMs - cinematicStartMs;
-  let newStep = Math.floor(elapsed / cinematicStepDuration);
+  let timeline = getCinematicTimeline(elapsed);
+  let newStep = timeline.step;
 
   // If we are about to leave step 2, but the slice hasn't reached the end, hold the timeline!
   if (cinematicState.step === 2 && newStep > 2) {
     const scanSliceZ = document.getElementById("scanSliceZInput");
-    if (scanSliceZ && Number(scanSliceZ.value) > -100) {
-      elapsed = 3 * cinematicStepDuration - 1;
+    if (scanSliceZ && Number(scanSliceZ.value) > 1) {
+      const durs = getStepDurations();
+      elapsed = timeline.stepStart - 1;
+      timeline = getCinematicTimeline(elapsed);
       newStep = 2;
       cinematicStartMs = timeMs - elapsed; // Shift start time so it doesn't skip later
     }
@@ -252,53 +408,71 @@ export function processCinematicTick(timeMs) {
   if (cinematicState.step === 3 && newStep > 3) {
     const scanRadius = document.getElementById("scanRadiusInput");
     if (scanRadius && Number(scanRadius.value) < 100) {
-      elapsed = 4 * cinematicStepDuration - 1;
+      elapsed = timeline.stepStart - 1;
+      timeline = getCinematicTimeline(elapsed);
       newStep = 3;
       cinematicStartMs = timeMs - elapsed;
     }
   }
   
   if (newStep >= totalSteps) {
-    if (!cinematicExporting) {
-      cinematicStartMs = timeMs;
-      newStep = 0;
-      resetCinematicStateToStart();
-    } else {
-      newStep = totalSteps - 1;
+    if (cinematicExporting) {
+      cinematicState.step = totalSteps - 1;
       cinematicState.localProgress = 1;
+      updateCinematicOverlay();
+      return;
     }
-  } else {
-    cinematicState.localProgress = (elapsed % cinematicStepDuration) / cinematicStepDuration;
+    
+    // Stop at the end of the last step
+    cinematicState.step = totalSteps - 1;
+    cinematicState.localProgress = 1;
+    updateCinematicOverlay();
+    
+    // Auto-pause when reaching the end
+    cinematicActive = false;
+    const btn = document.getElementById("cinematicPlayBtn");
+    if (btn) btn.textContent = "播放";
+    return;
   }
   
-  if (newStep !== cinematicState.step) {
-    cinematicState.step = newStep;
-    if (newStep === 2) window._cinematicLastSliceMs = 0;
-    if (newStep === 3) {
-      window._cinematicLastRadiusMs = 0;
-      if (typeof document !== "undefined") {
-        const scanRadius = document.getElementById("scanRadiusInput");
-        if (scanRadius) {
-          scanRadius.value = 0;
-          scanRadius.dispatchEvent(new Event('input'));
-        }
-        const scanSliceZ = document.getElementById("scanSliceZInput");
-        if (scanSliceZ) {
-          scanSliceZ.value = 100;
-          scanSliceZ.dispatchEvent(new Event('input'));
+  cinematicState.step = newStep;
+  cinematicState.localProgress = timeline.progress;
+  updateCinematicOverlay();
+  
+  const p = cinematicState.localProgress;
+  const step = cinematicState.step;
+  const smoothP = p * p * (3 - 2 * p);
+  
+  if (step === 2) {
+    const scanSliceZ = document.getElementById("scanSliceZInput");
+    if (scanSliceZ && typeof api !== "undefined" && api.getGlobalXYClipPlane && api.getRadius) {
+      let val = 100 - smoothP * 100;
+      if (Math.abs(Number(scanSliceZ.value) - val) > 0.01) {
+        scanSliceZ.value = val;
+        const plane = api.getGlobalXYClipPlane();
+        plane.constant = (val / 100) * api.getRadius();
+        if (api.updateProjectionsFast) {
+          api.updateProjectionsFast();
         }
       }
     }
-    
-    setRadialWindowCinematic(newStep === 3);
-    
-    updateCinematicOverlay();
+  } else if (step === 3) {
+    const scanRadius = document.getElementById("scanRadiusInput");
+    if (scanRadius) {
+      let val = smoothP * 100;
+      if (val > 100) val = 100;
+      if (Math.abs(Number(scanRadius.value) - val) > 0.01) {
+        scanRadius.value = val;
+        scanRadius.dispatchEvent(new Event('input'));
+      }
+    }
   }
-  
-  const overallProgress = (cinematicState.step + cinematicState.localProgress) / totalSteps;
-  const progressFill = document.getElementById("cinematicProgressFill");
-  if (progressFill) progressFill.style.width = (overallProgress * 100) + "%";
-  
+
+  applyCinematicVisualState();
+}
+
+export function applyCinematicVisualState() {
+  if (!document.body.classList.contains("cinematic-mode")) return;
   const p = cinematicState.localProgress;
   const step = cinematicState.step;
   const smoothP = p * p * (3 - 2 * p);
@@ -312,6 +486,7 @@ export function processCinematicTick(timeMs) {
   if (step === 0) {
     if (radialGraph) radialGraph.visible = false;
     if (relationOrbital) relationOrbital.visible = false;
+    if (cinematicAngularGroup) cinematicAngularGroup.visible = false;
     if (cloudPos) {
       cloudPos.visible = true;
       const totalPoints = cloudPos.geometry.attributes.position.count;
@@ -329,15 +504,18 @@ export function processCinematicTick(timeMs) {
       if (cloudNeg.material.uniforms?.uGlobalOpacity) cloudNeg.material.uniforms.uGlobalOpacity.value = Math.min(1, smoothP * 2);
     }
     isoMeshes.forEach(m => {
-      m.visible = false;
+      m.visible = true;
       m.traverse(c => {
-        if (c.material) c.material.opacity = 0;
+        if (c.material) {
+          c.material.opacity = 0;
+        }
       });
     });
   }
   else if (step === 1) {
     if (radialGraph) radialGraph.visible = false;
     if (relationOrbital) relationOrbital.visible = false;
+    if (cinematicAngularGroup) cinematicAngularGroup.visible = false;
     if (cloudPos) {
       cloudPos.visible = true;
       cloudPos.geometry.setDrawRange(0, Infinity);
@@ -352,9 +530,13 @@ export function processCinematicTick(timeMs) {
     }
     isoMeshes.forEach(m => {
       m.visible = true;
+      if (m.name === "integratedProjection3DGroup") {
+        m.position.set(0, 0, 0);
+      }
       m.traverse(c => {
-        if (c.name === "integratedProjectionMountain" || c.name === "integratedProjectionBox") {
+        if (c.name === "integratedProjectionMountain" || c.name === "integratedProjectionBox" || c.name === "integratedProjectionFlat") {
            c.material.opacity = 0;
+           c.position.set(0, 0, 0);
         } else if (c.isMesh) {
            c.material.opacity = smoothP;
         }
@@ -366,80 +548,102 @@ export function processCinematicTick(timeMs) {
     if (relationOrbital) relationOrbital.visible = false;
     if (cloudPos) cloudPos.visible = false;
     if (cloudNeg) cloudNeg.visible = false;
-      if (typeof document !== "undefined") {
-        const scanSliceZ = document.getElementById("scanSliceZInput");
-        if (scanSliceZ) {
-          // Exactly as requested: step by 5 (val -= 5) every 50ms, decoupling from 'p'
-          // This avoids lag-induced huge jumps and matches the smooth manual play button.
-          if (!window._cinematicLastSliceMs) window._cinematicLastSliceMs = timeMs;
-          if (timeMs - window._cinematicLastSliceMs >= 50) {
-            let val = Number(scanSliceZ.value);
-            if (val > -100) {
-              val -= 5;
-              if (val < -100) val = -100;
-              scanSliceZ.value = val;
-              scanSliceZ.dispatchEvent(new Event('input'));
-            }
-            window._cinematicLastSliceMs = timeMs;
-          }
-        }
-      }
+    if (cinematicAngularGroup) cinematicAngularGroup.visible = false;
     
     const currentIsoMeshes = api.getIsoMeshes();
-    currentIsoMeshes.forEach(m => m.traverse(c => {
-      if (c.name === "integratedProjectionMountain") {
-         if (c.material) c.material.opacity = 1;
-      } else if (c.name === "integratedProjectionBox") {
-         if (c.material) c.material.opacity = 0.2;
-      } else if (c.isMesh) {
-         c.material.opacity = 1;
+    currentIsoMeshes.forEach(m => {
+      if (m.name === "integratedProjection3DGroup") {
+        m.position.set(0, 0, 0);
       }
-    }));
+      
+      m.traverse(c => {
+        if (c.name === "integratedProjectionMountain") {
+           if (c.material) c.material.opacity = 1;
+        } else if (c.name === "integratedProjectionFlat") {
+           if (c.material) c.material.opacity = 1;
+           if (typeof m.userData.surfaceZ !== 'undefined' && api.getGlobalXYClipPlane) {
+              const plane = api.getGlobalXYClipPlane();
+              if (m.userData.slicePlane === "xoy") {
+                 c.position.set(0, 0, plane.constant - m.userData.surfaceZ);
+              } else if (m.userData.slicePlane === "xoz") {
+                 c.position.set(0, plane.constant - m.userData.surfaceZ, 0);
+              } else if (m.userData.slicePlane === "yoz") {
+                 c.position.set(plane.constant - m.userData.surfaceZ, 0, 0);
+              }
+           }
+        } else if (c.name === "integratedProjectionBox") {
+           if (c.material) c.material.opacity = 0.2;
+        } else if (c.isMesh) {
+           c.material.opacity = 1;
+        }
+      });
+    });
   }
   else if (step === 3) {
     if (radialGraph) radialGraph.visible = true;
     if (relationOrbital) relationOrbital.visible = true;
     if (cloudPos) cloudPos.visible = false;
     if (cloudNeg) cloudNeg.visible = false;
-    
-    if (typeof document !== "undefined") {
-      const scanRadius = document.getElementById("scanRadiusInput");
-      if (scanRadius) {
-        if (!window._cinematicLastRadiusMs) window._cinematicLastRadiusMs = timeMs;
-        if (timeMs - window._cinematicLastRadiusMs >= 50) {
-          let val = Number(scanRadius.value);
-          if (val < 100) {
-            val += 2;
-            if (val > 100) val = 100;
-            scanRadius.value = val;
-            scanRadius.dispatchEvent(new Event('input'));
-          }
-          window._cinematicLastRadiusMs = timeMs;
-        }
-      }
-    }
+    if (cinematicAngularGroup) cinematicAngularGroup.visible = false;
 
     const currentIsoMeshes = api.getIsoMeshes();
-    currentIsoMeshes.forEach(m => m.traverse(c => {
-      if (c.name === "integratedProjectionMountain" || c.name === "integratedProjectionBox") {
-         if (c.material) c.material.opacity = 0;
-      } else if (c.isMesh) {
-         c.material.opacity = 1;
+    currentIsoMeshes.forEach(m => {
+      if (m.name === "integratedProjection3DGroup") {
+        m.position.set(0, 0, 0);
       }
-    }));
+      m.traverse(c => {
+        if (c.name === "integratedProjectionMountain" || c.name === "integratedProjectionBox" || c.name === "integratedProjectionFlat") {
+           if (c.material) c.material.opacity = 0;
+           c.position.set(0, 0, 0);
+        } else if (c.isMesh) {
+           c.material.opacity = 1;
+        }
+      });
+    });
   }
   else if (step === 4) {
     if (radialGraph) radialGraph.visible = false;
     if (relationOrbital) relationOrbital.visible = false;
     if (cloudPos) cloudPos.visible = false;
     if (cloudNeg) cloudNeg.visible = false;
-    isoMeshes.forEach(m => m.traverse(c => {
-      if (c.name === "integratedProjectionMountain" || c.name === "integratedProjectionBox") {
-         if (c.material) c.material.opacity = 0;
-      } else if (c.isMesh) {
-         c.material.opacity = 1;
+    isoMeshes.forEach(m => {
+      if (m.name === "integratedProjection3DGroup") {
+        m.position.set(0, 0, 0);
       }
-    }));
+      m.traverse(c => {
+        if (c.name === "integratedProjectionMountain" || c.name === "integratedProjectionBox" || c.name === "integratedProjectionFlat") {
+           if (c.material) c.material.opacity = 0;
+           c.position.set(0, 0, 0);
+        } else if (c.isMesh) {
+           c.material.opacity = 1; // keep background half-cut orbital
+        }
+      });
+    });
+    
+    if (cinematicAngularGroup) {
+      cinematicAngularGroup.visible = true;
+      
+      const r = api.getRadius ? api.getRadius() : 5;
+      const targetScale = r * 0.7; // size to fit well within orbital
+      cinematicAngularGroup.scale.setScalar(targetScale);
+      cinematicAngularGroup.rotation.y = 0; // stop rotation for clean scan
+      
+      cinematicAngularGroup.traverse(c => {
+        if (c.isMesh && c.material) {
+          c.material.transparent = true;
+          c.material.opacity = Math.min(1, smoothP * 4.0); // quick fade in
+        }
+        if (c.userData.uThetaProgress) {
+          if (smoothP <= 0.4) {
+             c.userData.uThetaProgress.value = smoothP / 0.4;
+             c.userData.uPhiProgress.value = 0.0;
+          } else {
+             c.userData.uThetaProgress.value = 1.0;
+             c.userData.uPhiProgress.value = (smoothP - 0.4) / 0.6;
+          }
+        }
+      });
+    }
   }
 
   // Post-tick cleanup: Ensure dynamically recreated objects (like relation markers and radial graph) 
@@ -467,7 +671,6 @@ export async function exportCinematicVideo() {
   }
   
   cinematicExporting = true;
-  cinematicStepDuration = 4000;
   cinematicStartMs = performance.now();
   cinematicState.step = 0;
   cinematicChunks = [];
@@ -489,7 +692,8 @@ export async function exportCinematicVideo() {
   
   recorder.start(250);
   
-  const totalDuration = cinematicStepDuration * generationSteps().length;
+  const durs = getStepDurations();
+  const totalDuration = durs.reduce((a, b) => a + b, 0);
   await new Promise(r => setTimeout(r, totalDuration + 500));
   
   if (recorder.state !== "inactive") recorder.stop();
