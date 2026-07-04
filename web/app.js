@@ -114,6 +114,7 @@ let currentViewRadius = 5;
 let currentAngularRadius = 4;
 let currentProjectionRadius = 3;
 let currentRadialRadius = 4.5;
+const currentProjectionTarget = new THREE.Vector3(0, 0, 0);
 const orbitalMeshCache = new Map();
 const ORBITAL_MESH_CACHE_LIMIT = 6;
 const baseMarchingSourceCache = new Map();
@@ -1145,6 +1146,7 @@ function makeClosedClippedMesh(source, options, color, params) {
   });
   capMaterial.toneMapped = false;
   const capMesh = new THREE.Mesh(capGeometry, capMaterial);
+  capMesh.name = "cutCapSurface";
   capMesh.renderOrder = showFullCapColor ? 3 : 1;
   const capGlowMaterial = new THREE.MeshBasicMaterial({
     vertexColors: true,
@@ -1158,6 +1160,7 @@ function makeClosedClippedMesh(source, options, color, params) {
   });
   capGlowMaterial.toneMapped = false;
   const capGlowMesh = new THREE.Mesh(capGeometry, capGlowMaterial);
+  capGlowMesh.name = "cutCapGlow";
   capGlowMesh.renderOrder = capMesh.renderOrder + 0.05;
   const group = new THREE.Group();
   group.add(surfaceMesh, capMesh, capGlowMesh);
@@ -1834,9 +1837,23 @@ function makeSlicePlane(params, options) {
 function makeBoundaryBox(radius) {
   const geometry = new THREE.BoxGeometry(radius * 2, radius * 2, radius * 2);
   const edges = new THREE.EdgesGeometry(geometry);
-  const material = new THREE.LineBasicMaterial({ color: 0xd0d5dd, transparent: true, opacity: 0.58 });
-  const lines = new THREE.LineSegments(edges, material);
+  
+  const lineGeometry = new THREE.BufferGeometry().copy(edges);
+  const material = new THREE.LineDashedMaterial({ 
+    color: 0x88eeff, 
+    transparent: true, 
+    opacity: 0.45,
+    dashSize: radius * 0.08,
+    gapSize: radius * 0.04,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+  
+  const lines = new THREE.LineSegments(lineGeometry, material);
+  lines.computeLineDistances();
+  
   geometry.dispose();
+  edges.dispose();
   return lines;
 }
 
@@ -1897,8 +1914,15 @@ function robustWavefunctionScale(values, fallback) {
 function makeCutPlaneMesh(params, options, plane, forcedSign = null, offset = 0, brightnessMultiplier = 1.0, fastMode = false) {
   let samples = Math.max(96, Math.min(params.n >= 5 ? 144 : 120, Math.round(options.density * 2.5)));
   if (fastMode) samples = 32;
-  if (typeof cinematicActive !== "undefined" && cinematicActive) {
+  if (typeof cinematicActive !== "undefined" && cinematicActive && !options._forceHighQualityCap) {
     samples = Math.min(samples, 64);
+  }
+  if (options._forceHighQualityCap) {
+    const highQualitySamples = Math.min(
+      params.n >= 6 ? 260 : 220,
+      Math.round(options.density * (params.n >= 6 ? 4.2 : 3.6))
+    );
+    samples = Math.max(samples, highQualitySamples);
   }
   const radius = options.radius;
   function pointFor(a, b) {
@@ -1944,11 +1968,11 @@ function makeCutPlaneMesh(params, options, plane, forcedSign = null, offset = 0,
   const colors = [];
   const indices = [];
 
-  function signedSampleValue(rawValue) {
-    return forcedSign == null ? Math.abs(rawValue) - threshold : forcedSign * rawValue - threshold;
+  function signedSampleValue(rawValue, phaseSign = forcedSign) {
+    return phaseSign == null ? Math.abs(rawValue) - threshold : phaseSign * rawValue - threshold;
   }
 
-  function sampleCorner(ix, iy) {
+  function sampleCorner(ix, iy, phaseSign = forcedSign) {
     const a = -radius + (2 * radius * ix) / samples;
     const b = radius - (2 * radius * iy) / samples;
     const [x, y, z] = pointFor(a, b);
@@ -1956,7 +1980,7 @@ function makeCutPlaneMesh(params, options, plane, forcedSign = null, offset = 0,
     return {
       point: new THREE.Vector3(x, y, z),
       rawValue,
-      value: signedSampleValue(rawValue),
+      value: signedSampleValue(rawValue, phaseSign),
     };
   }
 
@@ -2000,23 +2024,26 @@ function makeCutPlaneMesh(params, options, plane, forcedSign = null, offset = 0,
     return vertices.length / 3 - 1;
   }
 
-  for (let iy = 0; iy < samples; iy += 1) {
-    for (let ix = 0; ix < samples; ix += 1) {
-      const centerA = -radius + (2 * radius * (ix + 0.5)) / samples;
-      const centerB = radius - (2 * radius * (iy + 0.5)) / samples;
-      const [cx, cy, cz] = pointFor(centerA, centerB);
-      if (!inAngleCutRegion(cx, cy, cz)) continue;
-      let polygon = [
-        sampleCorner(ix, iy),
-        sampleCorner(ix + 1, iy),
-        sampleCorner(ix + 1, iy + 1),
-        sampleCorner(ix, iy + 1),
-      ];
-      polygon = clipSamplePolygonByIso(polygon);
-      if (polygon.length < 3) continue;
-      const base = addCapVertex(polygon[0]);
-      for (let i = 1; i < polygon.length - 1; i += 1) {
-        indices.push(base, addCapVertex(polygon[i]), addCapVertex(polygon[i + 1]));
+  const phaseSigns = options._separatePhaseCaps && forcedSign == null ? [1, -1] : [forcedSign];
+  for (const phaseSign of phaseSigns) {
+    for (let iy = 0; iy < samples; iy += 1) {
+      for (let ix = 0; ix < samples; ix += 1) {
+        const centerA = -radius + (2 * radius * (ix + 0.5)) / samples;
+        const centerB = radius - (2 * radius * (iy + 0.5)) / samples;
+        const [cx, cy, cz] = pointFor(centerA, centerB);
+        if (!inAngleCutRegion(cx, cy, cz)) continue;
+        let polygon = [
+          sampleCorner(ix, iy, phaseSign),
+          sampleCorner(ix + 1, iy, phaseSign),
+          sampleCorner(ix + 1, iy + 1, phaseSign),
+          sampleCorner(ix, iy + 1, phaseSign),
+        ];
+        polygon = clipSamplePolygonByIso(polygon);
+        if (polygon.length < 3) continue;
+        const base = addCapVertex(polygon[0]);
+        for (let i = 1; i < polygon.length - 1; i += 1) {
+          indices.push(base, addCapVertex(polygon[i]), addCapVertex(polygon[i + 1]));
+        }
       }
     }
   }
@@ -2505,13 +2532,18 @@ function updateProjectionFrustum(radius = Math.max(2.5, currentViewRadius * 0.6)
   projectionCamera.updateProjectionMatrix();
 }
 
-function resetProjectionCamera(radius = Math.max(3, currentViewRadius * 0.5)) {
+function resetProjectionCamera(radius = Math.max(3, currentViewRadius * 0.5), target = currentProjectionTarget) {
   currentProjectionRadius = radius;
+  currentProjectionTarget.copy(target);
   projectionCamera.up.set(0, 0, 1);
-  projectionCamera.position.set(radius * 0.78, -radius * 1.18, radius * 0.68);
-  projectionCamera.lookAt(0, 0, 0);
+  projectionCamera.position.set(
+    currentProjectionTarget.x + radius * 0.78,
+    currentProjectionTarget.y - radius * 1.18,
+    currentProjectionTarget.z + radius * 0.68
+  );
+  projectionCamera.lookAt(currentProjectionTarget);
   updateProjectionFrustum(radius);
-  projectionControls.target.set(0, 0, 0);
+  projectionControls.target.copy(currentProjectionTarget);
   projectionControls.handleResize?.();
   projectionControls.update();
 }
@@ -2549,16 +2581,16 @@ function syncLinkedCameras() {
   if (!relationEnabled() || !el.syncRotation?.checked) return;
   const direction = camera.position.clone().sub(controls.target).normalize();
   const up = camera.up.clone();
-  const syncOne = (targetCamera, targetControls, radius, minimumDistance = 40) => {
+  const syncOne = (targetCamera, targetControls, radius, minimumDistance = 40, focus = new THREE.Vector3(0, 0, 0)) => {
     const distance = cameraDistanceForRadius(radius, minimumDistance);
-    targetCamera.position.copy(direction.clone().multiplyScalar(distance));
+    targetCamera.position.copy(focus.clone().add(direction.clone().multiplyScalar(distance)));
     targetCamera.up.copy(up);
-    targetCamera.lookAt(0, 0, 0);
-    targetControls.target.set(0, 0, 0);
+    targetCamera.lookAt(focus);
+    targetControls.target.copy(focus);
     targetCamera.updateProjectionMatrix();
   };
   syncOne(angularCamera, angularControls, currentAngularRadius, 40);
-  syncOne(projectionCamera, projectionControls, currentProjectionRadius, 30);
+  syncOne(projectionCamera, projectionControls, currentProjectionRadius, 30, currentProjectionTarget);
 }
 
 function renderAngularOrbital(params, options) {
@@ -3076,6 +3108,92 @@ function updateRelationOverlays() {
   addRelationRadial(state);
 }
 
+function rebuildRelationSliceCapHighQuality() {
+  const state = relationState();
+  syncRelationLabels(state);
+  const newClip = state.options.sliceOffset;
+
+  if (state.slicePlane === "yoz") {
+    globalXYClipPlane.normal.set(-1, 0, 0);
+  } else if (state.slicePlane === "xoz") {
+    globalXYClipPlane.normal.set(0, -1, 0);
+  } else {
+    globalXYClipPlane.normal.set(0, 0, -1);
+  }
+  globalXYClipPlane.constant = newClip;
+
+  const existingCap = scene.getObjectByName("relationSliceCap");
+  if (existingCap) disposeSceneObject(scene, existingCap);
+  clearTimeout(window._capDebounceTimer);
+
+  if (!relationEnabled() || Math.abs(newClip) >= state.maxRadius) return;
+  let axis = "z";
+  if (state.slicePlane === "xoz") axis = "y";
+  if (state.slicePlane === "yoz") axis = "x";
+
+  const highQualityCap = makeCutPlaneMesh(
+    readParams(),
+    { ...state.options, _forceHighQualityCap: true, _separatePhaseCaps: true },
+    axis,
+    null,
+    newClip,
+    0.75,
+    false
+  );
+  if (highQualityCap) {
+    highQualityCap.name = "relationSliceCap";
+    scene.add(highQualityCap);
+  }
+}
+
+function rebuildRelationSliceCapFastSeparated() {
+  const state = relationState();
+  syncRelationLabels(state);
+  const newClip = state.options.sliceOffset;
+
+  if (state.slicePlane === "yoz") {
+    globalXYClipPlane.normal.set(-1, 0, 0);
+  } else if (state.slicePlane === "xoz") {
+    globalXYClipPlane.normal.set(0, -1, 0);
+  } else {
+    globalXYClipPlane.normal.set(0, 0, -1);
+  }
+  globalXYClipPlane.constant = newClip;
+
+  const existingCap = scene.getObjectByName("relationSliceCap");
+  if (existingCap) disposeSceneObject(scene, existingCap);
+  clearTimeout(window._capDebounceTimer);
+
+  if (!relationEnabled() || Math.abs(newClip) >= state.maxRadius) return;
+  let axis = "z";
+  if (state.slicePlane === "xoz") axis = "y";
+  if (state.slicePlane === "yoz") axis = "x";
+
+  const fastCap = makeCutPlaneMesh(
+    readParams(),
+    { ...state.options, _separatePhaseCaps: true },
+    axis,
+    null,
+    newClip,
+    0.75,
+    true
+  );
+  if (fastCap) {
+    fastCap.name = "relationSliceCap";
+    scene.add(fastCap);
+  }
+}
+
+function updateRelationRadiusScanOnly() {
+  disposeRelationObjects();
+  const state = relationState();
+  syncRelationLabels(state);
+  addRelationOrbital(state);
+  addRelationAngular(state);
+  addRelationProjection(state);
+  addRelationRadial(state);
+}
+
 function setRelationFromPoint(point) {
   const r = point.length();
   if (r < 1e-6) return;
@@ -3175,7 +3293,8 @@ function makeIntegratedProjection3D(params, options, fastMode = false) {
   const colors = [];
   const indices = [];
   const radius = options.radius;
-  const surfaceZ = options.radius * 1.7;
+  
+  const surfaceZ = radius;
   const height = radius * 0.8;
   
   for (let y = 0; y < size; y += 1) {
@@ -3218,8 +3337,9 @@ function makeIntegratedProjection3D(params, options, fastMode = false) {
     new THREE.MeshPhongMaterial({
       vertexColors: true,
       side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.98,
+      transparent: false,
+      opacity: 1,
+      depthWrite: true,
       specular: 0x333333,
       shininess: 10,
       emissive: 0x111111,
@@ -3227,35 +3347,129 @@ function makeIntegratedProjection3D(params, options, fastMode = false) {
     })
   );
   mesh.name = "integratedProjectionMountain";
+  mesh.renderOrder = 4;
   group.add(mesh);
   
   const flatVertices = [];
   for (let i = 0; i < vertices.length; i += 3) {
     if (plane === "xoy") {
-       flatVertices.push(vertices[i], vertices[i+1], surfaceZ);
+       flatVertices.push(vertices[i], vertices[i+1], 0);
     } else if (plane === "xoz") {
-       flatVertices.push(vertices[i], surfaceZ, vertices[i+2]);
+       flatVertices.push(vertices[i], 0, vertices[i+2]);
     } else if (plane === "yoz") {
-       flatVertices.push(surfaceZ, vertices[i+1], vertices[i+2]);
+       flatVertices.push(0, vertices[i+1], vertices[i+2]);
     }
   }
+  const thickness = radius * 0.005;
+  
+  const thickVertices = [];
+  const thickColors = [];
+  const thickIndices = [];
+  const N = size * size;
+  
+  for (let i = 0; i < N; i++) {
+    let vx = flatVertices[i * 3];
+    let vy = flatVertices[i * 3 + 1];
+    let vz = flatVertices[i * 3 + 2];
+    
+    thickVertices.push(vx, vy, vz);
+    
+    let bx = vx, by = vy, bz = vz;
+    if (plane === "xoy") bz -= thickness;
+    else if (plane === "xoz") by -= thickness;
+    else if (plane === "yoz") bx -= thickness;
+    thickVertices.push(bx, by, bz);
+    
+    const cr = colors[i * 3];
+    const cg = colors[i * 3 + 1];
+    const cb = colors[i * 3 + 2];
+    thickColors.push(cr, cg, cb);
+    thickColors.push(cr, cg, cb);
+  }
+  
+  for (let y = 0; y < size - 1; y += 1) {
+    for (let x = 0; x < size - 1; x += 1) {
+      const a = y * size + x;
+      const b = a + 1;
+      const c = a + size;
+      const d = c + 1;
+      
+      const tA = 2 * a, tB = 2 * b, tC = 2 * c, tD = 2 * d;
+      thickIndices.push(tA, tB, tC, tB, tD, tC);
+      
+      const bA = 2 * a + 1, bB = 2 * b + 1, bC = 2 * c + 1, bD = 2 * d + 1;
+      thickIndices.push(bA, bC, bB, bB, bC, bD);
+    }
+  }
+  
+  const addSideQuad = (i1, i2) => {
+    const t1 = 2 * i1, b1 = 2 * i1 + 1;
+    const t2 = 2 * i2, b2 = 2 * i2 + 1;
+    thickIndices.push(b1, b2, t2, t1, b1, t2);
+  };
+  
+  for(let x = 0; x < size - 1; x++) addSideQuad(x, x + 1);
+  for(let y = 0; y < size - 1; y++) addSideQuad(y * size + size - 1, (y + 1) * size + size - 1);
+  for(let x = size - 1; x > 0; x--) addSideQuad((size - 1) * size + x, (size - 1) * size + x - 1);
+  for(let y = size - 1; y > 0; y--) addSideQuad(y * size, (y - 1) * size);
+  
   const flatGeometry = new THREE.BufferGeometry();
-  flatGeometry.setAttribute("position", new THREE.Float32BufferAttribute(flatVertices, 3));
-  flatGeometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
-  flatGeometry.setIndex(indices);
+  flatGeometry.setAttribute("position", new THREE.Float32BufferAttribute(thickVertices, 3));
+  flatGeometry.setAttribute("color", new THREE.Float32BufferAttribute(thickColors, 3));
+  flatGeometry.setIndex(thickIndices);
   flatGeometry.computeVertexNormals();
+  
   const flatMesh = new THREE.Mesh(
     flatGeometry,
-    new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide, transparent: true, opacity: 0.78 })
+    new THREE.MeshPhongMaterial({
+      vertexColors: true,
+      side: THREE.DoubleSide,
+      transparent: true,
+      opacity: 0.45,
+      shininess: 90,
+      specular: 0x333333,
+      depthWrite: false,
+      polygonOffset: true,
+      polygonOffsetFactor: -1,
+      polygonOffsetUnits: -1
+    })
   );
   flatMesh.name = "integratedProjectionFlat";
+  flatMesh.renderOrder = 4;
+  
+  const rawClipZ = isRelationMode && typeof globalXYClipPlane !== 'undefined'
+    ? globalXYClipPlane.constant
+    : 0;
+  const clipZ = Number.isFinite(rawClipZ) && Math.abs(rawClipZ) <= radius ? rawClipZ : 0;
+  
+  if (plane === "xoy") {
+    flatMesh.position.set(0, 0, clipZ);
+  } else if (plane === "xoz") {
+    flatMesh.position.set(0, clipZ, 0);
+  } else if (plane === "yoz") {
+    flatMesh.position.set(clipZ, 0, 0);
+  }
+  
   group.add(flatMesh);
   
   const box = makeBoundaryBox(options.radius);
   box.name = "integratedProjectionBox";
-  if (plane === "xoy") box.scale.set(1, 1, 1.7);
-  else if (plane === "xoz") box.scale.set(1, 1.7, 1);
-  else if (plane === "yoz") box.scale.set(1.7, 1, 1);
+  
+  const midZ = (surfaceZ + clipZ) / 2;
+  // Make sure scale is at least a tiny number to avoid zero-scale issues
+  const scaleZ = Math.max(0.001, (surfaceZ - clipZ) / (2 * options.radius));
+  
+  if (plane === "xoy") {
+    box.position.set(0, 0, midZ);
+    box.scale.set(1, 1, scaleZ);
+  } else if (plane === "xoz") {
+    box.position.set(0, midZ, 0);
+    box.scale.set(1, scaleZ, 1);
+  } else if (plane === "yoz") {
+    box.position.set(midZ, 0, 0);
+    box.scale.set(scaleZ, 1, 1);
+  }
+  
   group.add(box);
   
   group.userData.vertexCount = size * size;
@@ -3363,8 +3577,8 @@ function renderProjectionView(params, options, fastMode = false) {
   const colors = [];
   const indices = [];
   const radius = Math.min(4.7, options.radius * 0.42);
-  const surfaceZ = radius * 1.0;
-  const bottomZ = -radius * 1.0;
+  const surfaceZ = radius * 2.0;
+  const bottomZ = 0;
   const height = radius * 0.9;
   projectionRelationMeta = { plane: projectionPlane, radius, surfaceZ, bottomZ, height };
   for (let y = 0; y < size; y += 1) {
@@ -3405,6 +3619,13 @@ function renderProjectionView(params, options, fastMode = false) {
       emissiveIntensity: 0.04,
     })
   );
+  if (projectionPlane === "xoy") {
+    projectionSurfaceObject.position.z = 0;
+  } else if (projectionPlane === "xoz") {
+    projectionSurfaceObject.rotation.x = Math.PI / 2;
+  } else if (projectionPlane === "yoz") {
+    projectionSurfaceObject.rotation.y = -Math.PI / 2;
+  }
   group.add(projectionSurfaceObject);
   addProjectionSurfaceGrid(group, data, radius, surfaceZ, height, projectionScale);
 
@@ -3438,16 +3659,40 @@ function renderProjectionView(params, options, fastMode = false) {
     projectionScale
   );
   projectionContourObject = contourGroup;
+  if (projectionPlane === "xoy") {
+    projectionContourObject.position.z = 0;
+  } else if (projectionPlane === "xoz") {
+    projectionContourObject.rotation.x = Math.PI / 2;
+  } else if (projectionPlane === "yoz") {
+    projectionContourObject.rotation.y = -Math.PI / 2;
+  }
   group.add(projectionContourObject);
+  
   projectionBoxObject = makeBoundaryBox(radius);
   projectionBoxObject.scale.z = 1;
-  projectionBoxObject.position.z = (surfaceZ + bottomZ) / 2;
+  
+  if (projectionPlane === "xoy") {
+    projectionBoxObject.position.z = (surfaceZ + bottomZ) / 2;
+  } else if (projectionPlane === "xoz") {
+    projectionBoxObject.rotation.x = Math.PI / 2;
+    projectionBoxObject.position.z = 0;
+    projectionBoxObject.position.y = (surfaceZ + bottomZ) / 2;
+  } else if (projectionPlane === "yoz") {
+    projectionBoxObject.rotation.y = -Math.PI / 2;
+    projectionBoxObject.position.z = 0;
+    projectionBoxObject.position.x = (surfaceZ + bottomZ) / 2;
+  }
   group.add(projectionBoxObject);
   projectionSurfaceObject = group;
   projectionContourObject = null;
   projectionBoxObject = null;
   projectionScene.add(group);
-  resetProjectionCamera(radius * 1.92);
+  const projectionCenter = new THREE.Vector3(0, 0, 0);
+  const centerOffset = (surfaceZ + bottomZ) / 2;
+  if (projectionPlane === "xoy") projectionCenter.set(0, 0, centerOffset);
+  else if (projectionPlane === "xoz") projectionCenter.set(0, centerOffset, 0);
+  else if (projectionPlane === "yoz") projectionCenter.set(centerOffset, 0, 0);
+  resetProjectionCamera(radius * 1.92, projectionCenter);
   updateRelationOverlays();
 }
 
@@ -3682,7 +3927,7 @@ function renderRadialView(params, options) {
   
   if (document.body.classList.contains("cinematic-mode")) {
     scene.add(group);
-    group.position.set(options.radius * 2.2, 0, 0);
+    group.position.set(options.radius * 1.35, 0, 0);
     group.rotation.y = -Math.PI / 6; // slightly angle it for better 3D visibility
     const s = Math.max(0.8, options.radius * 0.08);
     group.scale.set(s, s, s);
@@ -3983,6 +4228,9 @@ initCinematic({
       applyCinematicVisualState();
     }
   },
+  rebuildRelationSliceCapHighQuality,
+  rebuildRelationSliceCapFastSeparated,
+  updateRelationRadiusScanOnly,
   setDrawRange: (start, count) => {
      const currentPercent = count / 100;
      if (typeof radialSurfaceObject !== 'undefined' && radialSurfaceObject) {
@@ -4868,10 +5116,16 @@ function drawGenerationAnimation(progress) {
     
     const radius = projectionRelationMeta ? projectionRelationMeta.radius : 5;
     
-    // Dynamically pull camera back so the spread always fits the screen
-    animCamera.position.z = Math.max(50, radius * 8.5);
+    // Keep this explanatory split view stable and readable.
+    animCamera.position.set(0, 0, Math.max(44, radius * 7.4));
+    animCamera.up.set(0, 1, 0);
+    animCamera.lookAt(0, 0, 0);
+    if (animControls) {
+      animControls.target.set(0, 0, 0);
+      animControls.update();
+    }
     
-    const offset = radius * 2.8;
+    const offset = radius * 0.72;
     const scaleFactor = 1.2;
     
     function getLocalBounds(group) {
@@ -4896,8 +5150,9 @@ function drawGenerationAnimation(progress) {
        animGroup.userData.animRadialGroup.position.x = currentRadialX;
        animGroup.userData.animRadialGroup.position.y = -radius * 0.4;
        animGroup.userData.animRadialGroup.scale.setScalar(scaleFactor);
-       animGroup.userData.animRadialGroup.rotation.x = Math.PI / 5;
-       animGroup.userData.animRadialGroup.rotation.y = -Math.PI / 4;
+       animGroup.userData.animRadialGroup.rotation.x = -Math.PI / 7;
+       animGroup.userData.animRadialGroup.rotation.y = 0;
+       animGroup.userData.animRadialGroup.rotation.z = 0;
        
        if (animGroup.userData.radialClipPlane) {
           if (animGroup.userData.radialBounds === undefined) {
@@ -5134,6 +5389,7 @@ UI.initUI({
   getCurrentAngularRadius: () => typeof currentAngularRadius !== 'undefined' ? currentAngularRadius : 4,
   getCurrentViewRadius: () => typeof currentViewRadius !== 'undefined' ? currentViewRadius : 10,
   getCurrentProjectionRadius: () => typeof currentProjectionRadius !== 'undefined' ? currentProjectionRadius : 10,
+  getCurrentProjectionTarget: () => currentProjectionTarget.clone(),
   getCurrentRadialRadius: () => typeof currentRadialRadius !== 'undefined' ? currentRadialRadius : 5.3,
   updateProjectionFrustum: typeof updateProjectionFrustum !== 'undefined' ? updateProjectionFrustum : null,
   updateRadialFrustum: typeof updateRadialFrustum !== 'undefined' ? updateRadialFrustum : null,

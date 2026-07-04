@@ -19,7 +19,10 @@ let api = {
   getScene: () => null,
   getGlobalXYClipPlane: () => null,
   getRadius: () => 5,
-  setDrawRange: (start, count) => {}
+  setDrawRange: (start, count) => {},
+  rebuildRelationSliceCapHighQuality: () => {},
+  rebuildRelationSliceCapFastSeparated: () => {},
+  updateRelationRadiusScanOnly: () => {}
 };
 
 export function initCinematic(appApi) {
@@ -435,9 +438,15 @@ export function processCinematicTick(timeMs) {
     return;
   }
   
+  const previousStep = cinematicState.step;
   cinematicState.step = newStep;
   cinematicState.localProgress = timeline.progress;
   updateCinematicOverlay();
+  if (previousStep !== 3 && newStep === 3 && api.updateProjectionsHighQuality) {
+    api.updateProjectionsHighQuality();
+    if (api.rebuildRelationSliceCapHighQuality) api.rebuildRelationSliceCapHighQuality();
+    if (api.updateRelationRadiusScanOnly) api.updateRelationRadiusScanOnly();
+  }
   
   const p = cinematicState.localProgress;
   const step = cinematicState.step;
@@ -454,6 +463,9 @@ export function processCinematicTick(timeMs) {
         if (api.updateProjectionsFast) {
           api.updateProjectionsFast();
         }
+        if (api.rebuildRelationSliceCapFastSeparated) {
+          api.rebuildRelationSliceCapFastSeparated();
+        }
       }
     }
   } else if (step === 3) {
@@ -463,7 +475,7 @@ export function processCinematicTick(timeMs) {
       if (val > 100) val = 100;
       if (Math.abs(Number(scanRadius.value) - val) > 0.01) {
         scanRadius.value = val;
-        scanRadius.dispatchEvent(new Event('input'));
+        if (api.updateRelationRadiusScanOnly) api.updateRelationRadiusScanOnly();
       }
     }
   }
@@ -506,6 +518,9 @@ export function applyCinematicVisualState() {
     isoMeshes.forEach(m => {
       m.visible = true;
       m.traverse(c => {
+        if (c.name === "integratedProjectionMountain" || c.name === "integratedProjectionBox" || c.name === "integratedProjectionFlat") {
+          c.visible = false;
+        }
         if (c.material) {
           c.material.opacity = 0;
         }
@@ -535,10 +550,11 @@ export function applyCinematicVisualState() {
       }
       m.traverse(c => {
         if (c.name === "integratedProjectionMountain" || c.name === "integratedProjectionBox" || c.name === "integratedProjectionFlat") {
-           c.material.opacity = 0;
+           c.visible = false;
            c.position.set(0, 0, 0);
         } else if (c.isMesh) {
-           c.material.opacity = smoothP;
+           c.visible = true;
+           if (c.material) c.material.opacity = smoothP;
         }
       });
     });
@@ -558,23 +574,17 @@ export function applyCinematicVisualState() {
       
       m.traverse(c => {
         if (c.name === "integratedProjectionMountain") {
+           c.visible = true;
            if (c.material) c.material.opacity = 1;
         } else if (c.name === "integratedProjectionFlat") {
-           if (c.material) c.material.opacity = 1;
-           if (typeof m.userData.surfaceZ !== 'undefined' && api.getGlobalXYClipPlane) {
-              const plane = api.getGlobalXYClipPlane();
-              if (m.userData.slicePlane === "xoy") {
-                 c.position.set(0, 0, plane.constant - m.userData.surfaceZ);
-              } else if (m.userData.slicePlane === "xoz") {
-                 c.position.set(0, plane.constant - m.userData.surfaceZ, 0);
-              } else if (m.userData.slicePlane === "yoz") {
-                 c.position.set(plane.constant - m.userData.surfaceZ, 0, 0);
-              }
-           }
+           c.visible = true;
+           if (c.material) c.material.opacity = 0.45;
         } else if (c.name === "integratedProjectionBox") {
+           c.visible = true;
            if (c.material) c.material.opacity = 0.2;
         } else if (c.isMesh) {
-           c.material.opacity = 1;
+           c.visible = true;
+           if (c.material) c.material.opacity = 1;
         }
       });
     });
@@ -593,9 +603,11 @@ export function applyCinematicVisualState() {
       }
       m.traverse(c => {
         if (c.name === "integratedProjectionMountain" || c.name === "integratedProjectionBox" || c.name === "integratedProjectionFlat") {
+           c.visible = false;
            if (c.material) c.material.opacity = 0;
            c.position.set(0, 0, 0);
         } else if (c.isMesh) {
+           c.visible = true;
            c.material.opacity = 1;
         }
       });
@@ -612,9 +624,11 @@ export function applyCinematicVisualState() {
       }
       m.traverse(c => {
         if (c.name === "integratedProjectionMountain" || c.name === "integratedProjectionBox" || c.name === "integratedProjectionFlat") {
+           c.visible = false;
            if (c.material) c.material.opacity = 0;
            c.position.set(0, 0, 0);
         } else if (c.isMesh) {
+           c.visible = true;
            c.material.opacity = 1; // keep background half-cut orbital
         }
       });

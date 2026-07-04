@@ -150,6 +150,24 @@
   transform: translateX(400px);
 }
 
+.view-container {
+  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.view-container.quad-view.drawer-reserved {
+  width: calc(100% - 372px);
+}
+
+@media (max-width: 980px) {
+  .view-container.quad-view.drawer-reserved {
+    width: 100%;
+  }
+
+  .settings-drawer {
+    width: min(340px, calc(100vw - 32px));
+  }
+}
+
 /* ─── View Dock ─── */
 .view-dock {
   position: fixed;

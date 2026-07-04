@@ -30,9 +30,17 @@ export function initUI(api) {
 function initDrawerAndDock() {
   const drawer = document.getElementById("settingsDrawer");
   const toggleBtn = document.getElementById("toggleDrawerBtn");
+  const container = document.querySelector(".view-container");
+
+  const updateQuadDrawerReservation = () => {
+    if (!container) return;
+    const shouldReserve = container.classList.contains("quad-view") && !drawer?.classList.contains("closed");
+    container.classList.toggle("drawer-reserved", shouldReserve);
+  };
 
   toggleBtn?.addEventListener("click", () => {
     drawer?.classList.toggle("closed");
+    updateQuadDrawerReservation();
     setTimeout(() => window.dispatchEvent(new Event("resize")), 450); // wait for animation
   });
 
@@ -52,7 +60,7 @@ function initDrawerAndDock() {
     btn.classList.add("active");
 
     const viewName = btn.dataset.view;
-    const container = document.querySelector(".view-container");
+    if (!container) return;
     
     if (viewName === "quad") {
       container.classList.add("quad-view");
@@ -70,10 +78,14 @@ function initDrawerAndDock() {
         }
       });
     }
+    updateQuadDrawerReservation();
     
     // Trigger resize so ThreeJS canvas updates its aspect ratio
     window.dispatchEvent(new Event("resize"));
+    setTimeout(() => window.dispatchEvent(new Event("resize")), 450);
   });
+
+  updateQuadDrawerReservation();
 }
 
 function initAccordion() {
@@ -413,6 +425,9 @@ export function setPlaneView(plane) {
   const angularRadius = Math.max(3, getCurrentAngularRadius());
   const projectionRadius = typeof getCurrentProjectionRadius !== "undefined" ? getCurrentProjectionRadius() : radius;
   const radialRadius = typeof getCurrentRadialRadius !== "undefined" ? getCurrentRadialRadius() : radius;
+  const projectionFocus = typeof getCurrentProjectionTarget !== "undefined"
+    ? getCurrentProjectionTarget()
+    : { x: 0, y: 0, z: 0 };
   
   const mainDistance = cameraDistanceForRadius(radius);
   const angularDistance = cameraDistanceForRadius(angularRadius, 40);
@@ -424,27 +439,27 @@ export function setPlaneView(plane) {
     angularCamera.up.set(0, 1, 0);
     camera.position.set(0, 0, mainDistance);
     angularCamera.position.set(0, 0, angularDistance);
-    if (window.projectionCamera) { projectionCamera.up.set(0, 1, 0); projectionCamera.position.set(0, 0, projDistance); }
+    if (window.projectionCamera) { projectionCamera.up.set(0, 1, 0); projectionCamera.position.set(projectionFocus.x, projectionFocus.y, projectionFocus.z + projDistance); }
     if (window.radialCamera) { radialCamera.up.set(0, 1, 0); radialCamera.position.set(0, 0, radialDistance); }
   } else if (plane === "yoz") {
     camera.up.set(0, 1, 0);
     angularCamera.up.set(0, 1, 0);
     camera.position.set(mainDistance, 0, 0);
     angularCamera.position.set(angularDistance, 0, 0);
-    if (window.projectionCamera) { projectionCamera.up.set(0, 1, 0); projectionCamera.position.set(projDistance, 0, 0); }
+    if (window.projectionCamera) { projectionCamera.up.set(0, 1, 0); projectionCamera.position.set(projectionFocus.x + projDistance, projectionFocus.y, projectionFocus.z); }
     if (window.radialCamera) { radialCamera.up.set(0, 1, 0); radialCamera.position.set(radialDistance, 0, 0); }
   } else if (plane === "xoz") {
     camera.up.set(0, 0, 1);
     angularCamera.up.set(0, 0, 1);
     camera.position.set(0, -mainDistance, 0);
     angularCamera.position.set(0, -angularDistance, 0);
-    if (window.projectionCamera) { projectionCamera.up.set(0, 0, 1); projectionCamera.position.set(0, -projDistance, 0); }
+    if (window.projectionCamera) { projectionCamera.up.set(0, 0, 1); projectionCamera.position.set(projectionFocus.x, projectionFocus.y - projDistance, projectionFocus.z); }
     if (window.radialCamera) { radialCamera.up.set(0, 0, 1); radialCamera.position.set(0, -radialDistance, 0); }
   }
   
   camera.lookAt(0, 0, 0);
   angularCamera.lookAt(0, 0, 0);
-  if (window.projectionCamera) projectionCamera.lookAt(0, 0, 0);
+  if (window.projectionCamera) projectionCamera.lookAt(projectionFocus.x, projectionFocus.y, projectionFocus.z);
   if (window.radialCamera) radialCamera.lookAt(0, 0, 0);
   
   updateCameraFrustum(radius);
@@ -454,7 +469,7 @@ export function setPlaneView(plane) {
   
   controls.target.set(0, 0, 0);
   angularControls.target.set(0, 0, 0);
-  if (window.projectionControls) projectionControls.target.set(0, 0, 0);
+  if (window.projectionControls) projectionControls.target.set(projectionFocus.x, projectionFocus.y, projectionFocus.z);
   if (window.radialControls) radialControls.target.set(0, 0, 0);
   
   controls.update();
