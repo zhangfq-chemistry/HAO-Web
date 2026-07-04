@@ -6,9 +6,8 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>Hydrogen-like MO Viewer (v3.2)</title>
-    <link rel="stylesheet" href="./styles.css?v=66" />
-    <link rel="stylesheet" href="./css/windows.css?v=66" />
+    <title>Hydrogen-like MO Viewer (v3.2)</title>
+
     <script type="importmap">
       {
         "imports": {
@@ -17,6 +16,8 @@
         }
       }
     </script>
+    <script type="module" crossorigin src="./assets/index-zUw-NkrD.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Dd_JNPHB.css">
   </head>
   <body>
     <header class="app-chrome">
@@ -371,6 +372,13 @@
     <div id="cinematicOverlay" class="cinematic-overlay">
       <div class="cinematic-controls">
         <button id="cinematicPlayBtn" data-i18n="btn_play">播放 / 暂停</button>
+        <div id="cinematicStepBtns" style="display:inline-flex; gap: 4px; margin: 0 10px;">
+           <button class="step-btn" data-step="0">段1</button>
+           <button class="step-btn" data-step="1">段2</button>
+           <button class="step-btn" data-step="2">段3</button>
+           <button class="step-btn" data-step="3">段4</button>
+           <button class="step-btn" data-step="4">段5</button>
+        </div>
         <button id="cinematicExportBtn" data-i18n="btn_export">导出视频</button>
         <button id="cinematicExitBtn" data-i18n="btn_cancel">退出</button>
       </div>
@@ -556,6 +564,8 @@
               <span>适合课堂投屏随机出题。</span>
             </button>
           </div>
-    <script type="module" src="./app.js"></script>
+        </section>
+      </div>
+    </article>
   </body>
 </html>
