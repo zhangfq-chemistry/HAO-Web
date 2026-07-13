@@ -7,8 +7,13 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Hydrogen-like MO Viewer (v3.2)</title>
-    <link rel="stylesheet" href="./styles.css?v=68" />
-    <link rel="stylesheet" href="./css/windows.css?v=68" />
+    <link rel="stylesheet" href="./css/base.css?v=69" />
+    <link rel="stylesheet" href="./css/layout.css?v=69" />
+    <link rel="stylesheet" href="./css/components.css?v=69" />
+    <link rel="stylesheet" href="./css/windows.css?v=69" />
+    <link rel="stylesheet" href="./css/activities.css?v=69" />
+    <link rel="stylesheet" href="./css/media.css?v=69" />
+    <link rel="stylesheet" href="./styles.css?v=69" />
     <script type="importmap">
       {
         "imports": {
@@ -222,15 +227,327 @@
         </section>
 
         <!--
-          Legacy controls are represented aboveßÎ»¶‰žËkºwµç@€€€ð½¡•…‘•Èø((€€€€€€€€ñÍ•Ñ¥½¸¥ô‰±…ÍÍÉ½½µAÉ•Á…É•MÉ••¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÍÉ••¸…Ñ¥Ù”ˆ‘…Ñ„µ±…ÍÍÉ½½´µÁ…¹”ô‰ÁÉ•Á…É”ˆø(€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µÍ•Ñ¥½¸µ¡•…ˆø(€€€€€€€€€€€€ñ‘¥ØøñÍÑÉ½¹œû¦'š.§¢¾û–‚šÒï–* ð½ÍÑÉ½¹œøñÍµ…±°û’î;–¶›’æƒžn»š‚–ë–>G¾ò3¢3’â7šb¿’î;¢ö¿’îÛ–*¢÷–ë–>Dð½Íµ…±°øð½‘¥Øø(€€€€€€€€€€€€ñ‰ÕÑÑ½¸¥ô‰±…ÍÍÉ½½µMÑ…ÉÑ	ÕÑÑ½¸ˆÑåÁ”ô‰‰ÕÑÑ½¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÁÉ¥µ…Éäµ‰ÕÑÑ½¸ˆû–ò–ž/šÒï–* ð½‰ÕÑÑ½¸ø(€€€€€€€€€€ð½‘¥Øø((€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µÑ•µÁ±…Ñ”µÉ¥ˆÉ½±”ô‰±¥ÍÐˆ…É¥„µ±…‰•°ô‹¢¾û–‚šÒï–*£š¢‡švüˆø(€€€€€€€€€€€€ñ‰ÕÑÑ½¸ÑåÁ”ô‰‰ÕÑÑ½¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÑ•µÁ±…Ñ”Í•±•Ñ•ˆ‘…Ñ„µ±…ÍÍÉ½½´µÑ•µÁ±…Ñ”ô‰±¥¹­Ìˆ…É¥„µÁÉ•ÍÍ•ô‰ÑÉÕ”ˆø(€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÌô‰±…ÍÍÉ½½´µÑ•µÁ±…Ñ”µ¥½¸ˆûŠ^8ð½ÍÁ…¸øñÍÑÉ½¹œû–no–nû–Ï¢Pð½ÍÑÉ½¹œøñÍµ…±°ûžR£–B3’âšÎ‹–÷šVÃ¢SžÎï¢ö£¦OŽš*W–öÇŽ–ú–BG–J3¢žK–BG¢ž–nûŽð½Íµ…±°øñÍÁ…¸ûš:£¢6@ð½ÍÁ…¸ø(€€€€€€€€€€€€ð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€ñ‰ÕÑÑ½¸ÑåÁ”ô‰‰ÕÑÑ½¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÑ•µÁ±…Ñ”ˆ‘…Ñ„µ±…ÍÍÉ½½´µÑ•µÁ±…Ñ”ô‰¹½‘•Ìˆ…É¥„µÁÉ•ÍÍ•ô‰™…±Í”ˆø(€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÌô‰±…ÍÍÉ½½´µÑ•µÁ±…Ñ”µ¥½¸ˆûŠ2ð½ÍÁ…¸øñÍÑÉ½¹œû–¾ïš&û¢*ž
-äð½ÍÑÉ½¹œøñÍµ…±°û–#¦ŠšÖ/¢*ž
-ç¾ò3–7žR£šnËžêÿ’â;¢*¦v‹¦Cš¶—¦ª3¢¾Žð½Íµ…±°øñÍÁ…¸û¢*ž
-çšVg–¶˜ð½ÍÁ…¸ø(€€€€€€€€€€€€ð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€ñ‰ÕÑÑ½¸ÑåÁ”ô‰‰ÕÑÑ½¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÑ•µÁ±…Ñ”ˆ‘…Ñ„µ±…ÍÍÉ½½´µÑ•µÁ±…Ñ”ô‰Í±¥”ˆ…É¥„µÁÉ•ÍÍ•ô‰™…±Í”ˆø(€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÌô‰±…ÍÍÉ½½´µÑ•µÁ±…Ñ”µ¥½¸ˆûŠ^¬ð½ÍÁ…¸øñÍÑÉ½¹œûš"«¦v‹’â;š*W–öÄð½ÍÑÉ½¹œøñÍµ…±°ûžB¢ž’â'žîÓšÎ‹–÷šVÃ–š’öW–ö‹š"C’ê3žîÓš"«¦v‹’â;š*W–öÇŽð½Íµ…±°øñÍÁ…¸ûž¦ë¦^ÓšÏ¢Æ„ð½ÍÁ…¸ø(€€€€€€€€€€€€ð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€ñ‰ÕÑÑ½¸ÑåÁ”ô‰‰ÕÑÑ½¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÑ•µÁ±…Ñ”ˆ‘…Ñ„µ±…ÍÍÉ½½´µÑ•µÁ±…Ñ”ô‰‰…Í¥Ìˆ…É¥„µÁÉ•ÍÍ•ô‰™…±Í”ˆø(€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÌô‰±…ÍÍÉ½½´µÑ•µÁ±…Ñ”µ¥½¸ˆûŠ^Hð½ÍÁ…¸øñÍÑÉ½¹œû¢º“¢¾¢ö£¦Lð½ÍÑÉ½¹œøñÍµ…±°û–"“šZ·¢ö£¦Ožj–ö‹ž*ÛŽšZç–BGŽžnã’ö7–J3–¾çžžÃšŸŽð½Íµ…±°øñÍÁ…¸û–"wš²‡–¶›’æ€ð½ÍÁ…¸ø(€€€€€€€€€€€€ð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€ñ‰ÕÑÑ½¸ÑåÁ”ô‰‰ÕÑÑ½¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÑ•µÁ±…Ñ”ˆ‘…Ñ„µ±…ÍÍÉ½½´µÑ•µÁ±…Ñ”ô‰½µÁ…É”ˆ…É¥„µÁÉ•ÍÍ•ô‰™…±Í”ˆø(€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÌô‰±…ÍÍÉ½½´µÑ•µÁ±…Ñ”µ¥½¸ˆûŠð½ÍÁ…¸øñÍÑÉ½¹œû¢ö£¦O–¾çš¾Pð½ÍÑÉ½¹œøñÍµ…±°ûšRç–>`»Ž³Ž·¾ò3–öKžêÏ’î’æ#šRç–>cŽ’î’æ#’â7–>cŽð½Íµ…±°øñÍÁ…¸û–öKžêÏš>C–6ð½ÍÁ…¸ø(€€€€€€€€€€€€ð½‰ÕÑÑ½¸ø(€€€€€€€€€€ð½‘¥Øø((€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µÍ•ÑÕÀµÉ¥ˆø(€€€€€€€€€€€€ñ±…‰•°øñÍÁ…¸ûžn»š‚¢ö£¦Lð½ÍÁ…¸øñÍ•±•Ð¥ô‰±…ÍÍÉ½½µQ…É•Ñ%¹ÁÕÐˆøð½Í•±•Ðøð½±…‰•°ø(€€€€€€€€€€€€ñ±…‰•°¥ô‰±…ÍÍÉ½½µ½µÁ…É•Q…É•Ñ1…‰•°ˆ±…ÍÌô‰±…ÍÍÉ½½´µ½µÁ…É”µÍ•ÑÑ¥¹œˆøñÍÁ…¸û–¾çš¾S¢ö£¦Lð½ÍÁ…¸øñÍ•±•Ð¥ô‰±…ÍÍÉ½½µ½µÁ…É•Q…É•Ñ%¹ÁÕÐˆøð½Í•±•Ðøð½±…‰•°ø(€€€€€€€€€€€€ñ±…‰•°øñÍÁ…¸ûšÒï–*£š^Û¦Vüð½ÍÁ…¸øñÍ•±•Ð¥ô‰±…ÍÍÉ½½µÕÉ…Ñ¥½¹%¹ÁÕÐˆøñ½ÁÑ¥½¸Ù…±Õ”ôˆØÀÀˆøÄÀƒ–"¦J|ð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ôˆäÀÀˆøÄÔƒ–"¦J|ð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ôˆÄÈÀÀˆøÈÀƒ–"¦J|ð½½ÁÑ¥½¸øð½Í•±•Ðøð½±…‰•°ø(€€€€€€€€€€€€ñ±…‰•°øñÍÁ…¸û–ò–ž/¢ž–nøð½ÍÁ…¸øñÍ•±•Ð¥ô‰±…ÍÍÉ½½µMÑ…ÉÑY¥•Ý%¹ÁÕÐˆøñ½ÁÑ¥½¸Ù…±Õ”ô‰ÅÕ…ˆû–no–º¯š‚ðð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ô‰½É‰¥Ñ…°ˆû–:–¶C¢ö£¦Lð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ô‰É…‘¥…°ˆû–ú–BG–"–âð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ô‰ÁÉ½©•Ñ¥½¸ˆû¢ö£¦Oš*W–öÄð½½ÁÑ¥½¸øð½Í•±•Ðøð½±…‰•°ø(€€€€€€€€€€€€ñ±…‰•°±…ÍÌô‰±…ÍÍÉ½½´µ¡•¬ˆøñ¥¹ÁÕÐ¥ô‰±…ÍÍÉ½½µ!¥‘•9…µ•%¹ÁÕÐˆÑåÁ”ô‰¡•­‰½àˆ¡•­•øñÍÁ…¸û–ò–ž/š^Û¦jC¢^?¢ö£¦O–B7žžÀð½ÍÁ…¸øð½±…‰•°ø(€€€€€€€€€€€€ñ±…‰•°±…ÍÌô‰±…ÍÍÉ½½´µ¡•¬ˆøñ¥¹ÁÕÐ¥ô‰±…ÍÍÉ½½µI•ÅÕ¥É•Ù¥‘•¹•%¹ÁÕÐˆÑåÁ”ô‰¡•­‰½àˆ¡•­•øñÍÁ…¸û¢ž¦+–&7–þ¦†ï¦'š.§¢¾š6¸ð½ÍÁ…¸øð½±…‰•°ø(€€€€€€€€€€ð½‘¥Øø((€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µÁÉ•Á…É”µ¹½Ñ”ˆø(€€€€€€€€€€€€ñÍÑÉ½¹œ¥ô‰±…ÍÍÉ½½µQ•µÁ±…Ñ•EÕ•ÍÑ¥½¸ˆûš‚ã–þ¦^»¦Šc¾òk–no’â«žª_–>–š’öWš>?¢þÃ–B3’â’â«šÎ‹–÷šVÃ¾ò|ð½ÍÑÉ½¹œø(€€€€€€€€€€€€ñÍÁ…¸¥ô‰±…ÍÍÉ½½µQ•µÁ±…Ñ••ÍÉ¥ÁÑ¥½¸ˆû–¶›žR–Â–#¦ŠšÖ/¾ò3–7¦k¢þš^/¢ö³Ž–6+–úš&¯š>?–J3¢ž–nû–"š6‹–¾ïš&û–¾ç–êS¢¾š6»Žð½ÍÁ…¸ø(€€€€€€€€€€ð½‘¥Øø(€€€€€€€€ð½Í•Ñ¥½¸ø((€€€€€€€€ñÍ•Ñ¥½¸¥ô‰±…ÍÍÉ½½µ1¥Ù•MÉ••¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÍÉ••¸±…ÍÍÉ½½´µ±¥Ù”µÍÉ••¸ˆ‘…Ñ„µ±…ÍÍÉ½½´µÁ…¹”ô‰±¥Ù”ˆø(€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µ±¥Ù”µ¡•…ˆø(€€€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µ±¥Ù”µÑ¥Ñ±”ˆøñ‰ÕÑÑ½¸¥ô‰±…ÍÍÉ½½µ	…­	ÕÑÑ½¸ˆÑåÁ”ô‰‰ÕÑÑ½¸ˆ…É¥„µ±…‰•°ô‹¢þS–n{šÒï–*£––’ˆûŠ@ð½‰ÕÑÑ½¸øñÍÁ…¸øñÍÑÉ½¹œ¥ô‰±…ÍÍÉ½½µÑ¥Ù¥Ñå9…µ”ˆû–no–nû–Ï¢Pƒ
-Ü€ÉAàð½ÍÑÉ½¹œøñÍµ…±°¥ô‰±…ÍÍÉ½½µM•ÍÍ¥½¹MÑ…ÑÕÌˆû¢¾û–‚–Âkšr«–ò–ž,ð½Íµ…±°øð½ÍÁ…¸øð½‘¥Øø(€€€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µÍÑ•ÁÁ•Èˆ…É¥„µ±…‰•°ô‹¢¾û–‚šÒï–*£¢þo–ê˜ˆø(€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸ÑåÁ”ô‰‰ÕÑÑ½¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÍÑ•À…Ñ¥Ù”ˆ‘…Ñ„µ±…ÍÍÉ½½´µÍÑ•ÀôˆÀˆøñÍÁ…¸øÄð½ÍÁ…¸ûž2sšÌð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸ÑåÁ”ô‰‰ÕÑÑ½¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÍÑ•Àˆ‘…Ñ„µ±…ÍÍÉ½½´µÍÑ•ÀôˆÄˆøñÍÁ…¸øÈð½ÍÁ…¸ûš:‹ž¦Øð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸ÑåÁ”ô‰‰ÕÑÑ½¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÍÑ•Àˆ‘…Ñ„µ±…ÍÍÉ½½´µÍÑ•ÀôˆÈˆøñÍÁ…¸øÌð½ÍÁ…¸û¢¾š6¸ð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸ÑåÁ”ô‰‰ÕÑÑ½¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÍÑ•Àˆ‘…Ñ„µ±…ÍÍÉ½½´µÍÑ•ÀôˆÌˆøñÍÁ…¸øÐð½ÍÁ…¸û¢ž¦(ð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸ÑåÁ”ô‰‰ÕÑÑ½¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÍÑ•Àˆ‘…Ñ„µ±…ÍÍÉ½½´µÍÑ•ÀôˆÐˆøñÍÁ…¸øÔð½ÍÁ…¸û¢þžžìð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µÑ¥µ•ÈˆøñÍÁ…¸¥ô‰±…ÍÍÉ½½µQ¥µ•ÉY…±Õ”ˆøÄÀèÀÀð½ÍÁ…¸øñ‰ÕÑÑ½¸¥ô‰±…ÍÍÉ½½µ¹‘	ÕÑÑ½¸ˆÑåÁ”ô‰‰ÕÑÑ½¸ˆûžîOšv|ð½‰ÕÑÑ½¸øð½‘¥Øø(€€€€€€€€€€ð½‘¥Øø((€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µ±¥Ù”µÉ¥ˆø(€€€€€€€€€€€€ñ…Í¥‘”±…ÍÌô‰±…ÍÍÉ½½´µÑ…Í¬µ½±Õµ¸ˆø(€€€€€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µÍÑ•Àµ½ÁäˆøñÍÁ…¸¥ô‰±…ÍÍÉ½½µMÑ•Á	…‘”ˆûž²°€Äƒš¶”€¼€Ôƒš¶”ð½ÍÁ…¸øñÍÑÉ½¹œ¥ô‰±…ÍÍÉ½½µQ…Í­Q¥Ñ±”ˆû–#’ös–ë¦ŠšÖ,ð½ÍÑÉ½¹œøñÀ¥ô‰±…ÍÍÉ½½µQ…Í­Q•áÐˆû–r£žr/–"Ãžr–º{žîOšzs–&7¾ò3–"“šZ·¢ö£¦Ožj–ö‹ž*ÛŽšZç–BGŽ¢*ž
-ç–J3žnã’ö7Žð½Àøð½‘¥Øø((€€€€€€€€€€€€€€ñÍ•Ñ¥½¸±…ÍÌô‰±…ÍÍÉ½½´µÍÑ•ÀµÁ…¹•°…Ñ¥Ù”ˆ‘…Ñ„µ±…ÍÍÉ½½´µÍÑ•ÀµÁ…¹•°ôˆÀˆø(€€€€€€€€€€€€€€€€ñ±…‰•°¥ô‰±…ÍÍÉ½½µAÉ•‘¥Ñ¥½¹±…¥µ¥•±ˆøñÍÁ…¸¥ô‰±…ÍÍÉ½½µAÉ•‘¥Ñ¥½¹±…¥µ1…‰•°ˆû–#¦'š.§’öƒžjš‚ã–þž2sšÌð½ÍÁ…¸øñÍ•±•Ð¥ô‰±…ÍÍÉ½½µAÉ•‘¥Ñ¥½¹±…¥´ˆøð½Í•±•Ðøð½±…‰•°ø(€€€€€€€€€€€€€€€€ñ±…‰•°¥ô‰±…ÍÍÉ½½µAÉ•‘¥Ñ¥½¹I…‘¥…±¥•±ˆøñÍÁ…¸û–ú–BG¢*ž
-çšVÀð½ÍÁ…¸øñÍ•±•Ð¥ô‰±…ÍÍÉ½½µAÉ•‘¥Ñ¥½¹I…‘¥…°ˆøñ½ÁÑ¥½¸Ù…±Õ”ôˆÀˆøÀð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ôˆÄˆøÄð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ôˆÈˆøÈð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ôˆÌˆøÌð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ôˆÐˆøÐð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ôˆÔˆøÔð½½ÁÑ¥½¸øð½Í•±•Ðøð½±…‰•°ø(€€€€€€€€€€€€€€€€ñ±…‰•°¥ô‰±…ÍÍÉ½½µAÉ•‘¥Ñ¥½¹¹Õ±…É¥•±ˆøñÍÁ…¸û¢žK–BG¢*ž
-çšVÀð½ÍÁ…¸øñÍ•±•Ð¥ô‰±…ÍÍÉ½½µAÉ•‘¥Ñ¥½¹¹Õ±…Èˆøñ½ÁÑ¥½¸Ù…±Õ”ôˆÀˆøÀð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ôˆÄˆøÄð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ôˆÈˆøÈð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ôˆÌˆøÌð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ôˆÐˆøÐð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ôˆÔˆøÔð½½ÁÑ¥½¸øð½Í•±•Ðøð½±…‰•°ø(€€€€€€€€€€€€€€€€ñ±…‰•°¥ô‰±…ÍÍÉ½½µAÉ•‘¥Ñ¥½¹á¥Í¥•±ˆøñÍÁ…¸û’âï¢ššZç–BDð½ÍÁ…¸øñÍ•±•Ð¥ô‰±…ÍÍÉ½½µAÉ•‘¥Ñ¥½¹á¥Ìˆøñ½ÁÑ¥½¸Ù…±Õ”ô‰àˆùàƒ¢öÐð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ô‰äˆùäƒ¢öÐð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ô‰èˆùèƒ¢öÐð½½ÁÑ¥½¸øñ½ÁÑ¥½¸Ù…±Õ”ô‰µ¥á•ˆû–’7–B#šZç–BDð½½ÁÑ¥½¸øð½Í•±•Ðøð½±…‰•°ø(€€€€€€€€€€€€€€€€ñÀ¥ô‰±…ÍÍÉ½½µAÉ•‘¥Ñ¥½¹!¥¹Ðˆ±…ÍÌô‰±…ÍÍÉ½½´µ¡¥¹Ðˆû–r£’â·–’»žRïšvÿ’â·žVg’â/’öƒžj–"w–ž/–nû–?¾ò3–B;¦v‹’òk’â;žr–º{žîOšzs–¾çžŸŽð½Àø(€€€€€€€€€€€€€€ð½Í•Ñ¥½¸ø((€€€€€€€€€€€€€€ñÍ•Ñ¥½¸±…ÍÌô‰±…ÍÍÉ½½´µÍÑ•ÀµÁ…¹•°ˆ‘…Ñ„µ±…ÍÍÉ½½´µÍÑ•ÀµÁ…¹•°ôˆÄˆø(€€€€€€€€€€€€€€€€ñ‘¥Ø¥ô‰±…ÍÍÉ½½µ=‰Í•ÉÙ…Ñ¥½¹I½ÕÑ”ˆ±…ÍÌô‰±…ÍÍÉ½½´µ½‰Í•ÉÙ…Ñ¥½¸µÉ½ÕÑ”ˆøð½‘¥Øø(€€€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸¥ô‰±…ÍÍÉ½½µ=Á•¹]½É­ÍÁ…•	ÕÑÑ½¸ˆÑåÁ”ô‰‰ÕÑÑ½¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÍ•½¹‘…Éäµ‰ÕÑÑ½¸ˆûš&O–ò’âï–Þ—’ös–2ë¢ž–¾|ð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€€€ð½Í•Ñ¥½¸ø((€€€€€€€€€€€€€€ñÍ•Ñ¥½¸±…ÍÌô‰±…ÍÍÉ½½´µÍÑ•ÀµÁ…¹•°ˆ‘…Ñ„µ±…ÍÍÉ½½´µÍÑ•ÀµÁ…¹•°ôˆÈˆø(€€€€€€€€€€€€€€€€ñÍÁ…¸±…ÍÌô‰±…ÍÍÉ½½´µ™¥•±µ±…‰•°ˆû¦'š.§šR¿š2’öƒ–"“šZ·žj¢¾š6¸ð½ÍÁ…¸ø(€€€€€€€€€€€€€€€€ñ±…‰•°±…ÍÌô‰±…ÍÍÉ½½´µ¡•¬ˆøñ¥¹ÁÕÐÑåÁ”ô‰¡•­‰½àˆÙ…±Õ”ô‰½É‰¥Ñ…°ˆ‘…Ñ„µ±…ÍÍÉ½½´µ•Ù¥‘•¹”øñÍÁ…¸û–:–¶C¢ö£¦O–ö‹ž*Øð½ÍÁ…¸øð½±…‰•°ø(€€€€€€€€€€€€€€€€ñ±…‰•°±…ÍÌô‰±…ÍÍÉ½½´µ¡•¬ˆøñ¥¹ÁÕÐÑåÁ”ô‰¡•­‰½àˆÙ…±Õ”ô‰É…‘¥…°ˆ‘…Ñ„µ±…ÍÍÉ½½´µ•Ù¥‘•¹”øñÍÁ…¸û–ú–BGšnËžêÿ¦nÛž
-äð½ÍÁ…¸øð½±…‰•°ø(€€€€€€€€€€€€€€€€ñ±…‰•°±…ÍÌô‰±…ÍÍÉ½½´µ¡•¬ˆøñ¥¹ÁÕÐÑåÁ”ô‰¡•­‰½àˆÙ…±Õ”ô‰…¹Õ±…Èˆ‘…Ñ„µ±…ÍÍÉ½½´µ•Ù¥‘•¹”øñÍÁ…¸û¢žK–BG–÷šVÃšZç–BDð½ÍÁ…¸øð½±…‰•°ø(€€€€€€€€€€€€€€€€ñ±…‰•°±…ÍÌô‰±…ÍÍÉ½½´µ¡•¬ˆøñ¥¹ÁÕÐÑåÁ”ô‰¡•­‰½àˆÙ…±Õ”ô‰ÁÉ½©•Ñ¥½¸ˆ‘…Ñ„µ±…ÍÍÉ½½´µ•Ù¥‘•¹”øñÍÁ…¸ûš*W–öÇš"[š"«¦vˆð½ÍÁ…¸øð½±…‰•°ø(€€€€€€€€€€€€€€€€ñÀ¥ô‰±…ÍÍÉ½½µÙ¥‘•¹•!¥¹Ðˆ±…ÍÌô‰±…ÍÍÉ½½´µ¡¥¹Ðˆû¢Ï–ÂG¦'š.§’âšv‡žrš¶šR¿š2–"“šZ·žj¢¾š6»Žð½Àø(€€€€€€€€€€€€€€ð½Í•Ñ¥½¸ø((€€€€€€€€€€€€€€ñÍ•Ñ¥½¸±…ÍÌô‰±…ÍÍÉ½½´µÍÑ•ÀµÁ…¹•°ˆ‘…Ñ„µ±…ÍÍÉ½½´µÍÑ•ÀµÁ…¹•°ôˆÌˆø(€€€€€€€€€€€€€€€€ñ±…‰•°øñÍÁ…¸¥ô‰±…ÍÍÉ½½µáÁ±…¹…Ñ¥½¹1…‰•°ˆûš*+ž2sšÏŽ¢ž–¾–J3¢¾š6»¢þ{š"C’â–>—¢¾tð½ÍÁ…¸øñÑ•áÑ…É•„¥ô‰±…ÍÍÉ½½µáÁ±…¹…Ñ¥½¹%¹ÁÕÐˆÉ½ÝÌôˆØˆÁ±…•¡½±‘•Èô‹–nƒ’âëš"G–r£Š›Š›’â·¢ž–¾–"ÃŠ›Š›¾ò3š&’î—Š›Š˜ˆøð½Ñ•áÑ…É•„øð½±…‰•°ø(€€€€€€€€€€€€€€ð½Í•Ñ¥½¸ø((€€€€€€€€€€€€€€ñÍ•Ñ¥½¸±…ÍÌô‰±…ÍÍÉ½½´µÍÑ•ÀµÁ…¹•°ˆ‘…Ñ„µ±…ÍÍÉ½½´µÍÑ•ÀµÁ…¹•°ôˆÐˆø(€€€€€€€€€€€€€€€€ñ‘¥Ø¥ô‰±…ÍÍÉ½½µ½¹±ÕÍ¥½¹…Éˆ±…ÍÌô‰±…ÍÍÉ½½´µ½¹±ÕÍ¥½¸ˆøð½‘¥Øø(€€€€€€€€€€€€€€€€ñ±…‰•°øñÍÁ…¸¥ô‰±…ÍÍÉ½½µQÉ…¹Í™•É1…‰•°ˆûš*+¢ž–ú/¢þžžï–"Ã–>›’â’â«¢ö£¦Lð½ÍÁ…¸øñÑ•áÑ…É•„¥ô‰±…ÍÍÉ½½µQÉ…¹Í™•É%¹ÁÕÐˆÉ½ÝÌôˆÐˆÁ±…•¡½±‘•Èô‹–ššzsš6‹š"C–>›’â’â«¢ö£¦O¾ò3š"G’òk–#¢ž–¾Š›Š˜ˆøð½Ñ•áÑ…É•„øð½±…‰•°ø(€€€€€€€€€€€€€€ð½Í•Ñ¥½¸ø(€€€€€€€€€€€€ð½…Í¥‘”ø((€€€€€€€€€€€€ñµ…¥¸±…ÍÌô‰±…ÍÍÉ½½´µ½‰Í•ÉÙ…Ñ¥½¸µ½±Õµ¸ˆø(€€€€€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µ½‰Í•ÉÙ…Ñ¥½¸µ¡•…ˆø(€€€€€€€€€€€€€€€€ñ‘¥ØøñÍÑÉ½¹œ¥ô‰±…ÍÍÉ½½µY¥•Ý•ÉQ¥Ñ±”ˆû¦ŠšÖ/žRïšvüð½ÍÑÉ½¹œøñÍµ…±°¥ô‰±…ÍÍÉ½½µY¥•Ý•ÉMÕ‰Ñ¥Ñ±”ˆû¦ª3¢¾–&7’â7’òkšbûž’ëžr–º{¢ö£¦Lð½Íµ…±°øð½‘¥Øø(€€€€€€€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µÁ¡…Í”µ­•äˆøñÍÁ…¸±…ÍÌô‰Á½Í¥Ñ¥Ù”ˆøð½ÍÁ…¸ûš¶žnàñÍÁ…¸±…ÍÌô‰¹•…Ñ¥Ù”ˆøð½ÍÁ…¸û¢ÒžnàñÍÁ…¸±…ÍÌô‰Õ¥‘”ˆøð½ÍÁ…¸û¢¾û–‚–òW–¾ðð½‘¥Øø(€€€€€€€€€€€€€€ð½‘¥Øø((€€€€€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µÍÑ…”ˆø(€€€€€€€€€€€€€€€€ñ‘¥Ø¥ô‰±…ÍÍÉ½½µM­•Ñ¡MÑ…”ˆ±…ÍÌô‰±…ÍÍÉ½½´µÍÑ…”µ±…å•È…Ñ¥Ù”ˆø(€€€€€€€€€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µÍ­•Ñ µÑ½½±Ìˆøñ¥¹ÁÕÐ¥ô‰±…ÍÍÉ½½µM­•Ñ¡½±½É%¹ÁÕÐˆÑåÁ”ô‰½±½ÈˆÙ…±Õ”ôˆ™™™™™˜ˆ…É¥„µ±…‰•°ô‹žRïž²S¦Šs¢&Èˆøñ¥¹ÁÕÐ¥ô‰±…ÍÍÉ½½µM­•Ñ¡M¥é•%¹ÁÕÐˆÑåÁ”ô‰É…¹”ˆµ¥¸ôˆÈˆµ…àôˆÈÐˆÙ…±Õ”ôˆÔˆ…É¥„µ±…‰•°ô‹žRïž²SžÊ_žîˆøñ‰ÕÑÑ½¸¥ô‰±…ÍÍÉ½½µM­•Ñ¡A•¹	ÕÑÑ½¸ˆÑåÁ”ô‰‰ÕÑÑ½¸ˆ±…ÍÌô‰…Ñ¥Ù”ˆûžRïž²Pð½‰ÕÑÑ½¸øñ‰ÕÑÑ½¸¥ô‰±…ÍÍÉ½½µM­•Ñ¡É…Í•É	ÕÑÑ½¸ˆÑåÁ”ô‰‰ÕÑÑ½¸ˆûš¦‡žj¸ð½‰ÕÑÑ½¸øñ‰ÕÑÑ½¸¥ô‰±…ÍÍÉ½½µM­•Ñ¡±•…É	ÕÑÑ½¸ˆÑåÁ”ô‰‰ÕÑÑ½¸ˆûšâž¦èð½‰ÕÑÑ½¸øð½‘¥Øø(€€€€€€€€€€€€€€€€€€ñ…¹Ù…Ì¥ô‰±…ÍÍÉ½½µM­•Ñ¡…¹Ù…Ìˆøð½…¹Ù…Ìø(€€€€€€€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€€€€€€€ñ‘¥Ø¥ô‰±…ÍÍÉ½½µ=É‰¥Ñ…±MÑ…”ˆ±…ÍÌô‰±…ÍÍÉ½½´µÍÑ…”µ±…å•Èˆøñ‘¥Ø¥ô‰±…ÍÍÉ½½µY¥•Ý•Èˆ±…ÍÌô‰±…ÍÍÉ½½´µÑ¡É•”µÙ¥•Ý•Èˆøð½‘¥Øøð½‘¥Øø(€€€€€€€€€€€€€€€€ñ‘¥Ø¥ô‰±…ÍÍÉ½½µM¹…ÁÍ¡½ÑMÑ…”ˆ±…ÍÌô‰±…ÍÍÉ½½´µÍÑ…”µ±…å•Èˆøñ…¹Ù…Ì¥ô‰±…ÍÍÉ½½µM¹…ÁÍ¡½Ñ…¹Ù…Ìˆøð½…¹Ù…Ìøð½‘¥Øø(€€€€€€€€€€€€€€€€ñ‘¥Ø¥ô‰±…ÍÍÉ½½µ½µÁ…É•MÑ…”ˆ±…ÍÌô‰±…ÍÍÉ½½´µÍÑ…”µ±…å•È±…ÍÍÉ½½´µ½µÁ…É”µÍÑ…”ˆøñ‘¥Øøñ¡•…‘•È¥ô‰±…ÍÍÉ½½µ½µÁ…É•Q¥Ñ±”ˆû¢ö£¦Lð½¡•…‘•Èøñ‘¥Ø¥ô‰±…ÍÍÉ½½µ½µÁ…É•Y¥•Ý•Èˆ±…ÍÌô‰±…ÍÍÉ½½´µÑ¡É•”µÙ¥•Ý•Èˆøð½‘¥Øøð½‘¥Øøñ‘¥Øøñ¡•…‘•È¥ô‰±…ÍÍÉ½½µ½µÁ…É•	Q¥Ñ±”ˆû¢ö£¦Lð½¡•…‘•Èøñ‘¥Ø¥ô‰±…ÍÍÉ½½µ½µÁ…É•	Y¥•Ý•Èˆ±…ÍÌô‰±…ÍÍÉ½½´µÑ¡É•”µÙ¥•Ý•Èˆøð½‘¥Øøð½‘¥Øøð½‘¥Øø(€€€€€€€€€€€€€€ð½‘¥Øø((€€€€€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µ±¥¹­•µÙ¥•ÝÌˆ…É¥„µ±…‰•°ô‹–Ï¢SžžG–¶›¢ž–nøˆø(€€€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸ÑåÁ”ô‰‰ÕÑÑ½¸ˆ±…ÍÌô‰Í•±•Ñ•ˆ‘…Ñ„µ±…ÍÍÉ½½´µÙ¥•Üô‰½É‰¥Ñ…°ˆøñÍÑÉ½¹œû–:–¶C¢ö£¦Lð½ÍÑÉ½¹œøñÍµ…±°û–ö‹ž*Û’â;žnã’ö4ð½Íµ…±°øð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸ÑåÁ”ô‰‰ÕÑÑ½¸ˆ‘…Ñ„µ±…ÍÍÉ½½´µÙ¥•Üô‰ÁÉ½©•Ñ¥½¸ˆøñÍÑÉ½¹œû¢ö£¦Oš*W–öÄð½ÍÑÉ½¹œøñÍµ…±°û’ê3žîÓš"«¦v‹¢¾š6¸ð½Íµ…±°øð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸ÑåÁ”ô‰‰ÕÑÑ½¸ˆ‘…Ñ„µ±…ÍÍÉ½½´µÙ¥•Üô‰É…‘¥…°ˆøñÍÑÉ½¹œû–ú–BG–"–âð½ÍÑÉ½¹œøñÍµ…±°û–6+–ú’â;¢*ž
-äð½Íµ…±°øð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€€€€€ñ‰ÕÑÑ½¸ÑåÁ”ô‰‰ÕÑÑ½¸ˆ‘…Ñ„µ±…ÍÍÉ½½´µÙ¥•Üô‰…¹Õ±…ÈˆøñÍÑÉ½¹œû¢žK–BG–÷šVÀð½ÍÑÉ½¹œøñÍµ…±°ûšZç–BG’â;žnã’ö4ð½Íµ…±°øð½‰ÕÑÑ½¸ø(€€€€€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€€€ð½µ…¥¸ø((€€€€€€€€€€€€ñ…Í¥‘”±…ÍÌô‰±…ÍÍÉ½½´µ•Ù¥‘•¹”µ½±Õµ¸ˆø(€€€€€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µ•Ù¥‘•¹”µ¡•…ˆøñÍÑÉ½¹œû–¶›’æƒ¢ºÃ–öTð½ÍÑÉ½¹œøñÍÁ…¸¥ô‰±…ÍÍÉ½½µM…Ù•MÑ…Ñ”ˆûž¶'–úž2sšÌð½ÍÁ…¸øð½‘¥Øø(€€€€€€€€€€€€€€ñ½°±…ÍÌô‰±…ÍÍÉ½½´µ±•…É¹¥¹œµÑÉ…¥°ˆø(€€€€€€€€€€€€€€€€ñ±¤‘…Ñ„µ±…ÍÍÉ½½´µÑÉ…¥°µÍÑ•ÀôˆÀˆøñÍÁ…¸øÄð½ÍÁ…¸øñ‘¥ØøñÍÑÉ½¹œûš"Gžjž2sšÌð½ÍÑÉ½¹œøñÀ¥ô‰±…ÍÍÉ½½µQÉ…¥±AÉ•‘¥Ñ¥½¸ˆû–Âkšr«š>C’êð½Àøð½‘¥Øøð½±¤ø(€€€€€€€€€€€€€€€€ñ±¤‘…Ñ„µ±…ÍÍÉ½½´µÑÉ…¥°µÍÑ•ÀôˆÄˆøñÍÁ…¸øÈð½ÍÁ…¸øñ‘¥ØøñÍÑÉ½¹œûš"G¢ž–¾¢þð½ÍÑÉ½¹œøñÀ¥ô‰±…ÍÍÉ½½µQÉ…¥±=‰Í•ÉÙ…Ñ¥½¸ˆû–Âkšr«–ò–ž/š:‹ž¦Øð½Àøð½‘¥Øøð½±¤ø(€€€€€€€€€€€€€€€€ñ±¤‘…Ñ„µ±…ÍÍÉ½½´µÑÉ…¥°µÍÑ•ÀôˆÈˆøñÍÁ…¸øÌð½ÍÁ…¸øñ‘¥ØøñÍÑÉ½¹œû–Ï¦R»¢¾š6¸ð½ÍÑÉ½¹œøñÀ¥ô‰±…ÍÍÉ½½µQÉ…¥±Ù¥‘•¹”ˆû–Âkšr«¦'š.¤ð½Àøð½‘¥Øøð½±¤ø(€€€€€€€€€€€€€€€€ñ±¤‘…Ñ„µ±…ÍÍÉ½½´µÑÉ…¥°µÍÑ•ÀôˆÌˆøñÍÁ…¸øÐð½ÍÁ…¸øñ‘¥ØøñÍÑÉ½¹œûš"Gžj¢ž¦(ð½ÍÑÉ½¹œøñÀ¥ô‰±…ÍÍÉ½½µQÉ…¥±áÁ±…¹…Ñ¥½¸ˆû–Âkšr«–ö‹š"@ð½Àøð½‘¥Øøð½±¤ø(€€€€€€€€€€€€€€€€ñ±¤‘…Ñ„µ±…ÍÍÉ½½´µÑÉ…¥°µÍÑ•ÀôˆÐˆøñÍÁ…¸øÔð½ÍÁ…¸øñ‘¥ØøñÍÑÉ½¹œû¢þžžïžîO¢ºèð½ÍÑÉ½¹œøñÀ¥ô‰±…ÍÍÉ½½µQÉ…¥±QÉ…¹Í™•Èˆû–Âkšr«–º3š"@ð½Àøð½‘¥Øøð½±¤ø(€€€€€€€€€€€€€€ð½½°ø(€€€€€€€€€€€€€€ñ‘¥Ø¥ô‰±…ÍÍÉ½½µ••‘‰…¬ˆ±…ÍÌô‰±…ÍÍÉ½½´µ™••‘‰…¬ˆû–#–º3š"C¦ŠšÖ/¾ò3žÎïžî’â7’òkš>C–&7žîg–ëž¶Sš†#Žð½‘¥Øø(€€€€€€€€€€€€ð½…Í¥‘”ø(€€€€€€€€€€ð½‘¥Øø((€€€€€€€€€€ñ™½½Ñ•È±…ÍÌô‰±…ÍÍÉ½½´µ…Ñ¥½¹‰…Èˆø(€€€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µÑ•…¡•Èµ½¹ÑÉ½±ÌˆøñÍÁ…¸ûšVg–â#š:Ÿ–"Øð½ÍÁ…¸øñ‰ÕÑÑ½¸¥ô‰±…ÍÍÉ½½µQ½±•9…µ•	ÕÑÑ½¸ˆÑåÁ”ô‰‰ÕÑÑ½¸ˆûšbûž’ë–B7žžÀð½‰ÕÑÑ½¸øñ‰ÕÑÑ½¸¥ô‰±…ÍÍÉ½½µ!¥‘•9½‘•Í	ÕÑÑ½¸ˆÑåÁ”ô‰‰ÕÑÑ½¸ˆû¦jC¢^?¢*ž
-äð½‰ÕÑÑ½¸øñ‰ÕÑÑ½¸¥ô‰±…ÍÍÉ½½µI•Ù•…±9½‘•Í	ÕÑÑ½¸ˆÑåÁ”ô‰‰ÕÑÑ½¸ˆû¦Cš¶—š>·ž’ë¢*ž
-äð½‰ÕÑÑ½¸øñ‰ÕÑÑ½¸¥ô‰±…ÍÍÉ½½µ1½­Y¥•Ý	ÕÑÑ½¸ˆÑåÁ”ô‰‰ÕÑÑ½¸ˆû¦R–ºk¢ž¢žHð½‰ÕÑÑ½¸øð½‘¥Øø(€€€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µÍÑÕ‘•¹Ðµ½¹ÑÉ½±Ìˆøñ‰ÕÑÑ½¸¥ô‰±…ÍÍÉ½½µAÉ•Ù¥½ÕÍ	ÕÑÑ½¸ˆÑåÁ”ô‰‰ÕÑÑ½¸ˆû’â+’âš¶”ð½‰ÕÑÑ½¸øñ‰ÕÑÑ½¸¥ô‰±…ÍÍÉ½½µ9•áÑ	ÕÑÑ½¸ˆÑåÁ”ô‰‰ÕÑÑ½¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÁÉ¥µ…Éäµ‰ÕÑÑ½¸ˆûš>C’ê“¦ŠšÖ,ð½‰ÕÑÑ½¸øð½‘¥Øø(€€€€€€€€€€ð½™½½Ñ•Èø(€€€€€€€€ð½Í•Ñ¥½¸ø((€€€€€€€€ñÍ•Ñ¥½¸¥ô‰±…ÍÍÉ½½µI•Ù¥•ÝMÉ••¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÍÉ••¸±…ÍÍÉ½½´µÉ•Ù¥•ÜµÍÉ••¸ˆ‘…Ñ„µ±…ÍÍÉ½½´µÁ…¹”ô‰É•Ù¥•Üˆø(€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µÍ•Ñ¥½¸µ¡•…ˆø(€€€€€€€€€€€€ñ‘¥ØøñÍÑÉ½¹œ¥ô‰±…ÍÍÉ½½µI•Ù¥•ÝQ¥Ñ±”ˆû¢¾û–‚–n{¦†øð½ÍÑÉ½¹œøñÍµ…±°¥ô‰±…ÍÍÉ½½µI•Ù¥•Ý5•Ñ„ˆû–º3š"C’âš²‡¢¾û–‚šÒï–*£–B;žRš"C¢ºÃ–öTð½Íµ…±°øð½‘¥Øø(€€€€€€€€€€€€ñ‘¥Øøñ‰ÕÑÑ½¸¥ô‰±…ÍÍÉ½½µáÁ½ÉÑI•Ù¥•Ý	ÕÑÑ½¸ˆÑåÁ”ô‰‰ÕÑÑ½¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÍ•½¹‘…Éäµ‰ÕÑÑ½¸ˆû–¾ó–ëšïžîO–nøð½‰ÕÑÑ½¸øñ‰ÕÑÑ½¸¥ô‰±…ÍÍÉ½½µM…Ù•I•Ù¥•Ý	ÕÑÑ½¸ˆÑåÁ”ô‰‰ÕÑÑ½¸ˆ±…ÍÌô‰±…ÍÍÉ½½´µÁÉ¥µ…Éäµ‰ÕÑÑ½¸ˆû’þw–¶cšÒï–* ð½‰ÕÑÑ½¸øð½‘¥Øø(€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µÉ•Ù¥•ÜµÉ¥ˆø(€€€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µÉ•Ù¥•ÜµÙ¥ÍÕ…°ˆøñ‘¥Ø¥ô‰±…ÍÍÉ½½µI•Ù¥•ÝY¥•Ý•Èˆ±…ÍÌô‰±…ÍÍÉ½½´µÑ¡É•”µÙ¥•Ý•Èˆøð½‘¥Øøð½‘¥Øø(€€€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µÉ•Ù¥•Üµ¹½Ñ•Ìˆø(€€€€€€€€€€€€€€ñÍ•Ñ¥½¸øñÍÁ…¸ûšr–"w¦ŠšÖ,ð½ÍÁ…¸øñÍÑÉ½¹œ¥ô‰±…ÍÍÉ½½µI•Ù¥•ÝAÉ•‘¥Ñ¥½¸ˆû–Âkš^ƒ¢ºÃ–öTð½ÍÑÉ½¹œøð½Í•Ñ¥½¸ø(€€€€€€€€€€€€€€ñÍ•Ñ¥½¸øñÍÁ…¸û¢¾š6»’þ»š¶Œð½ÍÁ…¸øñÍÑÉ½¹œ¥ô‰±…ÍÍÉ½½µI•Ù¥•ÝÙ¥‘•¹”ˆû–Âkš^ƒ¢ºÃ–öTð½ÍÑÉ½¹œøð½Í•Ñ¥½¸ø(€€€€€€€€€€€€€€ñÍ•Ñ¥½¸øñÍÁ…¸ûšržî#¢ž¦(ð½ÍÁ…¸øñÍÑÉ½¹œ¥ô‰±…ÍÍÉ½½µI•Ù¥•ÝáÁ±…¹…Ñ¥½¸ˆû–Âkš^ƒ¢ºÃ–öTð½ÍÑÉ½¹œøð½Í•Ñ¥½¸ø(€€€€€€€€€€€€€€ñÍ•Ñ¥½¸øñÍÁ…¸û¢þžžïžîO¢ºèð½ÍÁ…¸øñÍÑÉ½¹œ¥ô‰±…ÍÍÉ½½µI•Ù¥•ÝQÉ…¹Í™•Èˆû–Âkš^ƒ¢ºÃ–öTð½ÍÑÉ½¹œøð½Í•Ñ¥½¸ø(€€€€€€€€€€€€€€ñÍ•Ñ¥½¸øñÍÁ…¸ûšš–þ×–>7¦š ð½ÍÁ…¸øñÍÑÉ½¹œ¥ô‰±…ÍÍÉ½½µI•Ù¥•Ý••‘‰…¬ˆû–º3š"CšÒï–*£–B;šbûž’èð½ÍÑÉ½¹œøð½Í•Ñ¥½¸ø(€€€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€ð½‘¥Øø(€€€€€€€€€€ñ‘¥Ø±…ÍÌô‰±…ÍÍÉ½½´µÉ•Ù¥•Üµ¡¥ÍÑ½Éäˆøñ¡•…‘•ÈøñÍÑÉ½¹œûšr³šrë¢¾û–‚¢ºÃ–öTð½ÍÑÉ½¹œøñ‰ÕÑÑ½¸¥ô‰±…ÍÍÉ½½µ±•…É!¥ÍÑ½Éå	ÕÑÑ½¸ˆÑåÁ”ô‰‰ÕÑÑ½¸ˆûšâž¦ë¢ºÃ–öTð½‰ÕÑÑ½¸øð½¡•…‘•Èøñ‘¥Ø¥ô‰±…ÍÍÉ½½µ!¥ÍÑ½Éå1¥ÍÐˆøñÀûšjš^ƒ–ÞË’þw–¶cšÒï–*£Žð½Àøð½‘¥Øøð½‘¥Øø(€€€€€€€€ð½Í•Ñ¥½¸ø(€€€€€€ð½‘¥Øø(€€€€ð½…ÉÑ¥±”ø((€€€€ñÍÉ¥ÁÐÑåÁ”ô‰µ½‘Õ±”ˆÍÉŒôˆ¸½…ÁÀ¹©Ìˆøð½ÍÉ¥ÁÐø(€€ð½‰½‘äø(ð½¡Ñµ°ø
+          Legacy controls are represented above with the same IDs so app.js can keep
+          using the current calculation/rendering pipeline.
+        -->
+        <template>
+          <label>
+            <span>Display mode</span>
+            <select id="modeInput">
+              <option value="marching" selected>Marching Cubes</option>
+              <option value="surface">Radial surface</option>
+              <option value="points">Point cloud</option>
+              <option value="projection3d">3D æŠ•å½±åˆ‡ç‰‡ (3D Projection)</option>
+            </select>
+          </label>
+        </template>
+        </div>
+      </aside>
+
+      <div class="view-container">
+        <article class="qt-window" data-window-name="projection">
+          <div id="projectionViewer" class="viewer projection-viewer"></div>
+          <div class="annotation-layer" data-annotation-layer="projection"></div>
+        </article>
+
+        <article class="qt-window main-window active" data-window-name="orbital">
+          <div id="viewer" class="viewer"></div>
+          <div class="annotation-layer" data-annotation-layer="orbital"></div>
+          <div class="status-strip">
+            <span id="statusText">Ready</span>
+            <button id="resetCameraButton">Reset view</button>
+          </div>
+        </article>
+
+        <article class="qt-window" data-window-name="radial">
+          <div id="radialViewer" class="viewer radial-viewer"></div>
+          <div class="annotation-layer" data-annotation-layer="radial"></div>
+        </article>
+
+        <article class="qt-window" data-window-name="angular">
+          <div id="angularViewer" class="viewer mini-viewer"></div>
+          <div class="annotation-layer" data-annotation-layer="angular"></div>
+        </article>
+      </div>
+    </main>
+
+    <nav id="viewDock" class="view-dock">
+      <button class="dock-btn active" data-view="orbital">åŽŸå­è½¨é“</button>
+      <button class="dock-btn" data-view="projection">è½¨é“æŠ•å½±</button>
+      <button class="dock-btn" data-view="radial">å¾„å‘åˆ†å¸ƒ</button>
+      <button class="dock-btn" data-view="angular">è§’å‘å‡½æ•°</button>
+      <div style="width: 1px; height: 20px; background: var(--border-light); margin: 0 4px; align-self: center;"></div>
+      <button class="dock-btn" data-view="quad">å››å®«æ ¼</button>
+      <button class="dock-btn" id="openAnimationButton" style="color: var(--accent);">ç”ŸæˆåŠ¨ç”»</button>
+    </nav>
+
+    <article id="annotationToolbar" class="annotation-toolbar closed" aria-label="è®²è§£æ ‡æ³¨å·¥å…·">
+      <button type="button" data-annotation-add="æ­£ç›¸" data-i18n="btn_anno_pos">æ­£ç›¸</button>
+      <button type="button" data-annotation-add="è´Ÿç›¸" data-i18n="btn_anno_neg">è´Ÿç›¸</button>
+      <button type="button" data-annotation-add="èŠ‚ç‚¹" data-i18n="btn_anno_node">èŠ‚ç‚¹</button>
+      <button type="button" data-annotation-add="æŠ•å½±å¹³é¢" data-i18n="btn_anno_plane">æŠ•å½±å¹³é¢</button>
+      <button type="button" data-annotation-add="å¾„å‘èŠ‚ç‚¹" data-i18n="btn_anno_radial">å¾„å‘èŠ‚ç‚¹</button>
+      <button id="annotationClearButton" type="button" data-i18n="btn_anno_clear">æ¸…ç©ºæ ‡æ³¨</button>
+    </article>
+
+    <article id="sketchWindow" class="qt-window sketch-window floating-sketch closed" data-window-name="sketch">
+      <header class="window-title">
+        <span data-i18n="win_sketch">æ‰‹ç»˜å¯¹æ¯”</span>
+        <span class="window-controls">
+          <button type="button" class="window-control-btn" data-window-action="minimize" aria-label="æœ€å°åŒ–">ï¼</button>
+          <button type="button" class="window-control-btn" data-window-action="maximize" aria-label="å…¨å±">â–¡</button>
+          <button type="button" class="window-control-btn" data-window-action="close" aria-label="å…³é—­">Ã—</button>
+        </span>
+      </header>
+      <div class="sketch-panel">
+        <div class="sketch-tools">
+          <input id="sketchColorInput" type="color" value="#ffffff" aria-label="ç”»ç¬”é¢œè‰²" />
+          <input id="sketchSizeInput" type="range" min="2" max="28" step="1" value="5" aria-label="ç”»ç¬”ç²—ç»†" />
+          <button id="sketchPenButton" type="button" class="active" data-i18n="btn_pen">ç”»ç¬”</button>
+          <button id="sketchEraserButton" type="button" data-i18n="btn_eraser">æ©¡çš®</button>
+          <button id="sketchClearButton" type="button" data-i18n="btn_clear">æ¸…ç©º</button>
+        </div>
+        <canvas id="sketchCanvas"></canvas>
+      </div>
+    </article>
+
+    <article id="boxWindow" class="qt-window box-window floating-box closed" data-window-name="box">
+      <header class="window-title">
+        <span data-i18n="win_box">â€¦475 tokens truncatedâ€¦ol">
+          <span>Box radius</span>
+          <input id="radiusInput" type="range" min="4" max="140" step="1" value="14" />
+        </label>
+        <label class="hidden-control">
+          <span>Opacity</span>
+          <input id="opacityInput" type="range" min="0.2" max="1" step="0.05" value="1" />
+        </label>
+        <label class="hidden-control">
+          <input id="desktopMatchInput" type="checkbox" checked />
+          <span>Desktop matched defaults</span>
+        </label>
+      </div>
+    </article>
+
+    <article id="paletteWindow" class="qt-window floating-palette closed" data-window-name="palette">
+      <header class="window-title">
+        <span data-i18n="win_palette">è°ƒè‰²æ¿</span>
+        <span class="window-controls">
+          <button type="button" class="window-control-btn" data-window-action="close" aria-label="å…³é—­">Ã—</button>
+        </span>
+      </header>
+      <div class="box-panel" style="padding: 16px;">
+        <div style="display: grid; gap: 12px;">
+          <label class="color-row"><span data-i18n="lbl_positive_lobe" style="font-size: 16px;">æ­£ç“£</span><input id="positiveColorInput" type="color" value="#d83bd8" style="width: 48px; height: 32px;" /></label>
+          <label class="color-row"><span data-i18n="lbl_negative_lobe" style="font-size: 16px;">è´Ÿç“£</span><input id="negativeColorInput" type="color" value="#00aeb8" style="width: 48px; height: 32px;" /></label>
+          <label class="color-row"><span data-i18n="lbl_bg_color" style="font-size: 16px;">èƒŒæ™¯</span><input id="backgroundColorInput" type="color" value="#000000" style="width: 48px; height: 32px;" /></label>
+        </div>
+      </div>
+    </article>
+
+    <div id="cinematicOverlay" class="cinematic-overlay">
+      <div class="cinematic-controls">
+        <button id="cinematicPlayBtn" data-i18n="btn_play">æ’­æ”¾ / æš‚åœ</button>
+        <div id="cinematicStepBtns" style="display:inline-flex; gap: 4px; margin: 0 10px;">
+           <button class="step-btn" data-step="0">æ®µ1</button>
+           <button class="step-btn" data-step="1">æ®µ2</button>
+           <button class="step-btn" data-step="2">æ®µ3</button>
+           <button class="step-btn" data-step="3">æ®µ4</button>
+           <button class="step-btn" data-step="4">æ®µ5</button>
+        </div>
+        <button id="cinematicExportBtn" data-i18n="btn_export">å¯¼å‡ºè§†é¢‘</button>
+        <button id="cinematicExitBtn" data-i18n="btn_cancel">é€€å‡º</button>
+      </div>
+      <div class="cinematic-progress-bar" style="position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); width: 60%; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden; pointer-events: none;">
+        <div id="cinematicProgressFill" style="width: 0%; height: 100%; background: #00d2ff; transition: width 0.1s linear;"></div>
+      </div>
+      <div class="cinematic-formula" id="cinematicFormula">
+        <div class="cinematic-formula-eq" id="cinematicFormulaEq"></div>
+        <div style="display: flex; gap: 40px; font-size: 16px;">
+          <div id="cinematicFormulaRadial"></div>
+          <div id="cinematicFormulaAngular"></div>
+        </div>
+      </div>
+      <div class="cinematic-content">
+        <h2 id="cinematicTitle">åŠ¨ç”»ç”Ÿæˆå¼€å§‹</h2>
+        <p id="cinematicText">å°†å½“å‰çš„å„ä¸ªä¸åŒè§†è§’ç»Ÿä¸€èµ·æ¥ã€‚</p>
+      </div>
+    </div>
+
+    <article id="activityWindow" class="qt-window activity-window classroom-window floating-activity closed" data-window-name="activity">
+      <header class="window-title">
+        <span id="activityTitle">è¯¾å ‚äº’åŠ¨</span>
+        <span class="window-controls">
+          <button type="button" class="window-control-btn" data-window-action="minimize" aria-label="æœ€å°åŒ–">âˆ’</button>
+          <button type="button" class="window-control-btn" data-window-action="maximize" aria-label="å…¨å±">â–¡</button>
+          <button type="button" class="window-control-btn" data-window-action="close" aria-label="å…³é—­">Ã—</button>
+        </span>
+      </header>
+
+      <div class="classroom-shell">
+        <header class="classroom-topbar">
+          <div class="classroom-brand">
+            <span class="classroom-brand-mark" aria-hidden="true">Î¨</span>
+            <span><strong>è¯¾å ‚äº’åŠ¨</strong><small>æ°¢åŽŸå­è½¨é“ Â· æœ¬åœ°è¯¾å ‚</small></span>
+          </div>
+          <nav class="classroom-screen-tabs" aria-label="è¯¾å ‚äº’åŠ¨é¡µé¢">
+            <button type="button" class="classroom-screen-tab active" data-classroom-screen="prepare">æ´»åŠ¨å‡†å¤‡</button>
+            <button type="button" class="classroom-screen-tab" data-classroom-screen="live">è¯¾å ‚è¿›è¡Œ</button>
+            <button type="button" class="classroom-screen-tab" data-classroom-screen="review">è¯¾å ‚å›žé¡¾</button>
+          </nav>
+          <button id="classroomPreviewModeButton" type="button" class="classroom-secondary-button">å­¦ç”Ÿé¢„è§ˆ</button>
+        </header>
+
+        <section id="classroomPrepareScreen" class="classroom-screen active" data-classroom-pane="prepare">
+          <div class="classroom-section-head">
+            <div><strong>é€‰æ‹©è¯¾å ‚æ´»åŠ¨</strong><small>ä»Žå­¦ä¹ ç›®æ ‡å‡ºå‘ï¼Œè€Œä¸æ˜¯ä»Žè½¯ä»¶åŠŸèƒ½å‡ºå‘</small></div>
+            <button id="classroomStartButton" type="button" class="classroom-primary-button">å¼€å§‹æ´»åŠ¨</button>
+          </div>
+
+          <div class="classroom-template-grid" role="list" aria-label="è¯¾å ‚æ´»åŠ¨æ¨¡æ¿">
+            <button type="button" class="classroom-template selected" data-classroom-template="links" aria-pressed="true">
+              <span class="classroom-template-icon">â—Ž</span><strong>å››å›¾å…³è”</strong><small>ç”¨åŒä¸€æ³¢å‡½æ•°è”ç³»è½¨é“ã€æŠ•å½±ã€å¾„å‘å’Œè§’å‘è§†å›¾ã€‚</small><span>æŽ¨è</span>
+            </button>
+            <button type="button" class="classroom-template" data-classroom-template="nodes" aria-pressed="false">
+              <span class="classroom-template-icon">âŒ</span><strong>å¯»æ‰¾èŠ‚ç‚¹</strong><small>å…ˆé¢„æµ‹èŠ‚ç‚¹ï¼Œå†ç”¨æ›²çº¿ä¸ŽèŠ‚é¢é€æ­¥éªŒè¯ã€‚</small><span>èŠ‚ç‚¹æ•™å­¦</span>
+            </button>
+            <button type="button" class="classroom-template" data-classroom-template="slice" aria-pressed="false">
+              <span class="classroom-template-icon">â—«</span><strong>æˆªé¢ä¸ŽæŠ•å½±</strong><small>ç†è§£ä¸‰ç»´æ³¢å‡½æ•°å¦‚ä½•å½¢æˆäºŒç»´æˆªé¢ä¸ŽæŠ•å½±ã€‚</small><span>ç©ºé—´æƒ³è±¡</span>
+            </button>
+            <button type="button" class="classroom-template" data-classroom-template="basics" aria-pressed="false">
+              <span class="classroom-template-icon">â—’</span><strong>è®¤è¯†è½¨é“</strong><small>åˆ¤æ–­è½¨é“çš„å½¢çŠ¶ã€æ–¹å‘ã€ç›¸ä½å’Œå¯¹ç§°æ€§ã€‚</small><span>åˆæ¬¡å­¦ä¹ </span>
+            </button>
+            <button type="button" class="classroom-template" data-classroom-template="compare" aria-pressed="false">
+              <span class="classroom-template-icon">â‡„</span><strong>è½¨é“å¯¹æ¯”</strong><small>æ”¹å˜ nã€lã€mï¼Œå½’çº³ä»€ä¹ˆæ”¹å˜ã€ä»€ä¹ˆä¸å˜ã€‚</small><span>å½’çº³æå‡</span>
+            </button>
+          </div>
+
+          <div class="classroom-setup-grid">
+            <label><span>ç›®æ ‡è½¨é“</span><select id="classroomTargetInput"></select></label>
+            <label id="classroomCompareTargetLabel" class="classroom-compare-setting"><span>å¯¹æ¯”è½¨é“</span><select id="classroomCompareTargetInput"></select></label>
+            <label><span>æ´»åŠ¨æ—¶é•¿</span><select id="classroomDurationInput"><option value="600">10 åˆ†é’Ÿ</option><option value="900">15 åˆ†é’Ÿ</option><option value="1200">20 åˆ†é’Ÿ</option></select></label>
+            <label><span>å¼€å§‹è§†å›¾</span><select id="classroomStartViewInput"><option value="quad">å››å®«æ ¼</option><option value="orbital">åŽŸå­è½¨é“</option><option value="radial">å¾„å‘åˆ†å¸ƒ</option><option value="projection">è½¨é“æŠ•å½±</option></select></label>
+            <label class="classroom-check"><input id="classroomHideNameInput" type="checkbox" checked><span>å¼€å§‹æ—¶éšè—è½¨é“åç§°</span></label>
+            <label class="classroom-check"><input id="classroomRequireEvidenceInput" type="checkbox" checked><span>è§£é‡Šå‰å¿…é¡»é€‰æ‹©è¯æ®</span></label>
+          </div>
+
+          <div class="classroom-prepare-note">
+            <strong id="classroomTemplateQuestion">æ ¸å¿ƒé—®é¢˜ï¼šå››ä¸ªçª—å£å¦‚ä½•æè¿°åŒä¸€ä¸ªæ³¢å‡½æ•°ï¼Ÿ</strong>
+            <span id="classroomTemplateDescription">å­¦ç”Ÿå°†å…ˆé¢„æµ‹ï¼Œå†é€šè¿‡æ—‹è½¬ã€åŠå¾„æ‰«æå’Œè§†å›¾åˆ‡æ¢å¯»æ‰¾å¯¹åº”è¯æ®ã€‚</span>
+          </div>
+        </section>
+
+        <section id="classroomLiveScreen" class="classroom-screen classroom-live-screen" data-classroom-pane="live">
+          <div class="classroom-live-head">
+            <div class="classroom-live-title"><button id="classroomBackButton" type="button" aria-label="è¿”å›žæ´»åŠ¨å‡†å¤‡">â†</button><span><strong id="classroomActivityName">å››å›¾å…³è” Â· 2Px</strong><small id="classroomSessionStatus">è¯¾å ‚å°šæœªå¼€å§‹</small></span></div>
+            <div class="classroom-stepper" aria-label="è¯¾å ‚æ´»åŠ¨è¿›åº¦">
+              <button type="button" class="classroom-step active" data-classroom-step="0"><span>1</span>çŒœæƒ³</button>
+              <button type="button" class="classroom-step" data-classroom-step="1"><span>2</span>æŽ¢ç©¶</button>
+              <button type="button" class="classroom-step" data-classroom-step="2"><span>3</span>è¯æ®</button>
+              <button type="button" class="classroom-step" data-classroom-step="3"><span>4</span>è§£é‡Š</button>
+              <button type="button" class="classroom-step" data-classroom-step="4"><span>5</span>è¿ç§»</button>
+            </div>
+            <div class="classroom-timer"><span id="classroomTimerValue">10:00</span><button id="classroomEndButton" type="button">ç»“æŸ</button></div>
+          </div>
+
+          <div class="classroom-live-grid">
+            <aside class="classroom-task-column">
+              <div class="classroom-step-copy"><span id="classroomStepBadge">ç¬¬ 1 æ­¥ / 5 æ­¥</span><strong id="classroomTaskTitle">å…ˆä½œå‡ºé¢„æµ‹</strong><p id="classroomTaskText">åœ¨çœ‹åˆ°çœŸå®žç»“æžœå‰ï¼Œåˆ¤æ–­è½¨é“çš„å½¢çŠ¶ã€æ–¹å‘ã€èŠ‚ç‚¹å’Œç›¸ä½ã€‚</p></div>
+
+              <section class="classroom-step-panel active" data-classroom-step-panel="0">
+                <label id="classroomPredictionClaimField"><span id="classroomPredictionClaimLabel">å…ˆé€‰æ‹©ä½ çš„æ ¸å¿ƒçŒœæƒ³</span><select id="classroomPredictionClaim"></select></label>
+                <label id="classroomPredictionRadialField"><span>å¾„å‘èŠ‚ç‚¹æ•°</span><select id="classroomPredictionRadial"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
+                <label id="classroomPredictionAngularField"><span>è§’å‘èŠ‚ç‚¹æ•°</span><select id="classroomPredictionAngular"><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
+                <label id="classroomPredictionAxisField"><span>ä¸»è¦æ–¹å‘</span><select id="classroomPredictionAxis"><option value="x">x è½´</option><option value="y">y è½´</option><option value="z">z è½´</option><option value="mixed">å¤åˆæ–¹å‘</option></select></label>
+                <p id="classroomPredictionHint" class="classroom-hint">åœ¨ä¸­å¤®ç”»æ¿ä¸­ç•™ä¸‹ä½ çš„åˆå§‹å›¾åƒï¼ŒåŽé¢ä¼šä¸ŽçœŸå®žç»“æžœå¯¹ç…§ã€‚</p>
+              </section>
+
+              <section class="classroom-step-panel" data-classroom-step-panel="1">
+                <div id="classroomObservationRoute" class="classroom-observation-route"></div>
+                <button id="classroomOpenWorkspaceButton" type="button" class="classroom-secondary-button">æ‰“å¼€ä¸»å·¥ä½œåŒºè§‚å¯Ÿ</button>
+              </section>
+
+              <section class="classroom-step-panel" data-classroom-step-panel="2">
+                <span class="classroom-field-label">é€‰æ‹©æ”¯æŒä½ åˆ¤æ–­çš„è¯æ®</span>
+                <label class="classroom-check"><input type="checkbox" value="orbital" data-classroom-evidence><span>åŽŸå­è½¨é“å½¢çŠ¶</span></label>
+                <label class="classroom-check"><input type="checkbox" value="radial" data-classroom-evidence><span>å¾„å‘æ›²çº¿é›¶ç‚¹</span></label>
+                <label class="classroom-check"><input type="checkbox" value="angular" data-classroom-evidence><span>è§’å‘å‡½æ•°æ–¹å‘</span></label>
+                <label class="classroom-check"><input type="checkbox" value="projection" data-classroom-evidence><span>æŠ•å½±æˆ–æˆªé¢</span></label>
+                <p id="classroomEvidenceHint" class="classroom-hint">è‡³å°‘é€‰æ‹©ä¸€æ¡çœŸæ­£æ”¯æŒåˆ¤æ–­çš„è¯æ®ã€‚</p>
+              </section>
+
+              <section class="classroom-step-panel" data-classroom-step-panel="3">
+                <label><span id="classroomExplanationLabel">æŠŠçŒœæƒ³ã€è§‚å¯Ÿå’Œè¯æ®è¿žæˆä¸€å¥è¯</span><textarea id="classroomExplanationInput" rows="6" placeholder="å› ä¸ºæˆ‘åœ¨â€¦â€¦ä¸­è§‚å¯Ÿåˆ°â€¦â€¦ï¼Œæ‰€ä»¥â€¦â€¦"></textarea></label>
+              </section>
+
+              <section class="classroom-step-panel" data-classroom-step-panel="4">
+                <div id="classroomConclusionCard" class="classroom-conclusion"></div>
+                <label><span id="classroomTransferLabel">æŠŠè§„å¾‹è¿ç§»åˆ°å¦ä¸€ä¸ªè½¨é“</span><textarea id="classroomTransferInput" rows="4" placeholder="å¦‚æžœæ¢æˆå¦ä¸€ä¸ªè½¨é“ï¼Œæˆ‘ä¼šå…ˆè§‚å¯Ÿâ€¦â€¦"></textarea></label>
+              </section>
+            </aside>
+
+            <main class="classroom-observation-column">
+              <div class="classroom-observation-head">
+                <div><strong id="classroomViewerTitle">é¢„æµ‹ç”»æ¿</strong><small id="classroomViewerSubtitle">éªŒè¯å‰ä¸ä¼šæ˜¾ç¤ºçœŸå®žè½¨é“</small></div>
+                <div class="classroom-phase-key"><span class="positive"></span>æ­£ç›¸<span class="negative"></span>è´Ÿç›¸<span class="guide"></span>è¯¾å ‚å¼•å¯¼</div>
+              </div>
+
+              <div class="classroom-stage">
+                <div id="classroomSketchStage" class="classroom-stage-layer active">
+                  <div class="classroom-sketch-tools"><input id="classroomSketchColorInput" type="color" value="#ffffff" aria-label="ç”»ç¬”é¢œè‰²"><input id="classroomSketchSizeInput" type="range" min="2" max="24" value="5" aria-label="ç”»ç¬”ç²—ç»†"><button id="classroomSketchPenButton" type="button" class="active">ç”»ç¬”</button><button id="classroomSketchEraserButton" type="button">æ©¡çš®</button><button id="classroomSketchClearButton" type="button">æ¸…ç©º</button></div>
+                  <canvas id="classroomSketchCanvas"></canvas>
+                </div>
+                <div id="classroomOrbitalStage" class="classroom-stage-layer"><div id="classroomViewer" class="classroom-three-viewer"></div></div>
+                <div id="classroomSnapshotStage" class="classroom-stage-layer"><canvas id="classroomSnapshotCanvas"></canvas></div>
+                <div id="classroomCompareStage" class="classroom-stage-layer classroom-compare-stage"><div><header id="classroomCompareATitle">è½¨é“ A</header><div id="classroomCompareAViewer" class="classroom-three-viewer"></div></div><div><header id="classroomCompareBTitle">è½¨é“ B</header><div id="classroomCompareBViewer" class="classroom-three-viewer"></div></div></div>
+              </div>
+
+              <div class="classroom-linked-views" aria-label="å…³è”ç§‘å­¦è§†å›¾">
+                <button type="button" class="selected" data-classroom-view="orbital"><strong>åŽŸå­è½¨é“</strong><small>å½¢çŠ¶ä¸Žç›¸ä½</small></button>
+                <button type="button" data-classroom-view="projection"><strong>è½¨é“æŠ•å½±</strong><small>äºŒç»´æˆªé¢è¯æ®</small></button>
+                <button type="button" data-classroom-view="radial"><strong>å¾„å‘åˆ†å¸ƒ</strong><small>åŠå¾„ä¸ŽèŠ‚ç‚¹</small></button>
+                <button type="button" data-classroom-view="angular"><strong>è§’å‘å‡½æ•°</strong><small>æ–¹å‘ä¸Žç›¸ä½</small></button>
+              </div>
+            </main>
+
+            <aside class="classroom-evidence-column">
+              <div class="classroom-evidence-head"><strong>å­¦ä¹ è®°å½•</strong><span id="classroomSaveState">ç­‰å¾…çŒœæƒ³</span></div>
+              <ol class="classroom-learning-trail">
+                <li data-classroom-trail-step="0"><span>1</span><div><strong>æˆ‘çš„çŒœæƒ³</strong><p id="classroomTrailPrediction">å°šæœªæäº¤</p></div></li>
+                <li data-classroom-trail-step="1"><span>2</span><div><strong>æˆ‘è§‚å¯Ÿè¿‡</strong><p id="classroomTrailObservation">å°šæœªå¼€å§‹æŽ¢ç©¶</p></div></li>
+                <li data-classroom-trail-step="2"><span>3</span><div><strong>å…³é”®è¯æ®</strong><p id="classroomTrailEvidence">å°šæœªé€‰æ‹©</p></div></li>
+                <li data-classroom-trail-step="3"><span>4</span><div><strong>æˆ‘çš„è§£é‡Š</strong><p id="classroomTrailExplanation">å°šæœªå½¢æˆ</p></div></li>
+                <li data-classroom-trail-step="4"><span>5</span><div><strong>è¿ç§»ç»“è®º</strong><p id="classroomTrailTransfer">å°šæœªå®Œæˆ</p></div></li>
+              </ol>
+              <div id="classroomFeedback" class="classroom-feedback">å…ˆå®Œæˆé¢„æµ‹ï¼Œç³»ç»Ÿä¸ä¼šæå‰ç»™å‡ºç­”æ¡ˆã€‚</div>
+            </aside>
+          </div>
+
+          <footer class="classroom-actionbar">
+            <div class="classroom-teacher-controls"><span>æ•™å¸ˆæŽ§åˆ¶</span><button id="classroomToggleNameButton" type="button">æ˜¾ç¤ºåç§°</button><button id="classroomHideNodesButton" type="button">éšè—èŠ‚ç‚¹</button><button id="classroomRevealNodesButton" type="button">é€æ­¥æ­ç¤ºèŠ‚ç‚¹</button><button id="classroomLockViewButton" type="button">é”å®šè§†è§’</button></div>
+            <div class="classroom-student-controls"><button id="classroomPreviousButton" type="button">ä¸Šä¸€æ­¥</button><button id="classroomNextButton" type="button" class="classroom-primary-button">æäº¤é¢„æµ‹</button></div>
+          </footer>
+        </section>
+
+        <section id="classroomReviewScreen" class="classroom-screen classroom-review-screen" data-classroom-pane="review">
+          <div class="classroom-section-head">
+            <div><strong id="classroomReviewTitle">è¯¾å ‚å›žé¡¾</strong><small id="classroomReviewMeta">å®Œæˆä¸€æ¬¡è¯¾å ‚æ´»åŠ¨åŽç”Ÿæˆè®°å½•</small></div>
+            <div><button id="classroomExportReviewButton" type="button" class="classroom-secondary-button">å¯¼å‡ºæ€»ç»“å›¾</button><button id="classroomSaveReviewButton" type="button" class="classroom-primary-button">ä¿å­˜æ´»åŠ¨</button></div>
+          </div>
+          <div class="classroom-review-grid">
+            <div class="classroom-review-visual"><div id="classroomReviewViewer" class="classroom-three-viewer"></div></div>
+            <div class="classroom-review-notes">
+              <section><span>æœ€åˆé¢„æµ‹</span><strong id="classroomReviewPrediction">å°šæ— è®°å½•</strong></section>
+              <section><span>è¯æ®ä¿®æ­£</span><strong id="classroomReviewEvidence">å°šæ— è®°å½•</strong></section>
+              <section><span>æœ€ç»ˆè§£é‡Š</span><strong id="classroomReviewExplanation">å°šæ— è®°å½•</strong></section>
+              <section><span>è¿ç§»ç»“è®º</span><strong id="classroomReviewTransfer">å°šæ— è®°å½•</strong></section>
+              <section><span>æ¦‚å¿µåé¦ˆ</span><strong id="classroomReviewFeedback">å®Œæˆæ´»åŠ¨åŽæ˜¾ç¤º</strong></section>
+            </div>
+          </div>
+          <div class="classroom-review-history"><header><strong>æœ¬æœºè¯¾å ‚è®°å½•</strong><button id="classroomClearHistoryButton" type="button">æ¸…ç©ºè®°å½•</button></header><div id="classroomHistoryList"><p>æš‚æ— å·²ä¿å­˜æ´»åŠ¨ã€‚</p></div></div>
+        </section>
+      </div>
+    </article>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
