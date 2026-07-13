@@ -305,614 +305,11 @@ function renderObservationRoute() {
     button.className = "classroom-observation-step";
     button.classList.toggle("complete", state.visitedViews.includes(view));
     button.dataset.classroomObserveView = view;
-    const index = document.createElement("span");
-    index.textContent = String(el.classroomObservationRoute.children.length + 1);
-    const copy = document.createElement("span");
-    const heading = document.createElement("strong");
-    heading.textContent = title;
-    const detail = document.createElement("small");
-    detail.textContent = text;
-    copy.append(heading, detail);
-    button.append(index, copy);
-    button.addEventListener("click", () => {
-      markViewVisited(view);
-      setLinkedView(view);
-    });
-    el.classroomObservationRoute.append(button);
-  }
-}
-
-function markViewVisited(view) {
-  if (!evidenceLabels[view] || state.visitedViews.includes(view)) return;
-  state.visitedViews.push(view);
-  renderObservationRoute();
-  updateLearningTrail();
-}
-
-function claimLabel(value = state.prediction.claim) {
-  return currentDefinition().claimOptions?.find(([key]) => key === value)?.[1] ?? "å°šæœªé€‰æ‹©";
-}
-
-function predictionSummary() {
-  const fields = new Set(currentDefinition().predictionFields ?? []);
-  const parts = [];
-  if (fields.has("claim")) parts.push(claimLabel());
-  if (fields.has("radial")) parts.push(`å¾„å‘èŠ‚ç‚¹ ${state.prediction.radial}`);
-  if (fields.has("angular")) parts.push(`è§’å‘èŠ‚ç‚¹ ${state.prediction.angular}`);
-  if (fields.has("axis")) parts.push(`ä¸»è¦æ–¹å‘ ${state.prediction.axis}`);
-  return parts.join("ï¼›") || "å·²åœ¨ç”»æ¿ä¸­ç•™ä¸‹çŒœæƒ³";
-}
-
-function expectedCompareClaim() {
-  const first = targetParams(currentTarget());
-  const second = targetParams(comparisonTarget());
-  const radialChanged = first.n !== second.n || (first.n - first.l - 1) !== (second.n - second.l - 1);
-  const angularChanged = first.l !== second.l || first.m !== second.m;
-  if (radialChanged && angularChanged) return "both";
-  if (angularChanged) return "angular";
-  return "radial";
-}
-
-function expectedClaim() {
-  return state.template === "compare" ? expectedCompareClaim() : currentDefinition().correctClaim;
-}
-
-function selectTemplate(name) {
-  if (!templateDefinitions[name]) return;
-  state.template = name;
-  for (const button of el.classroomTemplates ?? []) {
-    const selected = button.dataset.classroomTemplate === name;
-    button.classList.toggle("selected", selected);
-    button.setAttribute("aria-pressed", String(selected));
-  }
-  const definition = templateDefinitions[name];
-  if (el.classroomTemplateQuestion) el.classroomTemplateQuestion.textContent = `æ ¸å¿ƒé—®é¢˜ï¼š${definition.question}`;
-  if (el.classroomTemplateDescription) el.classroomTemplateDescription.textContent = definition.description;
-  el.classroomCompareTargetLabel?.classList.toggle("visible", name === "compare");
-  configureTemplateUI();
-}
-
-function setScreen(name) {
-  const normalized = ["prepare", "live", "review"].includes(name) ? name : "prepare";
-  state.screen = normalized;
-  for (const screen of el.classroomScreens ?? []) {
-    screen.classList.toggle("active", screen.dataset.classroomPane === normalized);
-  }
-  for (const button of el.classroomScreenTabs ?? []) {
-    button.classList.toggle("active", button.dataset.classroomScreen === normalized);
-  }
-  if (normalized === "review") updateReviewScreen();
-  api.UI?.updateWindowControlLabels?.(el.activityWindow);
-  requestAnimationFrame(() => {
-    api.resizeAfterLayoutChange?.();
-    resizeSketchCanvas();
-    resizeClassroomViews();
-  });
-}
-
-function resetBackgroundInteraction() {
-  for (const element of [document.querySelector(".client-panel"), document.querySelector(".view-grid")]) {
-    if (!element) continue;
-    element.style.opacity = "1";
-    element.style.filter = "none";
-    element.style.pointerEvents = "auto";
-  }
-}
-
-export function showClassroomPane(mode = "prepare") {
-  if (!el.activityWindow) return;
-  const legacyMap = { predict: "prepare", challenge: "prepare", tablet: "prepare", compare: "prepare" };
-  if (mode === "compare") selectTemplate("compare");
-  const screen = legacyMap[mode] ?? mode;
-  el.activityWindow.classList.remove("closed", "minimized");
-  el.activityWindow.style.zIndex = "125";
-  resetBackgroundInteraction();
-  setScreen(screen);
-  if (el.activityTitle) el.activityTitle.textContent = "è¯¾å ‚äº’åŠ¨";
-}
-
-function startTimer() {
-  stopTimer();
-  state.timer = window.setInterval(() => {
-    if (state.remaining <= 0) {
-      stopTimer();
-      state.remaining = 0;
-      updateTimerText();
-      return;
-    }
-    state.remaining -= 1;
-    updateTimerText();
-  }, 1000);
-}
-
-function stopTimer() {
-  if (state.timer) window.clearInterval(state.timer);
-  state.timer = null;
-}
-
-function updateTimerText() {
-  if (!el.classroomTimerValue) return;
-  const minutes = Math.floor(state.remaining / 60);
-  const seconds = state.remaining % 60;
-  el.classroomTimerValue.textContent = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-}
-
-async function startActivity() {
-  state.targetValue = el.classroomTarget?.value || state.targetValue;
-  state.compareValue = el.classroomCompareTarget?.value || state.compareValue;
-  state.duration = Number(el.classroomDurâ€¦2756 tokens truncatedâ€¦w.radius * factor);
-  api.updateCompareCamera(view, view.radius);
-}
-
-function updateStageVisibility() {
-  const prediction = state.step === 0;
-  const comparison = !prediction && state.template === "compare" && state.linkedView === "orbital";
-  const snapshot = !prediction && !comparison && state.linkedView !== "orbital";
-  el.classroomLiveScreen?.classList.toggle("is-predicting", prediction);
-  el.classroomSketchStage?.classList.toggle("active", prediction);
-  el.classroomCompareStage?.classList.toggle("active", comparison);
-  el.classroomSnapshotStage?.classList.toggle("active", snapshot);
-  el.classroomOrbitalStage?.classList.toggle("active", !prediction && !comparison && !snapshot);
-  if (el.classroomViewerTitle) {
-    el.classroomViewerTitle.textContent = prediction
-      ? "é¢„æµ‹ç”»æ¿"
-      : comparison
-        ? "åŒæ­¥è½¨é“å¯¹æ¯”"
-        : evidenceLabels[state.linkedView] || "åŸå­è½¨é“";
-  }
-  if (el.classroomViewerSubtitle) {
-    el.classroomViewerSubtitle.textContent = prediction
-      ? "éªŒè¯å‰ä¸ä¼šæ˜¾ç¤ºçœŸå®è½¨é“"
-      : snapshot
-        ? "æ˜¾ç¤ºä¸»å·¥ä½œåŒºä¸­çš„å®æ—¶ç§‘å­¦è§†å›¾"
-        : "å·¦é”®è‡ªç”±æ—‹è½¬ï¼Œæ»šè½®ç¼©æ”¾";
-  }
-}
-
-function resizeClassroomViews() {
-  for (const container of [el.classroomViewer, el.classroomCompareAViewer, el.classroomCompareBViewer, el.classroomReviewViewer]) {
-    if (!container || !container.offsetWidth || !container.offsetHeight) continue;
-    const view = api.compareViewFor(container);
-    api.updateCompareCamera(view, view?.radius || 5);
-  }
-  resizeSnapshotCanvas();
-}
-
-function setLinkedView(viewName) {
-  if (!evidenceLabels[viewName]) return;
-  state.linkedView = viewName;
-  if (state.step >= 1) markViewVisited(viewName);
-  for (const button of el.classroomViewButtons ?? []) button.classList.toggle("selected", button.dataset.classroomView === viewName);
-  const evidenceInput = [...(el.classroomEvidenceInputs ?? [])].find((input) => input.value === viewName);
-  if (state.step >= 2 && evidenceInput) evidenceInput.checked = true;
-  updateEvidencePanel();
-  updateStageVisibility();
-  resizeClassroomViews();
-}
-
-function sourceCanvasForLinkedView() {
-  const map = {
-    projection: "#projectionViewer canvas",
-    radial: "#radialViewer canvas",
-    angular: "#angularViewer canvas",
-  };
-  return map[state.linkedView] ? document.querySelector(map[state.linkedView]) : null;
-}
-
-function resizeSnapshotCanvas() {
-  const canvas = el.classroomSnapshotCanvas;
-  if (!canvas) return;
-  const rect = canvas.getBoundingClientRect();
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const width = Math.max(1, Math.round(rect.width * dpr));
-  const height = Math.max(1, Math.round(rect.height * dpr));
-  if (canvas.width !== width || canvas.height !== height) {
-    canvas.width = width;
-    canvas.height = height;
-  }
-}
-
-function mirrorLinkedView() {
-  mirrorFrame = requestAnimationFrame(mirrorLinkedView);
-  if (state.screen !== "live" || state.linkedView === "orbital" || !el.classroomSnapshotStage?.classList.contains("active")) return;
-  const source = sourceCanvasForLinkedView();
-  const canvas = el.classroomSnapshotCanvas;
-  if (!source || !canvas) return;
-  resizeSnapshotCanvas();
-  const context = canvas.getContext("2d");
-  context.fillStyle = el.backgroundColor?.value || "#000000";
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  const scale = Math.min(canvas.width / source.width, canvas.height / source.height);
-  const width = source.width * scale;
-  const height = source.height * scale;
-  context.drawImage(source, (canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
-}
-
-function relaySnapshotPointer(type, event) {
-  const source = sourceCanvasForLinkedView();
-  const snapshot = el.classroomSnapshotCanvas;
-  if (!source || !snapshot) return;
-  const from = snapshot.getBoundingClientRect();
-  const to = source.getBoundingClientRect();
-  const x = to.left + ((event.clientX - from.left) / Math.max(1, from.width)) * to.width;
-  const y = to.top + ((event.clientY - from.top) / Math.max(1, from.height)) * to.height;
-  source.dispatchEvent(new PointerEvent(type, {
-    bubbles: true,
-    cancelable: true,
-    pointerId: event.pointerId,
-    pointerType: event.pointerType,
-    isPrimary: event.isPrimary,
-    button: event.button,
-    buttons: event.buttons,
-    clientX: x,
-    clientY: y,
-  }));
-}
-
-function bindSnapshotInteraction() {
-  const canvas = el.classroomSnapshotCanvas;
-  if (!canvas || canvas.dataset.interactionBound === "true") return;
-  canvas.dataset.interactionBound = "true";
-  canvas.addEventListener("pointerdown", (event) => {
-    event.preventDefault();
-    canvas.setPointerCapture?.(event.pointerId);
-    relaySnapshotPointer("pointerdown", event);
-  });
-  canvas.addEventListener("pointermove", (event) => {
-    if (!event.buttons) return;
-    event.preventDefault();
-    relaySnapshotPointer("pointermove", event);
-  });
-  for (const type of ["pointerup", "pointercancel"]) {
-    canvas.addEventListener(type, (event) => {
-      relaySnapshotPointer(type, event);
-      canvas.releasePointerCapture?.(event.pointerId);
-    });
-  }
-  canvas.addEventListener("wheel", (event) => {
-    const source = sourceCanvasForLinkedView();
-    if (!source) return;
-    event.preventDefault();
-    source.dispatchEvent(new WheelEvent("wheel", {
-      bubbles: true,
-      cancelable: true,
-      clientX: event.clientX,
-      clientY: event.clientY,
-      deltaX: event.deltaX,
-      deltaY: event.deltaY,
-      deltaMode: event.deltaMode,
-    }));
-  }, { passive: false });
-}
-
-function openMainWorkspace() {
-  const view = state.linkedView === "orbital" ? (el.classroomStartView?.value || "quad") : state.linkedView;
-  activateMainView(view);
-  el.activityWindow?.classList.add("minimized");
-  api.UI?.updateWindowControlLabels?.(el.activityWindow);
-  api.resizeAfterLayoutChange?.();
-}
-
-function toggleName() {
-  state.nameRevealed = !state.nameRevealed;
-  updateActivityIdentity();
-  updateEvidencePanel();
-}
-
-function setNodesVisible(visible) {
-  if (el.radialNode && !el.radialNode.disabled) el.radialNode.checked = visible;
-  if (el.polarNode && !el.polarNode.disabled) el.polarNode.checked = visible;
-  if (el.longitudeNode) el.longitudeNode.checked = visible;
-  if (el.node) el.node.checked = visible;
-  state.nodesRevealed = visible;
-  api.renderOrbital?.();
-  setFeedback(visible ? "èŠ‚ç‚¹å·²åœ¨ä¸»å·¥ä½œåŒºä¸­æ­ç¤ºï¼Œå¯ç»“åˆå¾„å‘æ›²çº¿å’Œè§’å‘å‡½æ•°æ ¸å¯¹ã€‚" : "èŠ‚ç‚¹å·²éšè—ï¼Œå­¦ç”Ÿå¯ä»¥å…ˆè¿›è¡Œé¢„æµ‹ã€‚", "success");
-}
-
-function toggleViewLock() {
-  state.viewLocked = !state.viewLocked;
-  for (const container of [el.classroomViewer, el.classroomCompareAViewer, el.classroomCompareBViewer]) {
-    if (!container) continue;
-    const view = api.compareViewFor(container);
-    if (view?.controls) view.controls.enabled = !state.viewLocked;
-  }
-  if (el.classroomLockViewButton) el.classroomLockViewButton.textContent = state.viewLocked ? "è§£é™¤è§†è§’" : "é”å®šè§†è§’";
-}
-
-function togglePreviewMode() {
-  state.studentPreview = !state.studentPreview;
-  el.classroomShell?.classList.toggle("classroom-student-preview", state.studentPreview);
-  if (el.classroomPreviewModeButton) el.classroomPreviewModeButton.textContent = state.studentPreview ? "æ•™å¸ˆè§†å›¾" : "å­¦ç”Ÿé¢„è§ˆ";
-}
-
-function updateReviewScreen() {
-  const target = currentTarget();
-  const params = targetParams(target);
-  const radial = params.n - params.l - 1;
-  const angular = params.l;
-  const evidenceText = state.evidence.length ? state.evidence.map((item) => evidenceLabels[item]).join("ã€") : "æœªé€‰æ‹©è¯æ®";
-  if (el.classroomReviewTitle) el.classroomReviewTitle.textContent = `è¯¾å ‚å›é¡¾ Â· ${templateDefinitions[state.template].name}`;
-  if (el.classroomReviewMeta) el.classroomReviewMeta.textContent = `${target?.label || "è½¨é“"} Â· ${state.completed ? "å·²å®Œæˆ" : "è¿›è¡Œä¸­"}`;
-  if (el.classroomReviewPrediction) el.classroomReviewPrediction.textContent = predictionSummary();
-  if (el.classroomReviewEvidence) el.classroomReviewEvidence.textContent = evidenceText;
-  if (el.classroomReviewExplanation) el.classroomReviewExplanation.textContent = state.explanation || "å°šæœªå¡«å†™è§£é‡Š";
-  if (el.classroomReviewTransfer) el.classroomReviewTransfer.textContent = state.transfer || "å°šæœªå®Œæˆè¿ç§»";
-  if (el.classroomReviewFeedback) el.classroomReviewFeedback.textContent = state.feedback || `æ­£ç¡®èŠ‚ç‚¹æ•°ï¼šå¾„å‘ ${radial}ï¼Œè§’å‘ ${angular}`;
-  requestAnimationFrame(async () => {
-    if (el.classroomReviewViewer?.offsetWidth) {
-      await api.renderCompareView(el.classroomReviewViewer, target?.value, null, null, { smooth: true, wireframe: false });
-      tightenClassroomCamera(el.classroomReviewViewer, 0.7);
-      resizeClassroomViews();
-    }
-  });
-  renderHistory();
-}
-
-function sessionRecord() {
-  const target = currentTarget();
-  return {
-    id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-    savedAt: new Date().toISOString(),
-    template: state.template,
-    templateName: templateDefinitions[state.template].name,
-    targetValue: state.targetValue,
-    targetLabel: target?.label || state.targetValue,
-    prediction: { ...state.prediction },
-    visitedViews: [...state.visitedViews],
-    evidence: [...state.evidence],
-    explanation: state.explanation,
-    transfer: state.transfer,
-    feedback: state.feedback,
-  };
-}
-
-function readHistory() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveReview() {
-  const records = readHistory();
-  records.unshift(sessionRecord());
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(records.slice(0, 24)));
-  renderHistory();
-  if (el.classroomSaveReviewButton) el.classroomSaveReviewButton.textContent = "å·²ä¿å­˜";
-  window.setTimeout(() => { if (el.classroomSaveReviewButton) el.classroomSaveReviewButton.textContent = "ä¿å­˜æ´»åŠ¨"; }, 1200);
-}
-
-function clearHistory() {
-  localStorage.removeItem(STORAGE_KEY);
-  renderHistory();
-}
-
-function renderHistory() {
-  if (!el.classroomHistoryList) return;
-  el.classroomHistoryList.replaceChildren();
-  const records = readHistory();
-  if (!records.length) {
-    const empty = document.createElement("p");
-    empty.textContent = "æš‚æ— å·²ä¿å­˜æ´»åŠ¨ã€‚";
-    el.classroomHistoryList.append(empty);
-    return;
-  }
-  for (const record of records) {
-    const item = document.createElement("article");
-    item.className = "classroom-history-item";
-    const title = document.createElement("strong");
-    title.textContent = `${record.templateName} Â· ${record.targetLabel}`;
-    const time = document.createElement("small");
-    time.textContent = new Date(record.savedAt).toLocaleString();
-    const summary = document.createElement("span");
-    summary.textContent = [record.explanation, record.transfer].filter(Boolean).join(" Â· ") || "æœªå¡«å†™è§£é‡Š";
-    item.append(title, time, summary);
-    el.classroomHistoryList.append(item);
-  }
-}
-
-function exportReviewImage() {
-  const canvas = document.createElement("canvas");
-  canvas.width = 1600;
-  canvas.height = 900;
-  const context = canvas.getContext("2d");
-  const background = el.backgroundColor?.value || "#000000";
-  context.fillStyle = background;
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  const reviewView = api.compareViewFor(el.classroomReviewViewer);
-  const source = reviewView?.renderer?.domElement;
-  if (source?.width) context.drawImage(source, 40, 110, 920, 700);
-  context.fillStyle = "#f0f4f8";
-  context.font = "600 42px Segoe UI, Microsoft YaHei, sans-serif";
-  context.fillText(el.classroomReviewTitle?.textContent || "è¯¾å ‚å›é¡¾", 40, 66);
-  context.font = "600 25px Segoe UI, Microsoft YaHei, sans-serif";
-  context.fillText("æœ€åˆçŒœæƒ³", 1010, 130);
-  context.fillText("å…³é”®è¯æ®", 1010, 265);
-  context.fillText("æœ€ç»ˆè§£é‡Š", 1010, 400);
-  context.fillText("è¿ç§»ç»“è®º", 1010, 535);
-  context.fillText("æ¦‚å¿µåé¦ˆ", 1010, 670);
-  context.fillStyle = "#aab6c3";
-  context.font = "21px Segoe UI, Microsoft YaHei, sans-serif";
-  drawWrappedText(context, el.classroomReviewPrediction?.textContent || "", 1010, 165, 530, 30);
-  drawWrappedText(context, el.classroomReviewEvidence?.textContent || "", 1010, 300, 530, 30);
-  drawWrappedText(context, el.classroomReviewExplanation?.textContent || "", 1010, 435, 530, 30);
-  drawWrappedText(context, el.classroomReviewTransfer?.textContent || "", 1010, 570, 530, 30);
-  drawWrappedText(context, el.classroomReviewFeedback?.textContent || "", 1010, 705, 530, 30);
-  const link = document.createElement("a");
-  link.download = `HAO-classroom-${currentTarget()?.label || "orbital"}.png`;
-  link.href = canvas.toDataURL("image/png");
-  link.click();
-}
-
-function drawWrappedText(context, text, x, y, maxWidth, lineHeight) {
-  let line = "";
-  let row = 0;
-  for (const char of String(text)) {
-    const test = line + char;
-    if (context.measureText(test).width > maxWidth && line) {
-      context.fillText(line, x, y + row * lineHeight);
-      line = char;
-      row += 1;
-    } else {
-      line = test;
-    }
-  }
-  if (line) context.fillText(line, x, y + row * lineHeight);
-}
-
-function resizeSketchCanvas() {
-  const canvas = el.classroomSketchCanvas;
-  if (!canvas) return;
-  const rect = canvas.getBoundingClientRect();
-  if (rect.width < 2 || rect.height < 2) return;
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const width = Math.round(rect.width * dpr);
-  const height = Math.round(rect.height * dpr);
-  if (canvas.width !== width || canvas.height !== height) {
-    canvas.width = width;
-    canvas.height = height;
-    redrawSketch();
-  }
-}
-
-function sketchPoint(event) {
-  const rect = el.classroomSketchCanvas.getBoundingClientRect();
-  return { x: (event.clientX - rect.left) / rect.width, y: (event.clientY - rect.top) / rect.height };
-}
-
-function beginSketch(event) {
-  if (event.button !== undefined && event.button !== 0) return;
-  state.sketch.drawing = true;
-  state.sketch.pointerId = event.pointerId;
-  state.sketch.current = {
-    mode: state.sketch.mode,
-    color: el.classroomSketchColor?.value || "#ffffff",
-    size: Number(el.classroomSketchSize?.value) || 5,
-    points: [sketchPoint(event)],
-  };
-  el.classroomSketchCanvas.setPointerCapture?.(event.pointerId);
-  redrawSketch();
-}
-
-function continueSketch(event) {
-  if (!state.sketch.drawing || event.pointerId !== state.sketch.pointerId || !state.sketch.current) return;
-  state.sketch.current.points.push(sketchPoint(event));
-  redrawSketch();
-}
-
-function endSketch(event) {
-  if (!state.sketch.drawing || event.pointerId !== state.sketch.pointerId) return;
-  if (state.sketch.current) state.sketch.strokes.push(state.sketch.current);
-  state.sketch.drawing = false;
-  state.sketch.pointerId = null;
-  state.sketch.current = null;
-  redrawSketch();
-}
-
-function redrawSketch() {
-  const canvas = el.classroomSketchCanvas;
-  if (!canvas?.width || !canvas?.height) return;
-  const context = canvas.getContext("2d");
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  for (const stroke of [...state.sketch.strokes, ...(state.sketch.current ? [state.sketch.current] : [])]) drawStroke(context, canvas, stroke);
-}
-
-function drawStroke(context, canvas, stroke) {
-  if (!stroke.points.length) return;
-  context.save();
-  context.globalCompositeOperation = stroke.mode === "eraser" ? "destination-out" : "source-over";
-  context.strokeStyle = stroke.color;
-  context.lineWidth = stroke.size * Math.min(window.devicePixelRatio || 1, 2);
-  context.lineCap = "round";
-  context.lineJoin = "round";
-  context.beginPath();
-  stroke.points.forEach((point, index) => {
-    const x = point.x * canvas.width;
-    const y = point.y * canvas.height;
-    if (index === 0) context.moveTo(x, y);
-    else context.lineTo(x, y);
-  });
-  if (stroke.points.length === 1) context.lineTo(stroke.points[0].x * canvas.width + 0.01, stroke.points[0].y * canvas.height + 0.01);
-  context.stroke();
-  context.restore();
-}
-
-function setSketchMode(mode) {
-  state.sketch.mode = mode;
-  el.classroomSketchPen?.classList.toggle("active", mode === "pen");
-  el.classroomSketchEraser?.classList.toggle("active", mode === "eraser");
-}
-
-function clearSketch() {
-  state.sketch.strokes = [];
-  state.sketch.current = null;
-  redrawSketch();
-}
-
-function bindClassroomUI() {
-  bound = true;
-  for (const button of el.classroomScreenTabs ?? []) button.addEventListener("click", () => setScreen(button.dataset.classroomScreen));
-  for (const button of el.classroomTemplates ?? []) button.addEventListener("click", () => selectTemplate(button.dataset.classroomTemplate));
-  for (const button of el.classroomSteps ?? []) button.addEventListener("click", () => {
-    const requested = Number(button.dataset.classroomStep);
-    if (requested <= state.step || !state.studentPreview) updateStep(requested);
-  });
-  for (const button of el.classroomViewButtons ?? []) button.addEventListener("click", () => setLinkedView(button.dataset.classroomView));
-  for (const input of el.classroomEvidenceInputs ?? []) input.addEventListener("change", updateEvidencePanel);
-  for (const input of [
-    el.classroomPredictionClaim,
-    el.classroomPredictionRadial,
-    el.classroomPredictionAngular,
-    el.classroomPredictionAxis,
-  ]) {
-    input?.addEventListener("change", () => {
-      if (!state.startedAt) return;
-      state.predictionSaved = false;
-      if (el.classroomSaveState) el.classroomSaveState.textContent = "çŒœæƒ³å·²ä¿®æ”¹ï¼Œç­‰å¾…é‡æ–°é”å®š";
-      updateLearningTrail();
-    });
-  }
-  el.classroomStartButton?.addEventListener("click", startActivity);
-  el.classroomBackButton?.addEventListener("click", () => setScreen("prepare"));
-  el.classroomEndButton?.addEventListener("click", () => finishActivity(true));
-  el.classroomPreviousButton?.addEventListener("click", previousStep);
-  el.classroomNextButton?.addEventListener("click", nextStep);
-  el.classroomPreviewModeButton?.addEventListener("click", togglePreviewMode);
-  el.classroomOpenWorkspaceButton?.addEventListener("click", openMainWorkspace);
-  el.classroomToggleNameButton?.addEventListener("click", toggleName);
-  el.classroomHideNodesButton?.addEventListener("click", () => setNodesVisible(false));
-  el.classroomRevealNodesButton?.addEventListener("click", () => setNodesVisible(true));
-  el.classroomLockViewButton?.addEventListener("click", toggleViewLock);
-  el.classroomTarget?.addEventListener("change", () => { state.targetValue = el.classroomTarget.value; });
-  el.classroomCompareTarget?.addEventListener("change", () => { state.compareValue = el.classroomCompareTarget.value; });
-  el.classroomExportReviewButton?.addEventListener("click", exportReviewImage);
-  el.classroomSaveReviewButton?.addEventListener("click", saveReview);
-  el.classroomClearHistoryButton?.addEventListener("click", clearHistory);
-  el.classroomExplanation?.addEventListener("input", () => {
-    state.explanation = el.classroomExplanation.value;
-    updateLearningTrail();
-  });
-  el.classroomTransfer?.addEventListener("input", () => {
-    state.transfer = el.classroomTransfer.value;
-    updateLearningTrail();
-  });
-  el.classroomSketchPen?.addEventListener("click", () => setSketchMode("pen"));
-  el.classroomSketchEraser?.addEventListener("click", () => setSketchMode("eraser"));
-  el.classroomSketchClear?.addEventListener("click", clearSketch);
-  el.classroomSketchCanvas?.addEventListener("pointerdown", beginSketch);
-  el.classroomSketchCanvas?.addEventListener("pointermove", continueSketch);
-  el.classroomSketchCanvas?.addEventListener("pointerup", endSketch);
-  el.classroomSketchCanvas?.addEventListener("pointercancel", endSketch);
-  if ("ResizeObserver" in window && el.classroomSketchCanvas) {
-    sketchObserver = new ResizeObserver(() => resizeSketchCanvas());
-    sketchObserver.observe(el.classroomSketchCanvas);
-  }
-  bindSnapshotInteraction();
-  if (!mirrorFrame) mirrorLinkedView();
-}
-
-export function getClassroomState() {
-  return state;
-}
+    const index = document.createElemenï_8¶‰Ëkºwµç@¡•Ù•¹Ğ¤€ôøì(€€€€€É•±…åM¹…ÁÍ¡½ÑA½¥¹Ñ•È¡ÑåÁ”°•Ù•¹Ğ¤ì(€€€€€…¹Ù…Ì¹É•±•…Í•A½¥¹Ñ•É…ÁÑÕÉ”ü¸¡•Ù•¹Ğ¹Á½¥¹Ñ•É%¤ì(€€€ô¤ì(€ô(€…¹Ù…Ì¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰İ¡••°ˆ°€¡•Ù•¹Ğ¤€ôøì(€€€½¹ÍĞÍ½ÕÉ”€ôÍ½ÕÉ•…¹Ù…Í½É1¥¹­•‘Y¥•Ü ¤ì(€€€¥˜€ …Í½ÕÉ”¤É•ÑÕÉ¸ì(€€€•Ù•¹Ğ¹ÁÉ•Ù•¹Ñ•™…Õ±Ğ ¤ì(€€€Í½ÕÉ”¹‘¥ÍÁ…Ñ¡Ù•¹Ğ¡¹•Ü]¡••±Ù•¹Ğ ‰İ¡••°ˆ°ì(€€€€€‰Õ‰‰±•ÌèÑÉÕ”°(€€€€€…¹•±…‰±”èÑÉÕ”°(€€€€€±¥•¹Ñ`è•Ù•¹Ğ¹±¥•¹Ñ`°(€€€€€±¥•¹Ñdè•Ù•¹Ğ¹±¥•¹Ñd°(€€€€€‘•±Ñ…`è•Ù•¹Ğ¹‘•±Ñ…`°(€€€€€‘•±Ñ…dè•Ù•¹Ğ¹‘•±Ñ…d°(€€€€€‘•±Ñ…5½‘”è•Ù•¹Ğ¹‘•±Ñ…5½‘”°(€€€ô¤¤ì(€ô°ìÁ…ÍÍ¥Ù”è™…±Í”ô¤ì)ô()™Õ¹Ñ¥½¸½Á•¹5…¥¹]½É­ÍÁ…” ¤ì(€½¹ÍĞÙ¥•Ü€ôÍÑ…Ñ”¹±¥¹­•‘Y¥•Ü€ôôô€‰½É‰¥Ñ…°ˆ€ü€¡•°¹±…ÍÍÉ½½µMÑ…ÉÑY¥•Üü¹Ù…±Õ”ñğ€‰ÅÕ…ˆ¤€èÍÑ…Ñ”¹±¥¹­•‘Y¥•Üì(€…Ñ¥Ù…Ñ•5…¥¹Y¥•Ü¡Ù¥•Ü¤ì(€•°¹…Ñ¥Ù¥Ñå]¥¹‘½Üü¹±…ÍÍ1¥ÍĞ¹…‘ ‰µ¥¹¥µ¥é•ˆ¤ì(€…Á¤¹U$ü¹ÕÁ‘…Ñ•]¥¹‘½İ½¹ÑÉ½±1…‰•±Ìü¸¡•°¹…Ñ¥Ù¥Ñå]¥¹‘½Ü¤ì(€…Á¤¹É•Í¥é•™Ñ•É1…å½ÕÑ¡…¹”ü¸ ¤ì)ô()™Õ¹Ñ¥½¸Ñ½±•9…µ” ¤ì(€ÍÑ…Ñ”¹¹…µ•I•Ù•…±•€ô€…ÍÑ…Ñ”¹¹…µ•I•Ù•…±•ì(€ÕÁ‘…Ñ•Ñ¥Ù¥Ñå%‘•¹Ñ¥Ñä ¤ì(€ÕÁ‘…Ñ•Ù¥‘•¹•A…¹•° ¤ì)ô()™Õ¹Ñ¥½¸Í•Ñ9½‘•ÍY¥Í¥‰±”¡Ù¥Í¥‰±”¤ì(€¥˜€¡•°¹É…‘¥…±9½‘”€˜˜€…•°¹É…‘¥…±9½‘”¹‘¥Í…‰±•¤•°¹É…‘¥…±9½‘”¹¡•­•€ôÙ¥Í¥‰±”ì(€¥˜€¡•°¹Á½±…É9½‘”€˜˜€…•°¹Á½±…É9½‘”¹‘¥Í…‰±•¤•°¹Á½±…É9½‘”¹¡•­•€ôÙ¥Í¥‰±”ì(€¥˜€¡•°¹±½¹¥ÑÕ‘•9½‘”¤•°¹±½¹¥ÑÕ‘•9½‘”¹¡•­•€ôÙ¥Í¥‰±”ì(€¥˜€¡•°¹¹½‘”¤•°¹¹½‘”¹¡•­•€ôÙ¥Í¥‰±”ì(€ÍÑ…Ñ”¹¹½‘•ÍI•Ù•…±•€ôÙ¥Í¥‰±”ì(€…Á¤¹É•¹‘•É=É‰¥Ñ…°ü¸ ¤ì(€Í•Ñ••‘‰…¬¡Ù¥Í¥‰±”€ü€‹¢*
+ç–ŞË–r£’âï–Ş—’ös–2ë’â·š>·’ë¾ò3–>¿îO–B#–ú–BGšnËêÿ–J3¢K–BG–÷šVÃš‚ã–¾çˆ€è€‹¢*
+ç–ŞË¦jC¢^?¾ò3–¶›R–>¿’î—–#¢şo¢†3¦ŠšÖ/ˆ°€‰ÍÕ•ÍÌˆ¤ì)ô()™Õ¹Ñ¥½¸Ñ½±•Y¥•İ1½¬ ¤ì(€ÍÑ…Ñ”¹Ù¥•İ1½­•€ô€…ÍÑ…Ñ”¹Ù¥•İ1½­•ì(€™½È€¡½¹ÍĞ½¹Ñ…¥¹•È½˜m•°¹±…ÍÍÉ½½µY¥•İ•È°•°¹±…ÍÍÉ½½µ½µÁ…É•Y¥•İ•È°•°¹±…ÍÍÉ½½µ½µÁ…É•	Y¥•İ•Ét¤ì(€€€¥˜€ …½¹Ñ…¥¹•È¤½¹Ñ¥¹Õ”ì(€€€½¹ÍĞÙ¥•Ü€ô…Á¤¹½µÁ…É•Y¥•İ½È¡½¹Ñ…¥¹•È¤ì(€€€¥˜€¡Ù¥•Üü¹½¹ÑÉ½±Ì¤Ù¥•Ü¹½¹ÑÉ½±Ì¹•¹…‰±•€ô€…ÍÑ…Ñ”¹Ù¥•İ1½­•ì(€ô(€¥˜€¡•°¹±…ÍÍÉ½½µ1½­Y¥•İ	ÕÑÑ½¸¤•°¹±…ÍÍÉ½½µ1½­Y¥•İ	ÕÑÑ½¸¹Ñ•áÑ½¹Ñ•¹Ğ€ôÍÑ…Ñ”¹Ù¥•İ1½­•€ü€‹¢¦f“¢¢Hˆ€è€‹¦R–ºk¢¢Hˆì)ô()™Õ¹Ñ¥½¸Ñ½±•AÉ•Ù¥•İ5½‘” ¤ì(€ÍÑ…Ñ”¹ÍÑÕ‘•¹ÑAÉ•Ù¥•Ü€ô€…ÍÑ…Ñ”¹ÍÑÕ‘•¹ÑAÉ•Ù¥•Üì(€•°¹±…ÍÍÉ½½µM¡•±°ü¹±…ÍÍ1¥ÍĞ¹Ñ½±” ‰±…ÍÍÉ½½´µÍÑÕ‘•¹ĞµÁÉ•Ù¥•Üˆ°ÍÑ…Ñ”¹ÍÑÕ‘•¹ÑAÉ•Ù¥•Ü¤ì(€¥˜€¡•°¹±…ÍÍÉ½½µAÉ•Ù¥•İ5½‘•	ÕÑÑ½¸¤•°¹±…ÍÍÉ½½µAÉ•Ù¥•İ5½‘•	ÕÑÑ½¸¹Ñ•áÑ½¹Ñ•¹Ğ€ôÍÑ…Ñ”¹ÍÑÕ‘•¹ÑAÉ•Ù¥•Ü€ü€‹šVg–â#¢–nøˆ€è€‹–¶›R¦Š¢ ˆì)ô()™Õ¹Ñ¥½¸ÕÁ‘…Ñ•I•Ù¥•İMÉ••¸ ¤ì(€½¹ÍĞÑ…É•Ğ€ôÕÉÉ•¹ÑQ…É•Ğ ¤ì(€½¹ÍĞÁ…É…µÌ€ôÑ…É•ÑA…É…µÌ¡Ñ…É•Ğ¤ì(€½¹ÍĞÉ…‘¥…°€ôÁ…É…µÌ¹¸€´Á…É…µÌ¹°€´€Äì(€½¹ÍĞ…¹Õ±…È€ôÁ…É…µÌ¹°ì(€½¹ÍĞ•Ù¥‘•¹•Q•áĞ€ôÍÑ…Ñ”¹•Ù¥‘•¹”¹±•¹Ñ €üÍÑ…Ñ”¹•Ù¥‘•¹”¹µ…À ¡¥Ñ•´¤€ôø•Ù¥‘•¹•1…‰•±Ím¥Ñ•µt¤¹©½¥¸ ‹ˆ¤€è€‹šr«¦'š.§¢¾š6¸ˆì(€¥˜€¡•°¹±…ÍÍÉ½½µI•Ù¥•İQ¥Ñ±”¤•°¹±…ÍÍÉ½½µI•Ù¥•İQ¥Ñ±”¹Ñ•áÑ½¹Ñ•¹Ğ€ôƒ¢¾û–‚–n{¦†øƒ
+Ü€‘íÑ•µÁ±…Ñ••™¥¹¥Ñ¥½¹ÍmÍÑ…Ñ”¹Ñ•µÁ±…Ñ•t¹¹…µ•õ€ì(€¥˜€¡•°¹±…ÍÍÉ½½µI•Ù¥•İ5•Ñ„¤•°¹±…ÍÍÉ½½µI•Ù¥•İ5•Ñ„¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‘íÑ…É•Ğü¹±…‰•°ñğ€‹¢ö£¦L‰ôƒ
+Ü€‘íÍÑ…Ñ”¹½µÁ±•Ñ•€ü€‹–ŞË–º3š"@ˆ€è€‹¢şo¢†3’â´‰õ€ì(€¥˜€¡•°¹±…ÍÍÉ½½µI•Ù¥•İAÉ•‘¥Ñ¥½¸¤•°¹±…ÍÍÉ½½µI•Ù¥•İAÉ•‘¥Ñ¥½¸¹Ñ•áÑ½¹Ñ•¹Ğ€ôÁÉ•‘¥Ñ¥½¹MÕµµ…Éä ¤ì(€¥˜€¡•°¹±…ÍÍÉ½½µI•Ù¥•İÙ¥‘•¹”¤•°¹±…ÍÍÉ½½µI•Ù¥•İÙ¥‘•¹”¹Ñ•áÑ½¹Ñ•¹Ğ€ô•Ù¥‘•¹•Q•áĞì(€¥˜€¡•°¹±…ÍÍÉ½½µI•Ù¥•İáÁ±…¹…Ñ¥½¸¤•°¹±…ÍÍÉ½½µI•Ù¥•İáÁ±…¹…Ñ¥½¸¹Ñ•áÑ½¹Ñ•¹Ğ€ôÍÑ…Ñ”¹•áÁ±…¹…Ñ¥½¸ñğ€‹–Âkšr«–†¯–g¢¦(ˆì(€¥˜€¡•°¹±…ÍÍÉ½½µI•Ù¥•İQÉ…¹Í™•È¤•°¹±…ÍÍÉ½½µI•Ù¥•İQÉ…¹Í™•È¹Ñ•áÑ½¹Ñ•¹Ğ€ôÍÑ…Ñ”¹ÑÉ…¹Í™•Èñğ€‹–Âkšr«–º3š"C¢şìˆì(€¥˜€¡•°¹±…ÍÍÉ½½µI•Ù¥•İ••‘‰…¬¤•°¹±…ÍÍÉ½½µI•Ù¥•İ••‘‰…¬¹Ñ•áÑ½¹Ñ•¹Ğ€ôÍÑ…Ñ”¹™••‘‰…¬ñğƒš¶†»¢*
+çšVÃ¾òk–ú–BD€‘íÉ…‘¥…±÷¾ò3¢K–BD€‘í…¹Õ±…Éõ€ì(€É•ÅÕ•ÍÑ¹¥µ…Ñ¥½¹É…µ”¡…Íå¹Œ€ ¤€ôøì(€€€¥˜€¡•°¹±…ÍÍÉ½½µI•Ù¥•İY¥•İ•Èü¹½™™Í•Ñ]¥‘Ñ ¤ì(€€€€€…İ…¥Ğ…Á¤¹É•¹‘•É½µÁ…É•Y¥•Ü¡•°¹±…ÍÍÉ½½µI•Ù¥•İY¥•İ•È°Ñ…É•Ğü¹Ù…±Õ”°¹Õ±°°¹Õ±°°ìÍµ½½Ñ èÑÉÕ”°İ¥É•™É…µ”è™…±Í”ô¤ì(€€€€€Ñ¥¡Ñ•¹±…ÍÍÉ½½µ…µ•É„¡•°¹±…ÍÍÉ½½µI•Ù¥•İY¥•İ•È°€À¸Ü¤ì(€€€€€É•Í¥é•±…ÍÍÉ½½µY¥•İÌ ¤ì(€€€ô(€ô¤ì(€É•¹‘•É!¥ÍÑ½Éä ¤ì)ô()™Õ¹Ñ¥½¸Í•ÍÍ¥½¹I•½É ¤ì(€½¹ÍĞÑ…É•Ğ€ôÕÉÉ•¹ÑQ…É•Ğ ¤ì(€É•ÑÕÉ¸ì(€€€¥è€‘í…Ñ”¹¹½Ü ¥ô´‘í5…Ñ ¹É…¹‘½´ ¤¹Ñ½MÑÉ¥¹œ ÄØ¤¹Í±¥” È¥õ€°(€€€Í…Ù•‘Ğè¹•Ü…Ñ” ¤¹Ñ½%M=MÑÉ¥¹œ ¤°(€€€Ñ•µÁ±…Ñ”èÍÑ…Ñ”¹Ñ•µÁ±…Ñ”°(€€€Ñ•µÁ±…Ñ•9…µ”èÑ•µÁ±…Ñ••™¥¹¥Ñ¥½¹ÍmÍÑ…Ñ”¹Ñ•µÁ±…Ñ•t¹¹…µ”°(€€€Ñ…É•ÑY…±Õ”èÍÑ…Ñ”¹Ñ…É•ÑY…±Õ”°(€€€Ñ…É•Ñ1…‰•°èÑ…É•Ğü¹±…‰•°ñğÍÑ…Ñ”¹Ñ…É•ÑY…±Õ”°(€€€ÁÉ•‘¥Ñ¥½¸èì€¸¸¹ÍÑ…Ñ”¹ÁÉ•‘¥Ñ¥½¸ô°(€€€Ù¥Í¥Ñ•‘Y¥•İÌèl¸¸¹ÍÑ…Ñ”¹Ù¥Í¥Ñ•‘Y¥•İÍt°(€€€•Ù¥‘•¹”èl¸¸¹ÍÑ…Ñ”¹•Ù¥‘•¹•t°(€€€•áÁ±…¹…Ñ¥½¸èÍÑ…Ñ”¹•áÁ±…¹…Ñ¥½¸°(€€€ÑÉ…¹Í™•ÈèÍÑ…Ñ”¹ÑÉ…¹Í™•È°(€€€™••‘‰…¬èÍÑ…Ñ”¹™••‘‰…¬°(€ôì)ô()™Õ¹Ñ¥½¸É•…‘!¥ÍÑ½Éä ¤ì(€ÑÉäì(€€€½¹ÍĞÁ…ÉÍ•€ô)M=8¹Á…ÉÍ”¡±½…±MÑ½É…”¹•Ñ%Ñ•´¡MQ=I}-d¤ñğ€‰mtˆ¤ì(€€€É•ÑÕÉ¸ÉÉ…ä¹¥ÍÉÉ…ä¡Á…ÉÍ•¤€üÁ…ÉÍ•€èmtì(€ô…Ñ ì(€€€É•ÑÕÉ¸mtì(€ô)ô()™Õ¹Ñ¥½¸Í…Ù•I•Ù¥•Ü ¤ì(€½¹ÍĞÉ•½É‘Ì€ôÉ•…‘!¥ÍÑ½Éä ¤ì(€É•½É‘Ì¹Õ¹Í¡¥™Ğ¡Í•ÍÍ¥½¹I•½É ¤¤ì(€±½…±MÑ½É…”¹Í•Ñ%Ñ•´¡MQ=I}-d°)M=8¹ÍÑÉ¥¹¥™ä¡É•½É‘Ì¹Í±¥” À°€ÈĞ¤¤¤ì(€É•¹‘•É!¥ÍÑ½Éä ¤ì(€¥˜€¡•°¹±…ÍÍÉ½½µM…Ù•I•Ù¥•İ	ÕÑÑ½¸¤•°¹±…ÍÍÉ½½µM…Ù•I•Ù¥•İ	ÕÑÑ½¸¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‹–ŞË’şw–¶`ˆì(€İ¥¹‘½Ü¹Í•ÑQ¥µ•½ÕĞ  ¤€ôøì¥˜€¡•°¹±…ÍÍÉ½½µM…Ù•I•Ù¥•İ	ÕÑÑ½¸¤•°¹±…ÍÍÉ½½µM…Ù•I•Ù¥•İ	ÕÑÑ½¸¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‹’şw–¶cšÒï–* ˆìô°€ÄÈÀÀ¤ì)ô()™Õ¹Ñ¥½¸±•…É!¥ÍÑ½Éä ¤ì(€±½…±MÑ½É…”¹É•µ½Ù•%Ñ•´¡MQ=I}-d¤ì(€É•¹‘•É!¥ÍÑ½Éä ¤ì)ô()™Õ¹Ñ¥½¸É•¹‘•É!¥ÍÑ½Éä ¤ì(€¥˜€ …•°¹±…ÍÍÉ½½µ!¥ÍÑ½Éå1¥ÍĞ¤É•ÑÕÉ¸ì(€•°¹±…ÍÍÉ½½µ!¥ÍÑ½Éå1¥ÍĞ¹É•Á±…•¡¥±‘É•¸ ¤ì(€½¹ÍĞÉ•½É‘Ì€ôÉ•…‘!¥ÍÑ½Éä ¤ì(€¥˜€ …É•½É‘Ì¹±•¹Ñ ¤ì(€€€½¹ÍĞ•µÁÑä€ô‘½Õµ•¹Ğ¹É•…Ñ•±•µ•¹Ğ ‰Àˆ¤ì(€€€•µÁÑä¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‹šjš^ƒ–ŞË’şw–¶cšÒï–*£ˆì(€€€•°¹±…ÍÍÉ½½µ!¥ÍÑ½Éå1¥ÍĞ¹…ÁÁ•¹¡•µÁÑä¤ì(€€€É•ÑÕÉ¸ì(€ô(€™½È€¡½¹ÍĞÉ•½É½˜É•½É‘Ì¤ì(€€€½¹ÍĞ¥Ñ•´€ô‘½Õµ•¹Ğ¹É•…Ñ•±•µ•¹Ğ ‰…ÉÑ¥±”ˆ¤ì(€€€¥Ñ•´¹±…ÍÍ9…µ”€ô€‰±…ÍÍÉ½½´µ¡¥ÍÑ½Éäµ¥Ñ•´ˆì(€€€½¹ÍĞÑ¥Ñ±”€ô‘½Õµ•¹Ğ¹É•…Ñ•±•µ•¹Ğ ‰ÍÑÉ½¹œˆ¤ì(€€€Ñ¥Ñ±”¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‘íÉ•½É¹Ñ•µÁ±…Ñ•9…µ•ôƒ
+Ü€‘íÉ•½É¹Ñ…É•Ñ1…‰•±õ€ì(€€€½¹ÍĞÑ¥µ”€ô‘½Õµ•¹Ğ¹É•…Ñ•±•µ•¹Ğ ‰Íµ…±°ˆ¤ì(€€€Ñ¥µ”¹Ñ•áÑ½¹Ñ•¹Ğ€ô¹•Ü…Ñ”¡É•½É¹Í…Ù•‘Ğ¤¹Ñ½1½…±•MÑÉ¥¹œ ¤ì(€€€½¹ÍĞÍÕµµ…Éä€ô‘½Õµ•¹Ğ¹É•…Ñ•±•µ•¹Ğ ‰ÍÁ…¸ˆ¤ì(€€€ÍÕµµ…Éä¹Ñ•áÑ½¹Ñ•¹Ğ€ômÉ•½É¹•áÁ±…¹…Ñ¥½¸°É•½É¹ÑÉ…¹Í™•Ét¹™¥±Ñ•È¡	½½±•…¸¤¹©½¥¸ ˆƒ
+Ü€ˆ¤ñğ€‹šr«–†¯–g¢¦(ˆì(€€€¥Ñ•´¹…ÁÁ•¹¡Ñ¥Ñ±”°Ñ¥µ”°ÍÕµµ…Éä¤ì(€€€•°¹±…ÍÍÉ½½µ!¥ÍÑ½Éå1¥ÍĞ¹…ÁÁ•¹¡¥Ñ•´¤ì(€ô)ô()™Õ¹Ñ¥½¸•áÁ½ÉÑI•Ù¥•İ%µ…” ¤ì(€½¹ÍĞ…¹Ù…Ì€ô‘½Õµ•¹Ğ¹É•…Ñ•±•µ•¹Ğ ‰…¹Ù…Ìˆ¤ì(€…¹Ù…Ì¹İ¥‘Ñ €ô€ÄØÀÀì(€…¹Ù…Ì¹¡•¥¡Ğ€ô€äÀÀì(€½¹ÍĞ½¹Ñ•áĞ€ô…¹Ù…Ì¹•Ñ½¹Ñ•áĞ ˆÉˆ¤ì(€½¹ÍĞ‰…­É½Õ¹€ô•°¹‰…­É½Õ¹‘½±½Èü¹Ù…±Õ”ñğ€ˆŒÀÀÀÀÀÀˆì(€½¹Ñ•áĞ¹™¥±±MÑå±”€ô‰…­É½Õ¹ì(€½¹Ñ•áĞ¹™¥±±I•Ğ À°€À°…¹Ù…Ì¹İ¥‘Ñ °…¹Ù…Ì¹¡•¥¡Ğ¤ì(€½¹ÍĞÉ•Ù¥•İY¥•Ü€ô…Á¤¹½µÁ…É•Y¥•İ½È¡•°¹±…ÍÍÉ½½µI•Ù¥•İY¥•İ•È¤ì(€½¹ÍĞÍ½ÕÉ”€ôÉ•Ù¥•İY¥•Üü¹É•¹‘•É•Èü¹‘½µ±•µ•¹Ğì(€¥˜€¡Í½ÕÉ”ü¹İ¥‘Ñ ¤½¹Ñ•áĞ¹‘É…İ%µ…”¡Í½ÕÉ”°€ĞÀ°€ÄÄÀ°€äÈÀ°€ÜÀÀ¤ì(€½¹Ñ•áĞ¹™¥±±MÑå±”€ô€ˆ˜Á˜Ñ˜àˆì(€½¹Ñ•áĞ¹™½¹Ğ€ô€ˆØÀÀ€ĞÉÁàM•½”U$°5¥É½Í½™Ğe…!•¤°Í…¹ÌµÍ•É¥˜ˆì(€½¹Ñ•áĞ¹™¥±±Q•áĞ¡•°¹±…ÍÍÉ½½µI•Ù¥•İQ¥Ñ±”ü¹Ñ•áÑ½¹Ñ•¹Ğñğ€‹¢¾û–‚–n{¦†øˆ°€ĞÀ°€ØØ¤ì(€½¹Ñ•áĞ¹™½¹Ğ€ô€ˆØÀÀ€ÈÕÁàM•½”U$°5¥É½Í½™Ğe…!•¤°Í…¹ÌµÍ•É¥˜ˆì(€½¹Ñ•áĞ¹™¥±±Q•áĞ ‹šr–"w2sšÌˆ°€ÄÀÄÀ°€ÄÌÀ¤ì(€½¹Ñ•áĞ¹™¥±±Q•áĞ ‹–Ï¦R»¢¾š6¸ˆ°€ÄÀÄÀ°€ÈØÔ¤ì(€½¹Ñ•áĞ¹™¥±±Q•áĞ ‹šrî#¢¦(ˆ°€ÄÀÄÀ°€ĞÀÀ¤ì(€½¹Ñ•áĞ¹™¥±±Q•áĞ ‹¢şïîO¢ºèˆ°€ÄÀÄÀ°€ÔÌÔ¤ì(€½¹Ñ•áĞ¹™¥±±Q•áĞ ‹šš–ş×–>7¦š ˆ°€ÄÀÄÀ°€ØÜÀ¤ì(€½¹Ñ•áĞ¹™¥±±MÑå±”€ô€ˆ……ˆÙŒÌˆì(€½¹Ñ•áĞ¹™½¹Ğ€ô€ˆÈÅÁàM•½”U$°5¥É½Í½™Ğe…!•¤°Í…¹ÌµÍ•É¥˜ˆì(€‘É…İ]É…ÁÁ•‘Q•áĞ¡½¹Ñ•áĞ°•°¹±…ÍÍÉ½½µI•Ù¥•İAÉ•‘¥Ñ¥½¸ü¹Ñ•áÑ½¹Ñ•¹Ğñğ€ˆˆ°€ÄÀÄÀ°€ÄØÔ°€ÔÌÀ°€ÌÀ¤ì(€‘É…İ]É…ÁÁ•‘Q•áĞ¡½¹Ñ•áĞ°•°¹±…ÍÍÉ½½µI•Ù¥•İÙ¥‘•¹”ü¹Ñ•áÑ½¹Ñ•¹Ğñğ€ˆˆ°€ÄÀÄÀ°€ÌÀÀ°€ÔÌÀ°€ÌÀ¤ì(€‘É…İ]É…ÁÁ•‘Q•áĞ¡½¹Ñ•áĞ°•°¹±…ÍÍÉ½½µI•Ù¥•İáÁ±…¹…Ñ¥½¸ü¹Ñ•áÑ½¹Ñ•¹Ğñğ€ˆˆ°€ÄÀÄÀ°€ĞÌÔ°€ÔÌÀ°€ÌÀ¤ì(€‘É…İ]É…ÁÁ•‘Q•áĞ¡½¹Ñ•áĞ°•°¹±…ÍÍÉ½½µI•Ù¥•İQÉ…¹Í™•Èü¹Ñ•áÑ½¹Ñ•¹Ğñğ€ˆˆ°€ÄÀÄÀ°€ÔÜÀ°€ÔÌÀ°€ÌÀ¤ì(€‘É…İ]É…ÁÁ•‘Q•áĞ¡½¹Ñ•áĞ°•°¹±…ÍÍÉ½½µI•Ù¥•İ••‘‰…¬ü¹Ñ•áÑ½¹Ñ•¹Ğñğ€ˆˆ°€ÄÀÄÀ°€ÜÀÔ°€ÔÌÀ°€ÌÀ¤ì(€½¹ÍĞ±¥¹¬€ô‘½Õµ•¹Ğ¹É•…Ñ•±•µ•¹Ğ ‰„ˆ¤ì(€±¥¹¬¹‘½İ¹±½…€ô!<µ±…ÍÍÉ½½´´‘íÕÉÉ•¹ÑQ…É•Ğ ¤ü¹±…‰•°ñğ€‰½É‰¥Ñ…°‰ô¹Á¹€ì(€±¥¹¬¹¡É•˜€ô…¹Ù…Ì¹Ñ½…Ñ…UI0 ‰¥µ…”½Á¹œˆ¤ì(€±¥¹¬¹±¥¬ ¤ì)ô()™Õ¹Ñ¥½¸‘É…İ]É…ÁÁ•‘Q•áĞ¡½¹Ñ•áĞ°Ñ•áĞ°à°ä°µ…á]¥‘Ñ °±¥¹•!•¥¡Ğ¤ì(€±•Ğ±¥¹”€ô€ˆˆì(€±•ĞÉ½Ü€ô€Àì(€™½È€¡½¹ÍĞ¡…È½˜MÑÉ¥¹œ¡Ñ•áĞ¤¤ì(€€€½¹ÍĞÑ•ÍĞ€ô±¥¹”€¬¡…Èì(€€€¥˜€¡½¹Ñ•áĞ¹µ•…ÍÕÉ•Q•áĞ¡Ñ•ÍĞ¤¹İ¥‘Ñ €øµ…á]¥‘Ñ €˜˜±¥¹”¤ì(€€€€€½¹Ñ•áĞ¹™¥±±Q•áĞ¡±¥¹”°à°ä€¬É½Ü€¨±¥¹•!•¥¡Ğ¤ì(€€€€€±¥¹”€ô¡…Èì(€€€€€É½Ü€¬ô€Äì(€€€ô•±Í”ì(€€€€€±¥¹”€ôÑ•ÍĞì(€€€ô(€ô(€¥˜€¡±¥¹”¤½¹Ñ•áĞ¹™¥±±Q•áĞ¡±¥¹”°à°ä€¬É½Ü€¨±¥¹•!•¥¡Ğ¤ì)ô()™Õ¹Ñ¥½¸É•Í¥é•M­•Ñ¡…¹Ù…Ì ¤ì(€½¹ÍĞ…¹Ù…Ì€ô•°¹±…ÍÍÉ½½µM­•Ñ¡…¹Ù…Ìì(€¥˜€ ……¹Ù…Ì¤É•ÑÕÉ¸ì(€½¹ÍĞÉ•Ğ€ô…¹Ù…Ì¹•Ñ	½Õ¹‘¥¹±¥•¹ÑI•Ğ ¤ì(€¥˜€¡É•Ğ¹İ¥‘Ñ €ğ€ÈñğÉ•Ğ¹¡•¥¡Ğ€ğ€È¤É•ÑÕÉ¸ì(€½¹ÍĞ‘ÁÈ€ô5…Ñ ¹µ¥¸¡İ¥¹‘½Ü¹‘•Ù¥•A¥á•±I…Ñ¥¼ñğ€Ä°€È¤ì(€½¹ÍĞİ¥‘Ñ €ô5…Ñ ¹É½Õ¹¡É•Ğ¹İ¥‘Ñ €¨‘ÁÈ¤ì(€½¹ÍĞ¡•¥¡Ğ€ô5…Ñ ¹É½Õ¹¡É•Ğ¹¡•¥¡Ğ€¨‘ÁÈ¤ì(€¥˜€¡…¹Ù…Ì¹İ¥‘Ñ €„ôôİ¥‘Ñ ñğ…¹Ù…Ì¹¡•¥¡Ğ€„ôô¡•¥¡Ğ¤ì(€€€…¹Ù…Ì¹İ¥‘Ñ €ôİ¥‘Ñ ì(€€€…¹Ù…Ì¹¡•¥¡Ğ€ô¡•¥¡Ğì(€€€É•‘É…İM­•Ñ  ¤ì(€ô)ô()™Õ¹Ñ¥½¸Í­•Ñ¡A½¥¹Ğ¡•Ù•¹Ğ¤ì(€½¹ÍĞÉ•Ğ€ô•°¹±…ÍÍÉ½½µM­•Ñ¡…¹Ù…Ì¹•Ñ	½Õ¹‘¥¹±¥•¹ÑI•Ğ ¤ì(€É•ÑÕÉ¸ìàè€¡•Ù•¹Ğ¹±¥•¹Ñ`€´É•Ğ¹±•™Ğ¤€¼É•Ğ¹İ¥‘Ñ °äè€¡•Ù•¹Ğ¹±¥•¹Ñd€´É•Ğ¹Ñ½À¤€¼É•Ğ¹¡•¥¡Ğôì)ô()™Õ¹Ñ¥½¸‰•¥¹M­•Ñ ¡•Ù•¹Ğ¤ì(€¥˜€¡•Ù•¹Ğ¹‰ÕÑÑ½¸€„ôôÕ¹‘•™¥¹•€˜˜•Ù•¹Ğ¹‰ÕÑÑ½¸€„ôô€À¤É•ÑÕÉ¸ì(€ÍÑ…Ñ”¹Í­•Ñ ¹‘É…İ¥¹œ€ôÑÉÕ”ì(€ÍÑ…Ñ”¹Í­•Ñ ¹Á½¥¹Ñ•É%€ô•Ù•¹Ğ¹Á½¥¹Ñ•É%ì(€ÍÑ…Ñ”¹Í­•Ñ ¹ÕÉÉ•¹Ğ€ôì(€€€µ½‘”èÍÑ…Ñ”¹Í­•Ñ ¹µ½‘”°(€€€½±½Èè•°¹±…ÍÍÉ½½µM­•Ñ¡½±½Èü¹Ù…±Õ”ñğ€ˆ™™™™™˜ˆ°(€€€Í¥é”è9Õµ‰•È¡•°¹±…ÍÍÉ½½µM­•Ñ¡M¥é”ü¹Ù…±Õ”¤ñğ€Ô°(€€€Á½¥¹ÑÌèmÍ­•Ñ¡A½¥¹Ğ¡•Ù•¹Ğ¥t°(€ôì(€•°¹±…ÍÍÉ½½µM­•Ñ¡…¹Ù…Ì¹Í•ÑA½¥¹Ñ•É…ÁÑÕÉ”ü¸¡•Ù•¹Ğ¹Á½¥¹Ñ•É%¤ì(€É•‘É…İM­•Ñ  ¤ì)ô()™Õ¹Ñ¥½¸½¹Ñ¥¹Õ•M­•Ñ ¡•Ù•¹Ğ¤ì(€¥˜€ …ÍÑ…Ñ”¹Í­•Ñ ¹‘É…İ¥¹œñğ•Ù•¹Ğ¹Á½¥¹Ñ•É%€„ôôÍÑ…Ñ”¹Í­•Ñ ¹Á½¥¹Ñ•É%ñğ€…ÍÑ…Ñ”¹Í­•Ñ ¹ÕÉÉ•¹Ğ¤É•ÑÕÉ¸ì(€ÍÑ…Ñ”¹Í­•Ñ ¹ÕÉÉ•¹Ğ¹Á½¥¹ÑÌ¹ÁÕÍ ¡Í­•Ñ¡A½¥¹Ğ¡•Ù•¹Ğ¤¤ì(€É•‘É…İM­•Ñ  ¤ì)ô()™Õ¹Ñ¥½¸•¹‘M­•Ñ ¡•Ù•¹Ğ¤ì(€¥˜€ …ÍÑ…Ñ”¹Í­•Ñ ¹‘É…İ¥¹œñğ•Ù•¹Ğ¹Á½¥¹Ñ•É%€„ôôÍÑ…Ñ”¹Í­•Ñ ¹Á½¥¹Ñ•É%¤É•ÑÕÉ¸ì(€¥˜€¡ÍÑ…Ñ”¹Í­•Ñ ¹ÕÉÉ•¹Ğ¤ÍÑ…Ñ”¹Í­•Ñ ¹ÍÑÉ½­•Ì¹ÁÕÍ ¡ÍÑ…Ñ”¹Í­•Ñ ¹ÕÉÉ•¹Ğ¤ì(€ÍÑ…Ñ”¹Í­•Ñ ¹‘É…İ¥¹œ€ô™…±Í”ì(€ÍÑ…Ñ”¹Í­•Ñ ¹Á½¥¹Ñ•É%€ô¹Õ±°ì(€ÍÑ…Ñ”¹Í­•Ñ ¹ÕÉÉ•¹Ğ€ô¹Õ±°ì(€É•‘É…İM­•Ñ  ¤ì)ô()™Õ¹Ñ¥½¸É•‘É…İM­•Ñ  ¤ì(€½¹ÍĞ…¹Ù…Ì€ô•°¹±…ÍÍÉ½½µM­•Ñ¡…¹Ù…Ìì(€¥˜€ ……¹Ù…Ìü¹İ¥‘Ñ ñğ€……¹Ù…Ìü¹¡•¥¡Ğ¤É•ÑÕÉ¸ì(€½¹ÍĞ½¹Ñ•áĞ€ô…¹Ù…Ì¹•Ñ½¹Ñ•áĞ ˆÉˆ¤ì(€½¹Ñ•áĞ¹±•…ÉI•Ğ À°€À°…¹Ù…Ì¹İ¥‘Ñ °…¹Ù…Ì¹¡•¥¡Ğ¤ì(€™½È€¡½¹ÍĞÍÑÉ½­”½˜l¸¸¹ÍÑ…Ñ”¹Í­•Ñ ¹ÍÑÉ½­•Ì°€¸¸¸¡ÍÑ…Ñ”¹Í­•Ñ ¹ÕÉÉ•¹Ğ€ümÍÑ…Ñ”¹Í­•Ñ ¹ÕÉÉ•¹Ñt€èmt¥t¤‘É…İMÑÉ½­”¡½¹Ñ•áĞ°…¹Ù…Ì°ÍÑÉ½­”¤ì)ô()™Õ¹Ñ¥½¸‘É…İMÑÉ½­”¡½¹Ñ•áĞ°…¹Ù…Ì°ÍÑÉ½­”¤ì(€¥˜€ …ÍÑÉ½­”¹Á½¥¹ÑÌ¹±•¹Ñ ¤É•ÑÕÉ¸ì(€½¹Ñ•áĞ¹Í…Ù” ¤ì(€½¹Ñ•áĞ¹±½‰…±½µÁ½Í¥Ñ•=Á•É…Ñ¥½¸€ôÍÑÉ½­”¹µ½‘”€ôôô€‰•É…Í•Èˆ€ü€‰‘•ÍÑ¥¹…Ñ¥½¸µ½ÕĞˆ€è€‰Í½ÕÉ”µ½Ù•Èˆì(€½¹Ñ•áĞ¹ÍÑÉ½­•MÑå±”€ôÍÑÉ½­”¹½±½Èì(€½¹Ñ•áĞ¹±¥¹•]¥‘Ñ €ôÍÑÉ½­”¹Í¥é”€¨5…Ñ ¹µ¥¸¡İ¥¹‘½Ü¹‘•Ù¥•A¥á•±I…Ñ¥¼ñğ€Ä°€È¤ì(€½¹Ñ•áĞ¹±¥¹•…À€ô€‰É½Õ¹ˆì(€½¹Ñ•áĞ¹±¥¹•)½¥¸€ô€‰É½Õ¹ˆì(€½¹Ñ•áĞ¹‰•¥¹A…Ñ  ¤ì(€ÍÑÉ½­”¹Á½¥¹ÑÌ¹™½É…  ¡Á½¥¹Ğ°¥¹‘•à¤€ôøì(€€€½¹ÍĞà€ôÁ½¥¹Ğ¹à€¨…¹Ù…Ì¹İ¥‘Ñ ì(€€€½¹ÍĞä€ôÁ½¥¹Ğ¹ä€¨…¹Ù…Ì¹¡•¥¡Ğì(€€€¥˜€¡¥¹‘•à€ôôô€À¤½¹Ñ•áĞ¹µ½Ù•Q¼¡à°ä¤ì(€€€•±Í”½¹Ñ•áĞ¹±¥¹•Q¼¡à°ä¤ì(€ô¤ì(€¥˜€¡ÍÑÉ½­”¹Á½¥¹ÑÌ¹±•¹Ñ €ôôô€Ä¤½¹Ñ•áĞ¹±¥¹•Q¼¡ÍÑÉ½­”¹Á½¥¹ÑÍlÁt¹à€¨…¹Ù…Ì¹İ¥‘Ñ €¬€À¸ÀÄ°ÍÑÉ½­”¹Á½¥¹ÑÍlÁt¹ä€¨…¹Ù…Ì¹¡•¥¡Ğ€¬€À¸ÀÄ¤ì(€½¹Ñ•áĞ¹ÍÑÉ½­” ¤ì(€½¹Ñ•áĞ¹É•ÍÑ½É” ¤ì)ô()™Õ¹Ñ¥½¸Í•ÑM­•Ñ¡5½‘”¡µ½‘”¤ì(€ÍÑ…Ñ”¹Í­•Ñ ¹µ½‘”€ôµ½‘”ì(€•°¹±…ÍÍÉ½½µM­•Ñ¡A•¸ü¹±…ÍÍ1¥ÍĞ¹Ñ½±” ‰…Ñ¥Ù”ˆ°µ½‘”€ôôô€‰Á•¸ˆ¤ì(€•°¹±…ÍÍÉ½½µM­•Ñ¡É…Í•Èü¹±…ÍÍ1¥ÍĞ¹Ñ½±” ‰…Ñ¥Ù”ˆ°µ½‘”€ôôô€‰•É…Í•Èˆ¤ì)ô()™Õ¹Ñ¥½¸±•…ÉM­•Ñ  ¤ì(€ÍÑ…Ñ”¹Í­•Ñ ¹ÍÑÉ½­•Ì€ômtì(€ÍÑ…Ñ”¹Í­•Ñ ¹ÕÉÉ•¹Ğ€ô¹Õ±°ì(€É•‘É…İM­•Ñ  ¤ì)ô()™Õ¹Ñ¥½¸‰¥¹‘±…ÍÍÉ½½µU$ ¤ì(€‰½Õ¹€ôÑÉÕ”ì(€™½È€¡½¹ÍĞ‰ÕÑÑ½¸½˜•°¹±…ÍÍÉ½½µMÉ••¹Q…‰Ì€üümt¤‰ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøÍ•ÑMÉ••¸¡‰ÕÑÑ½¸¹‘…Ñ…Í•Ğ¹±…ÍÍÉ½½µMÉ••¸¤¤ì(€™½È€¡½¹ÍĞ‰ÕÑÑ½¸½˜•°¹±…ÍÍÉ½½µQ•µÁ±…Ñ•Ì€üümt¤‰ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøÍ•±•ÑQ•µÁ±…Ñ”¡‰ÕÑÑ½¸¹‘…Ñ…Í•Ğ¹±…ÍÍÉ½½µQ•µÁ±…Ñ”¤¤ì(€™½È€¡½¹ÍĞ‰ÕÑÑ½¸½˜•°¹±…ÍÍÉ½½µMÑ•ÁÌ€üümt¤‰ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøì(€€€½¹ÍĞÉ•ÅÕ•ÍÑ•€ô9Õµ‰•È¡‰ÕÑÑ½¸¹‘…Ñ…Í•Ğ¹±…ÍÍÉ½½µMÑ•À¤ì(€€€¥˜€¡É•ÅÕ•ÍÑ•€ğôÍÑ…Ñ”¹ÍÑ•Àñğ€…ÍÑ…Ñ”¹ÍÑÕ‘•¹ÑAÉ•Ù¥•Ü¤ÕÁ‘…Ñ•MÑ•À¡É•ÅÕ•ÍÑ•¤ì(€ô¤ì(€™½È€¡½¹ÍĞ‰ÕÑÑ½¸½˜•°¹±…ÍÍÉ½½µY¥•İ	ÕÑÑ½¹Ì€üümt¤‰ÕÑÑ½¸¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøÍ•Ñ1¥¹­•‘Y¥•Ü¡‰ÕÑÑ½¸¹‘…Ñ…Í•Ğ¹±…ÍÍÉ½½µY¥•Ü¤¤ì(€™½È€¡½¹ÍĞ¥¹ÁÕĞ½˜•°¹±…ÍÍÉ½½µÙ¥‘•¹•%¹ÁÕÑÌ€üümt¤¥¹ÁÕĞ¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°ÕÁ‘…Ñ•Ù¥‘•¹•A…¹•°¤ì(€™½È€¡½¹ÍĞ¥¹ÁÕĞ½˜l(€€€•°¹±…ÍÍÉ½½µAÉ•‘¥Ñ¥½¹±…¥´°(€€€•°¹±…ÍÍÉ½½µAÉ•‘¥Ñ¥½¹I…‘¥…°°(€€€•°¹±…ÍÍÉ½½µAÉ•‘¥Ñ¥½¹¹Õ±…È°(€€€•°¹±…ÍÍÉ½½µAÉ•‘¥Ñ¥½¹á¥Ì°(€t¤ì(€€€¥¹ÁÕĞü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°€ ¤€ôøì(€€€€€¥˜€ …ÍÑ…Ñ”¹ÍÑ…ÉÑ•‘Ğ¤É•ÑÕÉ¸ì(€€€€€ÍÑ…Ñ”¹ÁÉ•‘¥Ñ¥½¹M…Ù•€ô™…±Í”ì(€€€€€¥˜€¡•°¹±…ÍÍÉ½½µM…Ù•MÑ…Ñ”¤•°¹±…ÍÍÉ½½µM…Ù•MÑ…Ñ”¹Ñ•áÑ½¹Ñ•¹Ğ€ô€‹2sšÏ–ŞË’ş»šRç¾ò3¶'–ú¦7šZÃ¦R–ºhˆì(€€€€€ÕÁ‘…Ñ•1•…É¹¥¹QÉ…¥° ¤ì(€€€ô¤ì(€ô(€•°¹±…ÍÍÉ½½µMÑ…ÉÑ	ÕÑÑ½¸ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°ÍÑ…ÉÑÑ¥Ù¥Ñä¤ì(€•°¹±…ÍÍÉ½½µ	…­	ÕÑÑ½¸ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøÍ•ÑMÉ••¸ ‰ÁÉ•Á…É”ˆ¤¤ì(€•°¹±…ÍÍÉ½½µ¹‘	ÕÑÑ½¸ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôø™¥¹¥Í¡Ñ¥Ù¥Ñä¡ÑÉÕ”¤¤ì(€•°¹±…ÍÍÉ½½µAÉ•Ù¥½ÕÍ	ÕÑÑ½¸ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°ÁÉ•Ù¥½ÕÍMÑ•À¤ì(€•°¹±…ÍÍÉ½½µ9•áÑ	ÕÑÑ½¸ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°¹•áÑMÑ•À¤ì(€•°¹±…ÍÍÉ½½µAÉ•Ù¥•İ5½‘•	ÕÑÑ½¸ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°Ñ½±•AÉ•Ù¥•İ5½‘”¤ì(€•°¹±…ÍÍÉ½½µ=Á•¹]½É­ÍÁ…•	ÕÑÑ½¸ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°½Á•¹5…¥¹]½É­ÍÁ…”¤ì(€•°¹±…ÍÍÉ½½µQ½±•9…µ•	ÕÑÑ½¸ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°Ñ½±•9…µ”¤ì(€•°¹±…ÍÍÉ½½µ!¥‘•9½‘•Í	ÕÑÑ½¸ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøÍ•Ñ9½‘•ÍY¥Í¥‰±”¡™…±Í”¤¤ì(€•°¹±…ÍÍÉ½½µI•Ù•…±9½‘•Í	ÕÑÑ½¸ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøÍ•Ñ9½‘•ÍY¥Í¥‰±”¡ÑÉÕ”¤¤ì(€•°¹±…ÍÍÉ½½µ1½­Y¥•İ	ÕÑÑ½¸ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°Ñ½±•Y¥•İ1½¬¤ì(€•°¹±…ÍÍÉ½½µQ…É•Ğü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°€ ¤€ôøìÍÑ…Ñ”¹Ñ…É•ÑY…±Õ”€ô•°¹±…ÍÍÉ½½µQ…É•Ğ¹Ù…±Õ”ìô¤ì(€•°¹±…ÍÍÉ½½µ½µÁ…É•Q…É•Ğü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¡…¹”ˆ°€ ¤€ôøìÍÑ…Ñ”¹½µÁ…É•Y…±Õ”€ô•°¹±…ÍÍÉ½½µ½µÁ…É•Q…É•Ğ¹Ù…±Õ”ìô¤ì(€•°¹±…ÍÍÉ½½µáÁ½ÉÑI•Ù¥•İ	ÕÑÑ½¸ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°•áÁ½ÉÑI•Ù¥•İ%µ…”¤ì(€•°¹±…ÍÍÉ½½µM…Ù•I•Ù¥•İ	ÕÑÑ½¸ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°Í…Ù•I•Ù¥•Ü¤ì(€•°¹±…ÍÍÉ½½µ±•…É!¥ÍÑ½Éå	ÕÑÑ½¸ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°±•…É!¥ÍÑ½Éä¤ì(€•°¹±…ÍÍÉ½½µáÁ±…¹…Ñ¥½¸ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¥¹ÁÕĞˆ°€ ¤€ôøì(€€€ÍÑ…Ñ”¹•áÁ±…¹…Ñ¥½¸€ô•°¹±…ÍÍÉ½½µáÁ±…¹…Ñ¥½¸¹Ù…±Õ”ì(€€€ÕÁ‘…Ñ•1•…É¹¥¹QÉ…¥° ¤ì(€ô¤ì(€•°¹±…ÍÍÉ½½µQÉ…¹Í™•Èü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰¥¹ÁÕĞˆ°€ ¤€ôøì(€€€ÍÑ…Ñ”¹ÑÉ…¹Í™•È€ô•°¹±…ÍÍÉ½½µQÉ…¹Í™•È¹Ù…±Õ”ì(€€€ÕÁ‘…Ñ•1•…É¹¥¹QÉ…¥° ¤ì(€ô¤ì(€•°¹±…ÍÍÉ½½µM­•Ñ¡A•¸ü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøÍ•ÑM­•Ñ¡5½‘” ‰Á•¸ˆ¤¤ì(€•°¹±…ÍÍÉ½½µM­•Ñ¡É…Í•Èü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°€ ¤€ôøÍ•ÑM­•Ñ¡5½‘” ‰•É…Í•Èˆ¤¤ì(€•°¹±…ÍÍÉ½½µM­•Ñ¡±•…Èü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰±¥¬ˆ°±•…ÉM­•Ñ ¤ì(€•°¹±…ÍÍÉ½½µM­•Ñ¡…¹Ù…Ìü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰Á½¥¹Ñ•É‘½İ¸ˆ°‰•¥¹M­•Ñ ¤ì(€•°¹±…ÍÍÉ½½µM­•Ñ¡…¹Ù…Ìü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰Á½¥¹Ñ•Éµ½Ù”ˆ°½¹Ñ¥¹Õ•M­•Ñ ¤ì(€•°¹±…ÍÍÉ½½µM­•Ñ¡…¹Ù…Ìü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰Á½¥¹Ñ•ÉÕÀˆ°•¹‘M­•Ñ ¤ì(€•°¹±…ÍÍÉ½½µM­•Ñ¡…¹Ù…Ìü¹…‘‘Ù•¹Ñ1¥ÍÑ•¹•È ‰Á½¥¹Ñ•É…¹•°ˆ°•¹‘M­•Ñ ¤ì(€¥˜€ ‰I•Í¥é•=‰Í•ÉÙ•Èˆ¥¸İ¥¹‘½Ü€˜˜•°¹±…ÍÍÉ½½µM­•Ñ¡…¹Ù…Ì¤ì(€€€Í­•Ñ¡=‰Í•ÉÙ•È€ô¹•ÜI•Í¥é•=‰Í•ÉÙ•È  ¤€ôøÉ•Í¥é•M­•Ñ¡…¹Ù…Ì ¤¤ì(€€€Í­•Ñ¡=‰Í•ÉÙ•È¹½‰Í•ÉÙ”¡•°¹±…ÍÍÉ½½µM­•Ñ¡…¹Ù…Ì¤ì(€ô(€‰¥¹‘M¹…ÁÍ¡½Ñ%¹Ñ•É…Ñ¥½¸ ¤ì(€¥˜€ …µ¥ÉÉ½ÉÉ…µ”¤µ¥ÉÉ½É1¥¹­•‘Y¥•Ü ¤ì)ô()•áÁ½ÉĞ™Õ¹Ñ¥½¸•Ñ±…ÍÍÉ½½µMÑ…Ñ” ¤ì(€É•ÑÕÉ¸ÍÑ…Ñ”ì)ô(
