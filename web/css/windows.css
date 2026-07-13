@@ -1332,3 +1332,19 @@ body.cinematic-mode .main-window .viewer {
   min-width: 0 !important;
   min-height: 0 !important;
 }
+
+.view-container.quad-view > .qt-window[data-window-name="orbital"] {
+  order: 1;
+}
+
+.view-container.quad-view > .qt-window[data-window-name="radial"] {
+  order: 2;
+}
+
+.view-container.quad-view > .qt-window[data-window-name="projection"] {
+  order: 3;
+}
+
+.view-container.quad-view > .qt-window[data-window-name="angular"] {
+  order: 4;
+}

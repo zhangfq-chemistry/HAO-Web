@@ -5,863 +5,764 @@
   background: var(--viewer-bg);
 }
 
-.sketch-tools {
-  display: grid;
-  grid-template-columns: 48px minmax(120px, 1fr) repeat(3, 72px);
-  gap: 8px;
-  align-items: center;
-  padding: 5px 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.65);
-  background: #f7f7f7;
+/* Classroom interaction redesign */
+.legacy-activity {
+  display: none !important;
 }
 
-.sketch-tools input[type="color"] {
-  width: 42px;
-  height: 30px;
-  padding: 2px;
+.classroom-window {
+  --window-bg: var(--bg-surface);
+  --text-color: var(--text);
+  --muted-text: var(--text-secondary);
+  --panel-soft-bg: var(--bg-elevated);
+  --control-bg: var(--bg-input);
+  --active-soft-bg: var(--accent-bg);
+  --phase-positive: var(--positive-color);
+  --phase-negative: var(--negative-color);
+  position: fixed !important;
+  inset: auto !important;
+  width: min(1180px, calc(100vw - 48px)) !important;
+  height: min(790px, calc(100vh - 48px)) !important;
+  min-width: 760px;
+  min-height: 560px;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  border-color: var(--border-light);
+  background: var(--window-bg);
+  color: var(--text-color);
 }
 
-.sketch-tools input[type="range"] {
-  width: 100%;
-}
-
-.sketch-tools button {
-  height: 30px;
-  padding: 0 8px;
-  border-radius: 4px;
-  font-size: 15px;
-}
-
-.sketch-tools button.active {
-  border-color: #175cd3;
-  color: #175cd3;
-  background: #eaf3ff;
-}
-
-#sketchCanvas {
-  width: 100%;
-  height: 100%;
+.classroom-window.maximized {
+  width: 100% !important;
+  height: 100% !important;
   min-width: 0;
   min-height: 0;
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    var(--viewer-bg);
-  background-size: 28px 28px;
-  cursor: crosshair;
-  touch-action: none;
+  left: 0 !important;
+  top: 0 !important;
+  transform: none !important;
 }
 
-.activity-panel {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  gap: 12px;
-  align-content: stretch;
-  min-height: 0;
-  padding: 14px;
-  background: #f7f7f7;
-  overflow: auto;
-}
-
-.activity-mode-bar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 8px;
-  border: 1px solid #d8dee8;
-  border-radius: 6px;
-  background: #ffffff;
-}
-
-.activity-mode-button {
-  height: 32px;
-  padding: 0 10px;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.activity-mode-button.active {
-  border-color: #175cd3;
-  color: #175cd3;
-  background: #eaf3ff;
-}
-
-.formula-panel {
-  padding: 12px;
-  overflow: auto;
-  background: #f8fafc;
-  color: #111827;
-}
-
-.formula-orbital {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: baseline;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.formula-orbital strong {
-  overflow: hidden;
-  color: #175cd3;
-  font-size: 24px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.formula-orbital span {
-  color: #475467;
-  font-size: 15px;
-  white-space: nowrap;
-}
-
-.formula-main {
-  margin-bottom: 10px;
-  padding: 10px;
-  border: 1px solid #bfd2ff;
-  border-radius: 6px;
-  background: #ffffff;
-  color: #111827;
-  font-size: 22px;
-  line-height: 1.35;
-  text-align: center;
-}
-
-.formula-breakdown {
-  display: grid;
-  gap: 8px;
-}
-
-.formula-breakdown section {
-  padding: 8px 10px;
-  border-left: 3px solid #175cd3;
-  background: #ffffff;
-}
-
-.formula-breakdown h3 {
-  margin: 0 0 4px;
-  color: #175cd3;
-  font-size: 16px;
-}
-
-.formula-breakdown p {
-  margin: 0;
-  color: #101828;
-  font-size: 15px;
-  line-height: 1.45;
-}
-
-.formula-facts {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin: 10px 0 0;
-}
-
-.formula-facts div {
-  padding: 7px;
-  border: 1px solid #e4e7ec;
-  border-radius: 6px;
-  background: #ffffff;
-}
-
-.formula-facts dt,
-.formula-facts dd {
-  margin: 0;
-  text-align: center;
-}
-
-.formula-facts dt {
-  color: #667085;
-  font-size: 13px;
-}
-
-.formula-facts dd {
-  color: #000000;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.animation-panel {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) minmax(42px, auto) auto auto;
-  gap: 10px;
+.classroom-shell {
   height: 100%;
   min-height: 0;
-  overflow: hidden;
-  padding: 12px;
-  background: #f8fafc;
-  color: #111827;
-}
-
-.animation-head {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 10px;
-}
-
-.animation-head span {
-  padding: 4px 9px;
-  border-radius: 999px;
-  background: #eaf3ff;
-  color: #175cd3;
-  font-size: 14px;
-  white-space: nowrap;
-}
-
-.animation-head strong {
+  grid-template-rows: 58px minmax(0, 1fr);
   overflow: hidden;
-  font-size: 20px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-#animationCanvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  border: 1px solid #d8dee8;
-  border-radius: 6px;
   background: var(--viewer-bg);
 }
 
-.animation-text {
-  min-height: 42px;
-  max-height: 52px;
-  margin: 0;
-  overflow: hidden;
-  color: #344054;
-  font-size: 15px;
-  line-height: 1.45;
-}
-
-.animation-progress {
-  height: 7px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: #dbe4f0;
-}
-
-.animation-progress span {
-  display: block;
-  width: 0;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #00d7ff, #ff2bd6);
-}
-
-.animation-controls {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.animation-controls button {
-  height: 32px;
-  border-radius: 5px;
-}
-
-.activity-pane {
-  display: none;
-  padding: 12px;
-  border: 1px solid #d8dee8;
-  border-radius: 6px;
-  background: #ffffff;
-}
-
-.activity-pane.active {
-  display: block;
-}
-
-#comparePane.activity-pane.active {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.activity-card-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.activity-card {
-  display: grid;
-  gap: 5px;
-  min-height: 82px;
-  padding: 12px;
-  text-align: left;
-  align-content: start;
-  border-radius: 6px;
-  background: #f8fbff;
-}
-
-.activity-card strong {
-  font-size: 15px;
-  color: #101828;
-}
-
-.activity-card span {
-  font-size: 13px;
-  line-height: 1.4;
-  color: #475467;
-}
-
-.activity-row {
-  display: grid;
-  grid-template-columns: minmax(140px, 1fr) auto auto;
-  gap: 10px;
-  align-items: end;
-}
-
-.activity-row.compact {
-  grid-template-columns: repeat(3, auto);
-  justify-content: start;
-}
-
-.activity-row.compare-row {
-  grid-template-columns: minmax(140px, 1fr) minmax(140px, 1fr) auto;
-}
-
-.compare-view-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-auto-rows: minmax(0, 1fr);
-  gap: 10px;
-  min-height: 0;
-  margin-top: 12px;
-}
-
-.compare-view-card {
-  display: grid;
-  grid-template-rows: 32px minmax(0, 1fr) auto;
-  min-width: 0;
-  min-height: 0;
-  border: 1px solid #d8dee8;
-  border-radius: 6px;
-  overflow: hidden;
-  background: #ffffff;
-}
-
-.compare-view-card header {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+.classroom-topbar,
+.classroom-section-head,
+.classroom-live-head,
+.classroom-observation-head,
+.classroom-evidence-head,
+.classroom-actionbar,
+.classroom-review-history > header {
+  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 8px;
-  border-bottom: 1px solid #e4e7ec;
-  background: #f8fafc;
-  font-size: 14px;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.compare-view-card header button {
-  height: 24px;
-  padding: 0 8px;
+.classroom-topbar {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--window-bg);
+}
+
+.classroom-brand,
+.classroom-brand > span:last-child,
+.classroom-section-head > div:first-child,
+.classroom-live-title,
+.classroom-live-title > span,
+.classroom-observation-head > div:first-child {
+  display: flex;
+}
+
+.classroom-brand,
+.classroom-live-title {
+  align-items: center;
+  gap: 9px;
+}
+
+.classroom-brand > span:last-child,
+.classroom-section-head > div:first-child,
+.classroom-live-title > span,
+.classroom-observation-head > div:first-child {
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.classroom-brand strong,
+.classroom-section-head strong,
+.classroom-live-title strong,
+.classroom-observation-head strong,
+.classroom-evidence-head strong {
+  font-weight: 600;
+}
+
+.classroom-brand small,
+.classroom-section-head small,
+.classroom-live-title small,
+.classroom-observation-head small,
+.classroom-template small,
+.classroom-linked-views small {
+  color: var(--muted-text);
   font-size: 12px;
 }
 
-.compare-viewer {
+.classroom-brand-mark {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 5px;
+  background: var(--accent);
+  color: #ffffff;
+  font-family: Georgia, serif;
+  font-size: 20px;
+}
+
+.classroom-screen-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(92px, 1fr));
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  background: var(--panel-soft-bg);
+}
+
+.classroom-screen-tab,
+.classroom-secondary-button,
+.classroom-primary-button,
+.classroom-actionbar button,
+.classroom-live-title button,
+.classroom-timer button,
+.classroom-sketch-tools button,
+.classroom-linked-views button,
+.classroom-review-history button {
+  min-height: 32px;
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+  background: var(--control-bg);
+  color: var(--text-color);
+}
+
+.classroom-screen-tab.active,
+.classroom-primary-button {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.classroom-screen {
+  display: none;
   min-width: 0;
   min-height: 0;
+}
+
+.classroom-screen.active {
+  display: grid;
+}
+
+#classroomPrepareScreen,
+.classroom-review-screen {
+  padding: 16px;
+  gap: 14px;
+  align-content: start;
+  overflow: auto;
+  background: var(--window-bg);
+}
+
+.classroom-template-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.classroom-template {
+  min-width: 0;
+  min-height: 134px;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 7px;
+  align-content: start;
+  padding: 12px;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  background: var(--panel-soft-bg);
+  color: var(--text-color);
+  text-align: left;
+}
+
+.classroom-template:hover,
+.classroom-template.selected {
+  border-color: var(--accent);
+  background: var(--active-soft-bg);
+}
+
+.classroom-template.selected {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.classroom-template > span:last-child {
+  width: max-content;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: var(--control-bg);
+  color: var(--accent);
+  font-size: 11px;
+}
+
+.classroom-template-icon {
+  color: var(--accent);
+  font-size: 25px;
+  line-height: 1;
+}
+
+.classroom-setup-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px 12px;
+  align-items: end;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-light);
+}
+
+.classroom-setup-grid label,
+.classroom-step-panel label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  color: var(--text-color);
+  font-size: 13px;
+}
+
+.classroom-setup-grid select,
+.classroom-step-panel select,
+.classroom-step-panel textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+  background: var(--control-bg);
+  color: var(--text-color);
+}
+
+.classroom-step-panel textarea {
+  resize: vertical;
+}
+
+.classroom-check {
+  display: flex !important;
+  grid-template-columns: none !important;
+  align-items: center;
+  gap: 7px !important;
+  min-height: 34px;
+}
+
+.classroom-check input {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  accent-color: var(--accent);
+}
+
+.classroom-compare-setting:not(.visible) {
+  display: none;
+}
+
+.classroom-prepare-note {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+  padding: 12px 14px;
+  border-left: 3px solid var(--accent);
+  background: var(--panel-soft-bg);
+}
+
+.classroom-prepare-note span {
+  color: var(--muted-text);
+  font-size: 13px;
+}
+
+.classroom-live-screen {
+  grid-template-rows: 64px minmax(0, 1fr) 54px;
   background: var(--viewer-bg);
 }
 
-.compare-viewer canvas {
-  width: 100% !important;
-  height: 100% !important;
-  touch-action: none;
+.classroom-live-head {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--window-bg);
 }
 
-.compare-notes {
-  margin: 0;
-  padding: 8px;
-  font-size: 13px;
-  line-height: 1.4;
-  color: #344054;
+.classroom-live-title {
+  min-width: 168px;
 }
 
-.activity-row label {
-  margin: 0;
-  font-size: 14px;
-}
-
-.activity-row button {
-  height: 34px;
-  padding: 0 12px;
-}
-
-.activity-text {
-  margin-top: 12px;
-  color: #344054;
-  font-size: 15px;
-  line-height: 1.5;
-}
-
-.explain-shell {
-  display: grid;
-  gap: 12px;
-}
-
-.explain-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.explain-controls button {
-  height: 32px;
-  padding: 0 12px;
-}
-
-.explain-progress {
-  height: 8px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: #e4e7ec;
-}
-
-.explain-progress span {
-  display: block;
-  width: 0%;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #0ea5e9, #e000c7);
-  transition: width 0.18s linear;
-}
-
-.explain-stage {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.9fr);
-  gap: 14px;
-  align-items: center;
-  min-height: 132px;
-  padding: 14px;
-  border: 1px solid #d8dee8;
-  border-radius: 6px;
-  background: #f8fbff;
-}
-
-.explain-step-badge {
-  display: inline-block;
-  margin-bottom: 8px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: #eaf3ff;
-  color: #175cd3;
-  font-size: 13px;
-}
-
-.explain-stage h3 {
-  margin: 0 0 8px;
-  color: #101828;
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.explain-stage p {
-  margin: 0;
-  color: #344054;
-  font-size: 15px;
-  line-height: 1.55;
-}
-
-.explain-formula {
-  min-height: 72px;
-  display: grid;
-  place-items: center;
-  padding: 12px;
-  border-radius: 6px;
-  background: #ffffff;
-  color: #111827;
-  font-family: "Times New Roman", serif;
-  font-size: 22px;
-  text-align: center;
-  box-shadow: inset 0 0 0 1px #e4e7ec;
-}
-
-.explain-cards {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.explain-card {
-  display: grid;
-  gap: 6px;
-  padding: 12px;
-  border: 1px solid #d8dee8;
-  border-radius: 6px;
-  background: #ffffff;
-}
-
-.explain-card strong {
-  color: #101828;
-  font-size: 14px;
-}
-
-.explain-card span {
-  color: #475467;
-  font-size: 14px;
-  line-height: 1.45;
-}
-
-.qt-window.teaching-focus {
-  outline: 3px solid rgba(23, 92, 211, 0.72);
-  outline-offset: -3px;
-  box-shadow: 0 0 0 5px rgba(23, 92, 211, 0.14);
-  transition: outline-color 0.35s ease, box-shadow 0.35s ease;
-}
-
-.qt-window.teaching-focus .window-title {
-  color: #175cd3;
-}
-
-canvas {
-  display: block;
-}
-
-.animation-export-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-  border-radius: 4px;
-  backdrop-filter: blur(3px);
-}
-.animation-export-modal {
-  background: var(--panel-bg, #ffffff);
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid var(--border-color, #d8dee8);
-  width: 85%;
-  text-align: center;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-}
-.animation-export-modal h4 {
-  margin: 0 0 10px 0;
-  color: #ffb000;
-  font-size: 16px;
-}
-.animation-export-modal p {
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--text-color, #111827);
-  margin-bottom: 20px;
-}
-.animation-export-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-.animation-export-actions button {
-  padding: 6px 16px;
-  border: 1px solid var(--border-color, #d8dee8);
-  width: 100% !important;
-  height: 100% !important;
-  touch-action: none;
-}
-
-.compare-notes {
-  margin: 0;
-  padding: 8px;
-  font-size: 13px;
-  line-height: 1.4;
-  color: #344054;
-}
-
-.activity-row label {
-  margin: 0;
-  font-size: 14px;
-}
-
-.activity-row button {
-  height: 34px;
-  padding: 0 12px;
-}
-
-.activity-text {
-  margin-top: 12px;
-  color: #344054;
-  font-size: 15px;
-  line-height: 1.5;
-}
-
-.explain-shell {
-  display: grid;
-  gap: 12px;
-}
-
-.explain-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.explain-controls button {
-  height: 32px;
-  padding: 0 12px;
-}
-
-.explain-progress {
-  height: 8px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: #e4e7ec;
-}
-
-.explain-progress span {
-  display: block;
-  width: 0%;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, #0ea5e9, #e000c7);
-  transition: width 0.18s linear;
-}
-
-.explain-stage {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.9fr);
-  gap: 14px;
-  align-items: center;
-  min-height: 132px;
-  padding: 14px;
-  border: 1px solid #d8dee8;
-  border-radius: 6px;
-  background: #f8fbff;
-}
-
-.explain-step-badge {
-  display: inline-block;
-  margin-bottom: 8px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: #eaf3ff;
-  color: #175cd3;
-  font-size: 13px;
-}
-
-.explain-stage h3 {
-  margin: 0 0 8px;
-  color: #101828;
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.explain-stage p {
-  margin: 0;
-  color: #344054;
-  font-size: 15px;
-  line-height: 1.55;
-}
-
-.explain-formula {
-  min-height: 72px;
-  display: grid;
-  place-items: center;
-  padding: 12px;
-  border-radius: 6px;
-  background: #ffffff;
-  color: #111827;
-  font-family: "Times New Roman", serif;
-  font-size: 22px;
-  text-align: center;
-  box-shadow: inset 0 0 0 1px #e4e7ec;
-}
-
-.explain-cards {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.explain-card {
-  display: grid;
-  gap: 6px;
-  padding: 12px;
-  border: 1px solid #d8dee8;
-  border-radius: 6px;
-  background: #ffffff;
-}
-
-.explain-card strong {
-  color: #101828;
-  font-size: 14px;
-}
-
-.explain-card span {
-  color: #475467;
-  font-size: 14px;
-  line-height: 1.45;
-}
-
-.qt-window.teaching-focus {
-  outline: 3px solid rgba(23, 92, 211, 0.72);
-  outline-offset: -3px;
-  box-shadow: 0 0 0 5px rgba(23, 92, 211, 0.14);
-  transition: outline-color 0.35s ease, box-shadow 0.35s ease;
-}
-
-.qt-window.teaching-focus .window-title {
-  color: #175cd3;
-}
-
-canvas {
-  display: block;
-}
-
-.animation-export-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-  border-radius: 4px;
-  backdrop-filter: blur(3px);
-}
-.animation-export-modal {
-  background: var(--panel-bg, #ffffff);
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px solid var(--border-color, #d8dee8);
-  width: 85%;
-  text-align: center;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-}
-.animation-export-modal h4 {
-  margin: 0 0 10px 0;
-  color: #ffb000;
-  font-size: 16px;
-}
-.animation-export-modal p {
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--text-color, #111827);
-  margin-bottom: 20px;
-}
-.animation-export-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-.animation-export-actions button {
-  padding: 6px 16px;
-  border: 1px solid var(--border-color, #d8dee8);
-  border-radius: 4px;
-  background: transparent;
-  color: var(--text-color, #111827);
-  cursor: pointer;
-}
-.animation-export-actions button.active {
-  background: var(--button-bg-hover, #175cd3);
-  color: #fff;
-  border-color: var(--button-bg-hover, #175cd3);
-}
-
-#predictPane.activity-pane.active {
-  display: flex;
-  flex-direction: column;
-}
-
-.predict-workspace {
-  display: flex;
-  gap: 16px;
-  margin-top: 12px;
-  flex: 1;
-  min-height: 250px;
-}
-
-.predict-draw-area,
-.predict-result-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid #d8dee8;
-  border-radius: 6px;
-  overflow: hidden;
-  background: #fff;
-  min-width: 0;
-}
-
-.predict-tools {
-  padding: 6px 12px;
-  border-bottom: 1px solid #d8dee8;
-  background: #f8fafc;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.predict-tools input[type="color"] {
+.classroom-live-title button {
   width: 32px;
-  height: 24px;
   padding: 0;
-  border: 1px solid #d8dee8;
-  border-radius: 4px;
+  font-size: 18px;
 }
 
-.predict-tools input[type="range"] {
-  width: 80px;
+.classroom-stepper {
+  width: min(520px, 52vw);
+  display: grid;
+  grid-template-columns: repeat(5, minmax(58px, 1fr));
+  gap: 3px;
 }
 
-.predict-tools button {
-  height: 26px;
-  padding: 0 8px;
-  font-size: 13px;
-  border: 1px solid transparent;
-  border-radius: 4px;
+.classroom-step {
+  min-width: 0;
+  min-height: 42px;
+  display: grid;
+  grid-template-columns: auto minmax(0, auto);
+  place-content: center;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  border-bottom: 3px solid var(--border-light);
   background: transparent;
-  color: #475467;
-  cursor: pointer;
+  color: var(--muted-text);
 }
 
-.predict-tools button.active {
-  color: #175cd3;
-  background: #eaf3ff;
-  border-color: #b9d3e8;
+.classroom-step span {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--panel-soft-bg);
+  font-size: 11px;
 }
 
-#predictCanvas {
-  flex: 1;
+.classroom-step.complete {
+  border-bottom-color: var(--phase-negative);
+  color: var(--text-color);
+}
+
+.classroom-step.active {
+  border-bottom-color: var(--accent);
+  color: var(--text-color);
+}
+
+.classroom-step.active span {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.classroom-timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.classroom-timer > span {
+  min-width: 48px;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.classroom-live-grid {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(190px, 0.72fr) minmax(360px, 2.2fr) minmax(220px, 0.88fr);
+  overflow: hidden;
+}
+
+.classroom-task-column,
+.classroom-evidence-column {
+  min-width: 0;
+  min-height: 0;
+  padding: 14px;
+  overflow: auto;
+  background: var(--window-bg);
+}
+
+.classroom-task-column {
+  border-right: 1px solid var(--border-light);
+}
+
+.classroom-evidence-column {
+  border-left: 1px solid var(--border-light);
+}
+
+.classroom-step-copy {
+  display: grid;
+  gap: 7px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.classroom-step-copy > span,
+.classroom-evidence-head > span {
+  width: max-content;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: var(--active-soft-bg);
+  color: var(--accent);
+  font-size: 11px;
+}
+
+.classroom-step-copy p,
+.classroom-hint,
+.classroom-feedback {
+  margin: 0;
+  color: var(--muted-text);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.classroom-step-panel {
+  display: none;
+  gap: 11px;
+  margin-top: 12px;
+}
+
+.classroom-step-panel.active {
+  display: grid;
+}
+
+.classroom-field-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.classroom-checklist {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.classroom-checklist li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+  color: var(--muted-text);
+  font-size: 13px;
+}
+
+.classroom-checklist li span {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--panel-soft-bg);
+  color: var(--accent);
+}
+
+.classroom-observation-column {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 48px minmax(0, 1fr) 82px;
+  background: var(--viewer-bg);
+}
+
+.classroom-observation-head {
+  padding: 7px 11px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--window-bg);
+}
+
+.classroom-phase-key {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted-text);
+  font-size: 11px;
+}
+
+.classroom-phase-key span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.classroom-phase-key .positive { background: var(--phase-positive); }
+.classroom-phase-key .negative { background: var(--phase-negative); }
+.classroom-phase-key .guide { background: #ffbf00; }
+
+.classroom-stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--viewer-bg);
+}
+
+.classroom-stage-layer {
+  position: absolute;
+  inset: 0;
+  display: none;
+  min-width: 0;
+  min-height: 0;
+}
+
+.classroom-stage-layer.active {
+  display: block;
+}
+
+.classroom-three-viewer,
+#classroomSketchCanvas,
+#classroomSnapshotCanvas {
   width: 100%;
   height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+#classroomSnapshotCanvas {
+  display: block;
+  background: var(--viewer-bg);
+  cursor: grab;
+  touch-action: none;
+}
+
+#classroomSnapshotCanvas:active {
+  cursor: grabbing;
+}
+
+.classroom-three-viewer canvas {
+  width: 100% !important;
+  height: 100% !important;
+  touch-action: none;
+}
+
+.classroom-sketch-tools {
+  height: 38px;
+  display: grid;
+  grid-template-columns: 42px minmax(80px, 1fr) repeat(3, auto);
+  gap: 6px;
+  align-items: center;
+  padding: 4px 7px;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--window-bg);
+}
+
+.classroom-sketch-tools input[type="color"] {
+  width: 38px;
+  height: 28px;
+  padding: 1px;
+}
+
+.classroom-sketch-tools button {
+  min-height: 28px;
+}
+
+.classroom-sketch-tools button.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+#classroomSketchCanvas {
+  display: block;
+  height: calc(100% - 38px);
   cursor: crosshair;
   touch-action: none;
-  background: 
-    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    #222;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+    var(--viewer-bg);
   background-size: 28px 28px;
 }
 
-.predict-result-header {
-  padding: 8px 12px;
-  border-bottom: 1px solid #d8dee8;
-  background: #f8fafc;
-  font-size: 14px;
-  font-weight: 600;
-  color: #101828;
-  text-align: center;
+.classroom-compare-stage.active {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.predict-result-image {
-  flex: 1;
-  background-color: #222;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+.classroom-compare-stage > div {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 30px minmax(0, 1fr);
 }
+
+.classroom-compare-stage > div + div {
+  border-left: 1px solid var(--border-light);
+}
+
+.classroom-compare-stage header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--border-light);
+  background: var(--window-bg);
+  font-size: 12px;
+}
+
+.classroom-linked-views {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  padding: 7px;
+  border-top: 1px solid var(--border-light);
+  background: var(--window-bg);
+}
+
+.classroom-linked-views button {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+  padding: 7px;
+  border: 1px solid var(--border-light);
+  border-radius: 5px;
+  background: var(--control-bg);
+  color: var(--text-color);
+  text-align: left;
+}
+
+.classroom-linked-views button.selected {
+  border-color: var(--accent);
+  background: var(--active-soft-bg);
+  color: var(--accent);
+}
+
+.classroom-evidence-head {
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.classroom-answer-list {
+  display: grid;
+  gap: 0;
+  margin: 10px 0;
+}
+
+.classroom-answer-list > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.classroom-answer-list dt,
+.classroom-answer-list dd {
+  margin: 0;
+  font-size: 13px;
+}
+
+.classroom-answer-list dt {
+  color: var(--muted-text);
+}
+
+.classroom-answer-list dd {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.classroom-selected-evidence {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0;
+}
+
+.classroom-selected-evidence ul {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted-text);
+  font-size: 12px;
+}
+
+.classroom-feedback,
+.classroom-conclusion {
+  padding: 10px;
+  border-left: 3px solid var(--accent);
+  background: var(--panel-soft-bg);
+}
+
+.classroom-feedback.success {
+  border-left-color: var(--phase-negative);
+  color: var(--text-color);
+}
+
+.classroom-feedback.warning {
+  border-left-color: #ffbf00;
+  color: var(--text-color);
+}
+
+.classroom-actionbar {
+  padding: 7px 12px;
+  border-top: 1px solid var(--border-light);
+  background: var(--window-bg);
+}
+
+.classroom-teacher-controls,
+.classroom-student-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.classroom-teacher-controls > span {
+  margin-right: 3px;
+  color: var(--muted-text);
+  font-size: 11px;
+}
+
+.classroom-student-preview .classroom-teacher-controls,
+.classroom-student-preview #classroomPreviewModeButton {
+  opacity: 0.45;
+}
+
+.classroom-review-screen {
+  grid-template-rows: auto minmax(320px, 1fr) auto;
+  align-content: stretch;
+}
+
+.classroom-section-head > div:last-child {
+  display: flex;
+  gap: 7px;
+}
+
+.classroom-review-grid {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(360px, 1.55fr) minmax(260px, 0.85fr);
+  gap: 12px;
+}
+
+.classroom-review-visual {
+  min-width: 0;
+  min-height: 300px;
+  border: 1px solid var(--border-light);
+  background: var(--viewer-bg);
+}
+
+.classroom-review-notes {
+  display: grid;
+  align-content: start;
+  border-top: 1px solid var(--border-light);
+}
+
+.classroom-review-notes section {
+  display: grid;
+  gap: 5px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.classroom-review-notes span {
+  color: var(--muted-text);
+  font-size: 11px;
+}
+×nµ¶‰žËkºwµç@ÈÔÔ°€ÈÔÔ°€À¸Àà¤€ÅÁà°ÑÉ…¹ÍÁ…É•¹Ð€ÅÁà¤°4(€€€Ù…È ´µÙ¥•Ý•Èµ‰œ¤ì4(€‰…­É½Õ¹µÍ¥é”è€ÈáÁà€ÈáÁàì4(€ÕÉÍ½ÈèÉ½ÍÍ¡…¥Èì4(€Ñ½Õ µ…Ñ¥½¸è¹½¹”ì4)ô4(4(¹…Ñ¥Ù¥ÑäµÁ…¹•°ì4(€‘¥ÍÁ±…äèÉ¥ì4(€É¥µÑ•µÁ±…Ñ”µÉ½ÝÌè…ÕÑ¼µ¥¹µ…à À°€Å™È¤ì4(€…Àè€ÄÉÁàì4(€…±¥¸µ½¹Ñ•¹ÐèÍÑÉ•Ñ ì4(€µ¥¸µ¡•¥¡Ðè€Àì4(€Á…‘‘¥¹œè€ÄÑÁàì4(€‰…­É½Õ¹è€˜Ý˜Ý˜Üì4(€½Ù•É™±½Üè…ÕÑ¼ì4)ô4(4(¹…Ñ¥Ù¥Ñäµµ½‘”µ‰…Èì4(€‘¥ÍÁ±…äè™±•àì4(€™±•àµÝÉ…ÀèÝÉ…Àì4(€…Àè€áÁàì4(€Á…‘‘¥¹œè€áÁàì4(€‰½É‘•Èè€ÅÁàÍ½±¥€á‘•”àì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÙÁàì4(€‰…­É½Õ¹è€™™™™™˜ì4)ô4(4(¹…Ñ¥Ù¥Ñäµµ½‘”µ‰ÕÑÑ½¸ì4(€¡•¥¡Ðè€ÌÉÁàì4(€Á…‘‘¥¹œè€À€ÄÁÁàì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÑÁàì4(€™½¹ÐµÍ¥é”è€ÄÑÁàì4)ô4(4(¹…Ñ¥Ù¥Ñäµµ½‘”µ‰ÕÑÑ½¸¹…Ñ¥Ù”ì4(€‰½É‘•Èµ½±½Èè€ŒÄÜÕÌì4(€½±½Èè€ŒÄÜÕÌì4(€‰…­É½Õ¹è€•…˜Í™˜ì4)ô4(4(¹™½ÉµÕ±„µÁ…¹•°ì4(€Á…‘‘¥¹œè€ÄÉÁàì4(€½Ù•É™±½Üè…ÕÑ¼ì4(€‰…­É½Õ¹è€˜á™…™Œì4(€½±½Èè€ŒÄÄÄàÈÜì4)ô4(4(¹™½ÉµÕ±„µ½É‰¥Ñ…°ì4(€‘¥ÍÁ±…äèÉ¥ì4(€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìèµ¥¹µ…à À°€Å™È¤…ÕÑ¼ì4(€…±¥¸µ¥Ñ•µÌè‰…Í•±¥¹”ì4(€…Àè€ÄÁÁàì4(€µ…É¥¸µ‰½ÑÑ½´è€ÄÁÁàì4)ô4(4(¹™½ÉµÕ±„µ½É‰¥Ñ…°ÍÑÉ½¹œì4(€½Ù•É™±½Üè¡¥‘‘•¸ì4(€½±½Èè€ŒÄÜÕÌì4(€™½¹ÐµÍ¥é”è€ÈÑÁàì4(€Ñ•áÐµ½Ù•É™±½Üè•±±¥ÁÍ¥Ìì4(€Ý¡¥Ñ”µÍÁ…”è¹½ÝÉ…Àì4)ô4(4(¹™½ÉµÕ±„µ½É‰¥Ñ…°ÍÁ…¸ì4(€½±½Èè€ŒÐÜÔÐØÜì4(€™½¹ÐµÍ¥é”è€ÄÕÁàì4(€Ý¡¥Ñ”µÍÁ…”è¹½ÝÉ…Àì4)ô4(4(¹™½ÉµÕ±„µµ…¥¸ì4(€µ…É¥¸µ‰½ÑÑ½´è€ÄÁÁàì4(€Á…‘‘¥¹œè€ÄÁÁàì4(€‰½É‘•Èè€ÅÁàÍ½±¥€‰™É™˜ì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÙÁàì4(€‰…­É½Õ¹è€™™™™™˜ì4(€½±½Èè€ŒÄÄÄàÈÜì4(€™½¹ÐµÍ¥é”è€ÈÉÁàì4(€±¥¹”µ¡•¥¡Ðè€Ä¸ÌÔì4(€Ñ•áÐµ…±¥¸è•¹Ñ•Èì4)ô4(4(¹™½ÉµÕ±„µ‰É•…­‘½Ý¸ì4(€‘¥ÍÁ±…äèÉ¥ì4(€…Àè€áÁàì4)ô4(4(¹™½ÉµÕ±„µ‰É•…­‘½Ý¸Í•Ñ¥½¸ì4(€Á…‘‘¥¹œè€áÁà€ÄÁÁàì4(€‰½É‘•Èµ±•™Ðè€ÍÁàÍ½±¥€ŒÄÜÕÌì4(€‰…­É½Õ¹è€™™™™™˜ì4)ô4(4(¹™½ÉµÕ±„µ‰É•…­‘½Ý¸ Ìì4(€µ…É¥¸è€À€À€ÑÁàì4(€½±½Èè€ŒÄÜÕÌì4(€™½¹ÐµÍ¥é”è€ÄÙÁàì4)ô4(4(¹™½ÉµÕ±„µ‰É•…­‘½Ý¸Àì4(€µ…É¥¸è€Àì4(€½±½Èè€ŒÄÀÄàÈàì4(€™½¹ÐµÍ¥é”è€ÄÕÁàì4(€±¥¹”µ¡•¥¡Ðè€Ä¸ÐÔì4)ô4(4(¹™½ÉµÕ±„µ™…ÑÌì4(€‘¥ÍÁ±…äèÉ¥ì4(€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹ÌèÉ•Á•…Ð Ì°µ¥¹µ…à À°€Å™È¤¤ì4(€…Àè€áÁàì4(€µ…É¥¸è€ÄÁÁà€À€Àì4)ô4(4(¹™½ÉµÕ±„µ™…ÑÌ‘¥Øì4(€Á…‘‘¥¹œè€ÝÁàì4(€‰½É‘•Èè€ÅÁàÍ½±¥€”Ñ”Ý•Œì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÙÁàì4(€‰…­É½Õ¹è€™™™™™˜ì4)ô4(4(¹™½ÉµÕ±„µ™…ÑÌ‘Ð°4(¹™½ÉµÕ±„µ™…ÑÌ‘ì4(€µ…É¥¸è€Àì4(€Ñ•áÐµ…±¥¸è•¹Ñ•Èì4)ô4(4(¹™½ÉµÕ±„µ™…ÑÌ‘Ðì4(€½±½Èè€ŒØØÜÀàÔì4(€™½¹ÐµÍ¥é”è€ÄÍÁàì4)ô4(4(¹™½ÉµÕ±„µ™…ÑÌ‘ì4(€½±½Èè€ŒÀÀÀÀÀÀì4(€™½¹ÐµÍ¥é”è€ÄÕÁàì4(€™½¹ÐµÝ•¥¡Ðè€ØÀÀì4)ô4(4(¹…¹¥µ…Ñ¥½¸µÁ…¹•°ì4(€‘¥ÍÁ±…äèÉ¥ì4(€É¥µÑ•µÁ±…Ñ”µÉ½ÝÌè…ÕÑ¼µ¥¹µ…à À°€Å™È¤µ¥¹µ…à ÐÉÁà°…ÕÑ¼¤…ÕÑ¼…ÕÑ¼ì4(€…Àè€ÄÁÁàì4(€¡•¥¡Ðè€ÄÀÀ”ì4(€µ¥¸µ¡•¥¡Ðè€Àì4(€½Ù•É™±½Üè¡¥‘‘•¸ì4(€Á…‘‘¥¹œè€ÄÉÁàì4(€‰…­É½Õ¹è€˜á™…™Œì4(€½±½Èè€ŒÄÄÄàÈÜì4)ô4(4(¹…¹¥µ…Ñ¥½¸µ¡•…ì4(€‘¥ÍÁ±…äèÉ¥ì4(€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìè…ÕÑ¼µ¥¹µ…à À°€Å™È¤ì4(€…±¥¸µ¥Ñ•µÌè•¹Ñ•Èì4(€…Àè€ÄÁÁàì4)ô4(4(¹…¹¥µ…Ñ¥½¸µ¡•…ÍÁ…¸ì4(€Á…‘‘¥¹œè€ÑÁà€åÁàì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ääåÁàì4(€‰…­É½Õ¹è€•…˜Í™˜ì4(€½±½Èè€ŒÄÜÕÌì4(€™½¹ÐµÍ¥é”è€ÄÑÁàì4(€Ý¡¥Ñ”µÍÁ…”è¹½ÝÉ…Àì4)ô4(4(¹…¹¥µ…Ñ¥½¸µ¡•…ÍÑÉ½¹œì4(€½Ù•É™±½Üè¡¥‘‘•¸ì4(€™½¹ÐµÍ¥é”è€ÈÁÁàì4(€Ñ•áÐµ½Ù•É™±½Üè•±±¥ÁÍ¥Ìì4(€Ý¡¥Ñ”µÍÁ…”è¹½ÝÉ…Àì4)ô4(4(…¹¥µ…Ñ¥½¹…¹Ù…Ìì4(€‘¥ÍÁ±…äè‰±½¬ì4(€Ý¥‘Ñ è€ÄÀÀ”ì4(€¡•¥¡Ðè€ÄÀÀ”ì4(€µ¥¸µ¡•¥¡Ðè€Àì4(€‰½É‘•Èè€ÅÁàÍ½±¥€á‘•”àì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÙÁàì4(€‰…­É½Õ¹èÙ…È ´µÙ¥•Ý•Èµ‰œ¤ì4)ô4(4(¹…¹¥µ…Ñ¥½¸µÑ•áÐì4(€µ¥¸µ¡•¥¡Ðè€ÐÉÁàì4(€µ…àµ¡•¥¡Ðè€ÔÉÁàì4(€µ…É¥¸è€Àì4(€½Ù•É™±½Üè¡¥‘‘•¸ì4(€½±½Èè€ŒÌÐÐÀÔÐì4(€™½¹ÐµÍ¥é”è€ÄÕÁàì4(€±¥¹”µ¡•¥¡Ðè€Ä¸ÐÔì4)ô4(4(¹…¹¥µ…Ñ¥½¸µÁÉ½É•ÍÌì4(€¡•¥¡Ðè€ÝÁàì4(€½Ù•É™±½Üè¡¥‘‘•¸ì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ääåÁàì4(€‰…­É½Õ¹è€‘‰”Ñ˜Àì4)ô4(4(¹…¹¥µ…Ñ¥½¸µÁÉ½É•ÍÌÍÁ…¸ì4(€‘¥ÍÁ±…äè‰±½¬ì4(€Ý¥‘Ñ è€Àì4(€¡•¥¡Ðè€ÄÀÀ”ì4(€‰½É‘•ÈµÉ…‘¥ÕÌè¥¹¡•É¥Ðì4(€‰…­É½Õ¹è±¥¹•…ÈµÉ…‘¥•¹Ð äÁ‘•œ°€ŒÀÁÝ™˜°€™˜É‰Ø¤ì4)ô4(4(¹…¹¥µ…Ñ¥½¸µ½¹ÑÉ½±Ìì4(€‘¥ÍÁ±…äèÉ¥ì4(€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹ÌèÉ•Á•…Ð Ô°µ¥¹µ…à À°€Å™È¤¤ì4(€…Àè€áÁàì4)ô4(4(¹…¹¥µ…Ñ¥½¸µ½¹ÑÉ½±Ì‰ÕÑÑ½¸ì4(€¡•¥¡Ðè€ÌÉÁàì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÕÁàì4)ô4(4(¹…Ñ¥Ù¥ÑäµÁ…¹”ì4(€‘¥ÍÁ±…äè¹½¹”ì4(€Á…‘‘¥¹œè€ÄÉÁàì4(€‰½É‘•Èè€ÅÁàÍ½±¥€á‘•”àì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÙÁàì4(€‰…­É½Õ¹è€™™™™™˜ì4)ô4(4(¹…Ñ¥Ù¥ÑäµÁ…¹”¹…Ñ¥Ù”ì4(€‘¥ÍÁ±…äè‰±½¬ì4)ô4(4(½µÁ…É•A…¹”¹…Ñ¥Ù¥ÑäµÁ…¹”¹…Ñ¥Ù”ì4(€‘¥ÍÁ±…äèÉ¥ì4(€É¥µÑ•µÁ±…Ñ”µÉ½ÝÌè…ÕÑ¼µ¥¹µ…à À°€Å™È¤…ÕÑ¼ì4(€µ¥¸µ¡•¥¡Ðè€Àì4(€½Ù•É™±½Üè¡¥‘‘•¸ì4)ô4(4(¹…Ñ¥Ù¥Ñäµ…ÉµÉ¥ì4(€‘¥ÍÁ±…äèÉ¥ì4(€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹ÌèÉ•Á•…Ð È°µ¥¹µ…à À°€Å™È¤¤ì4(€…Àè€ÄÁÁàì4)ô4(4(¹…Ñ¥Ù¥Ñäµ…Éì4(€‘¥ÍÁ±…äèÉ¥ì4(€…Àè€ÕÁàì4(€µ¥¸µ¡•¥¡Ðè€àÉÁàì4(€Á…‘‘¥¹œè€ÄÉÁàì4(€Ñ•áÐµ…±¥¸è±•™Ðì4(€…±¥¸µ½¹Ñ•¹ÐèÍÑ…ÉÐì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÙÁàì4(€‰…­É½Õ¹è€˜á™‰™˜ì4)ô4(4(¹…Ñ¥Ù¥Ñäµ…ÉÍÑÉ½¹œì4(€™½¹ÐµÍ¥é”è€ÄÕÁàì4(€½±½Èè€ŒÄÀÄàÈàì4)ô4(4(¹…Ñ¥Ù¥Ñäµ…ÉÍÁ…¸ì4(€™½¹ÐµÍ¥é”è€ÄÍÁàì4(€±¥¹”µ¡•¥¡Ðè€Ä¸Ðì4(€½±½Èè€ŒÐÜÔÐØÜì4)ô4(4(¹…Ñ¥Ù¥ÑäµÉ½Üì4(€‘¥ÍÁ±…äèÉ¥ì4(€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìèµ¥¹µ…à ÄÐÁÁà°€Å™È¤…ÕÑ¼…ÕÑ¼ì4(€…Àè€ÄÁÁàì4(€…±¥¸µ¥Ñ•µÌè•¹ì4)ô4(4(¹…Ñ¥Ù¥ÑäµÉ½Ü¹½µÁ…Ðì4(€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹ÌèÉ•Á•…Ð Ì°…ÕÑ¼¤ì4(€©ÕÍÑ¥™äµ½¹Ñ•¹ÐèÍÑ…ÉÐì4)ô4(4(¹…Ñ¥Ù¥ÑäµÉ½Ü¹½µÁ…É”µÉ½Üì4(€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìèµ¥¹µ…à ÄÐÁÁà°€Å™È¤µ¥¹µ…à ÄÐÁÁà°€Å™È¤…ÕÑ¼ì4)ô4(4(¹½µÁ…É”µÙ¥•ÜµÉ¥ì4(€‘¥ÍÁ±…äèÉ¥ì4(€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹ÌèÉ•Á•…Ð È°µ¥¹µ…à À°€Å™È¤¤ì4(€É¥µ…ÕÑ¼µÉ½ÝÌèµ¥¹µ…à À°€Å™È¤ì4(€…Àè€ÄÁÁàì4(€µ¥¸µ¡•¥¡Ðè€Àì4(€µ…É¥¸µÑ½Àè€ÄÉÁàì4)ô4(4(¹½µÁ…É”µÙ¥•Üµ…Éì4(€‘¥ÍÁ±…äèÉ¥ì4(€É¥µÑ•µÁ±…Ñ”µÉ½ÝÌè€ÌÉÁàµ¥¹µ…à À°€Å™È¤…ÕÑ¼ì4(€µ¥¸µÝ¥‘Ñ è€Àì4(€µ¥¸µ¡•¥¡Ðè€Àì4(€‰½É‘•Èè€ÅÁàÍ½±¥€á‘•”àì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÙÁàì4(€½Ù•É™±½Üè¡¥‘‘•¸ì4(€‰…­É½Õ¹è€™™™™™˜ì4)ô4(4(¹½µÁ…É”µÙ¥•Üµ…É¡•…‘•Èì4(€‘¥ÍÁ±…äèÉ¥ì4(€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìèµ¥¹µ…à À°€Å™È¤…ÕÑ¼ì4(€…±¥¸µ¥Ñ•µÌè•¹Ñ•Èì4(€…Àè€áÁàì4(€Á…‘‘¥¹œè€À€áÁàì4(€‰½É‘•Èµ‰½ÑÑ½´è€ÅÁàÍ½±¥€”Ñ”Ý•Œì4(€‰…­É½Õ¹è€˜á™…™Œì4(€™½¹ÐµÍ¥é”è€ÄÑÁàì4)ô4(4(¹½µÁ…É”µÙ¥•Üµ…É¡•…‘•È‰ÕÑÑ½¸ì4(€¡•¥¡Ðè€ÈÑÁàì4(€Á…‘‘¥¹œè€À€áÁàì4(€™½¹ÐµÍ¥é”è€ÄÉÁàì4)ô4(4(¹½µÁ…É”µÙ¥•Ý•Èì4(€µ¥¸µÝ¥‘Ñ è€Àì4(€µ¥¸µ¡•¥¡Ðè€Àì4(€‰…­É½Õ¹èÙ…È ´µÙ¥•Ý•Èµ‰œ¤ì4)ô4(4(¹½µÁ…É”µÙ¥•Ý•È…¹Ù…Ìì4(€Ý¥‘Ñ è€ÄÀÀ”€…¥µÁ½ÉÑ…¹Ðì4(€¡•¥¡Ðè€ÄÀÀ”€…¥µÁ½ÉÑ…¹Ðì4(€Ñ½Õ µ…Ñ¥½¸è¹½¹”ì4)ô4(4(¹½µÁ…É”µ¹½Ñ•Ìì4(€µ…É¥¸è€Àì4(€Á…‘‘¥¹œè€áÁàì4(€™½¹ÐµÍ¥é”è€ÄÍÁàì4(€±¥¹”µ¡•¥¡Ðè€Ä¸Ðì4(€½±½Èè€ŒÌÐÐÀÔÐì4)ô4(4(¹…Ñ¥Ù¥ÑäµÉ½Ü±…‰•°ì4(€µ…É¥¸è€Àì4(€™½¹ÐµÍ¥é”è€ÄÑÁàì4)ô4(4(¹…Ñ¥Ù¥ÑäµÉ½Ü‰ÕÑÑ½¸ì4(€¡•¥¡Ðè€ÌÑÁàì4(€Á…‘‘¥¹œè€À€ÄÉÁàì4)ô4(4(¹…Ñ¥Ù¥ÑäµÑ•áÐì4(€µ…É¥¸µÑ½Àè€ÄÉÁàì4(€½±½Èè€ŒÌÐÐÀÔÐì4(€™½¹ÐµÍ¥é”è€ÄÕÁàì4(€±¥¹”µ¡•¥¡Ðè€Ä¸Ôì4)ô4(4(¹•áÁ±…¥¸µÍ¡•±°ì4(€‘¥ÍÁ±…äèÉ¥ì4(€…Àè€ÄÉÁàì4)ô4(4(¹•áÁ±…¥¸µ½¹ÑÉ½±Ìì4(€‘¥ÍÁ±…äè™±•àì4(€™±•àµÝÉ…ÀèÝÉ…Àì4(€…Àè€áÁàì4)ô4(4(¹•áÁ±…¥¸µ½¹ÑÉ½±Ì‰ÕÑÑ½¸ì4(€¡•¥¡Ðè€ÌÉÁàì4(€Á…‘‘¥¹œè€À€ÄÉÁàì4)ô4(4(¹•áÁ±…¥¸µÁÉ½É•ÍÌì4(€¡•¥¡Ðè€áÁàì4(€½Ù•É™±½Üè¡¥‘‘•¸ì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ääåÁàì4(€‰…­É½Õ¹è€”Ñ”Ý•Œì4)ô4(4(¹•áÁ±…¥¸µÁÉ½É•ÍÌÍÁ…¸ì4(€‘¥ÍÁ±…äè‰±½¬ì4(€Ý¥‘Ñ è€À”ì4(€¡•¥¡Ðè€ÄÀÀ”ì4(€‰½É‘•ÈµÉ…‘¥ÕÌè¥¹¡•É¥Ðì4(€‰…­É½Õ¹è±¥¹•…ÈµÉ…‘¥•¹Ð äÁ‘•œ°€ŒÁ•„Õ”ä°€”ÀÀÁŒÜ¤ì4(€ÑÉ…¹Í¥Ñ¥½¸èÝ¥‘Ñ €À¸ÄáÌ±¥¹•…Èì4)ô4(4(¹•áÁ±…¥¸µÍÑ…”ì4(€‘¥ÍÁ±…äèÉ¥ì4(€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìèµ¥¹µ…à À°€Ä¸Ñ™È¤µ¥¹µ…à ÈÈÁÁà°€À¸å™È¤ì4(€…Àè€ÄÑÁàì4(€…±¥¸µ¥Ñ•µÌè•¹Ñ•Èì4(€µ¥¸µ¡•¥¡Ðè€ÄÌÉÁàì4(€Á…‘‘¥¹œè€ÄÑÁàì4(€‰½É‘•Èè€ÅÁàÍ½±¥€á‘•”àì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÙÁàì4(€‰…­É½Õ¹è€˜á™‰™˜ì4)ô4(4(¹•áÁ±…¥¸µÍÑ•Àµ‰…‘”ì4(€‘¥ÍÁ±…äè¥¹±¥¹”µ‰±½¬ì4(€µ…É¥¸µ‰½ÑÑ½´è€áÁàì4(€Á…‘‘¥¹œè€ÍÁà€áÁàì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ääåÁàì4(€‰…­É½Õ¹è€•…˜Í™˜ì4(€½±½Èè€ŒÄÜÕÌì4(€™½¹ÐµÍ¥é”è€ÄÍÁàì4)ô4(4(¹•áÁ±…¥¸µÍÑ…” Ìì4(€µ…É¥¸è€À€À€áÁàì4(€½±½Èè€ŒÄÀÄàÈàì4(€™½¹ÐµÍ¥é”è€ÈÁÁàì4(€™½¹ÐµÝ•¥¡Ðè€ØÀÀì4)ô4(4(¹•áÁ±…¥¸µÍÑ…”Àì4(€µ…É¥¸è€Àì4(€½±½Èè€ŒÌÐÐÀÔÐì4(€™½¹ÐµÍ¥é”è€ÄÕÁàì4(€±¥¹”µ¡•¥¡Ðè€Ä¸ÔÔì4)ô4(4(¹•áÁ±…¥¸µ™½ÉµÕ±„ì4(€µ¥¸µ¡•¥¡Ðè€ÜÉÁàì4(€‘¥ÍÁ±…äèÉ¥ì4(€Á±…”µ¥Ñ•µÌè•¹Ñ•Èì4(€Á…‘‘¥¹œè€ÄÉÁàì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÙÁàì4(€‰…­É½Õ¹è€™™™™™˜ì4(€½±½Èè€ŒÄÄÄàÈÜì4(€™½¹Ðµ™…µ¥±äè€‰Q¥µ•Ì9•ÜI½µ…¸ˆ°Í•É¥˜ì4(€™½¹ÐµÍ¥é”è€ÈÉÁàì4(€Ñ•áÐµ…±¥¸è•¹Ñ•Èì4(€‰½àµÍ¡…‘½Üè¥¹Í•Ð€À€À€À€ÅÁà€”Ñ”Ý•Œì4)ô4(4(¹•áÁ±…¥¸µ…É‘Ìì4(€‘¥ÍÁ±…äèÉ¥ì4(€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹ÌèÉ•Á•…Ð È°µ¥¹µ…à À°€Å™È¤¤ì4(€…Àè€ÄÁÁàì4)ô4(4(¹•áÁ±…¥¸µ…Éì4(€‘¥ÍÁ±…äèÉ¥ì4(€…Àè€ÙÁàì4(€Á…‘‘¥¹œè€ÄÉÁàì4(€‰½É‘•Èè€ÅÁàÍ½±¥€á‘•”àì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÙÁàì4(€‰…­É½Õ¹è€™™™™™˜ì4)ô4(4(¹•áÁ±…¥¸µ…ÉÍÑÉ½¹œì4(€½±½Èè€ŒÄÀÄàÈàì4(€™½¹ÐµÍ¥é”è€ÄÑÁàì4)ô4(4(¹•áÁ±…¥¸µ…ÉÍÁ…¸ì4(€½±½Èè€ŒÐÜÔÐØÜì4(€™½¹ÐµÍ¥é”è€ÄÑÁàì4(€±¥¹”µ¡•¥¡Ðè€Ä¸ÐÔì4)ô4(4(¹ÅÐµÝ¥¹‘½Ü¹Ñ•…¡¥¹œµ™½ÕÌì4(€½ÕÑ±¥¹”è€ÍÁàÍ½±¥É‰„ ÈÌ°€äÈ°€ÈÄÄ°€À¸ÜÈ¤ì4(€½ÕÑ±¥¹”µ½™™Í•Ðè€´ÍÁàì4(€‰½àµÍ¡…‘½Üè€À€À€À€ÕÁàÉ‰„ ÈÌ°€äÈ°€ÈÄÄ°€À¸ÄÐ¤ì4(€ÑÉ…¹Í¥Ñ¥½¸è½ÕÑ±¥¹”µ½±½È€À¸ÌÕÌ•…Í”°‰½àµÍ¡…‘½Ü€À¸ÌÕÌ•…Í”ì4)ô4(4(¹ÅÐµÝ¥¹‘½Ü¹Ñ•…¡¥¹œµ™½ÕÌ€¹Ý¥¹‘½ÜµÑ¥Ñ±”ì4(€½±½Èè€ŒÄÜÕÌì4)ô4(4)…¹Ù…Ìì4(€‘¥ÍÁ±…äè‰±½¬ì4)ô4(4(¹…¹¥µ…Ñ¥½¸µ•áÁ½ÉÐµ½Ù•É±…äì4(€Á½Í¥Ñ¥½¸è…‰Í½±ÕÑ”ì4(€Ñ½Àè€Àì4(€±•™Ðè€Àì4(€É¥¡Ðè€Àì4(€‰½ÑÑ½´è€Àì4(€‰…­É½Õ¹èÉ‰„ À°€À°€À°€À¸Ü¤ì4(€‘¥ÍÁ±…äè™±•àì4(€©ÕÍÑ¥™äµ½¹Ñ•¹Ðè•¹Ñ•Èì4(€…±¥¸µ¥Ñ•µÌè•¹Ñ•Èì4(€èµ¥¹‘•àè€ÄÀÀì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÑÁàì4(€‰…­‘É½Àµ™¥±Ñ•Èè‰±ÕÈ ÍÁà¤ì4)ô4(¹…¹¥µ…Ñ¥½¸µ•áÁ½ÉÐµµ½‘…°ì4(€‰…­É½Õ¹èÙ…È ´µÁ…¹•°µ‰œ°€™™™™™˜¤ì4(€Á…‘‘¥¹œè€ÈÁÁàì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€áÁàì4(€‰½É‘•Èè€ÅÁàÍ½±¥Ù…È ´µ‰½É‘•Èµ½±½È°€á‘•”à¤ì4(€Ý¥‘Ñ è€àÔ”ì4(€Ñ•áÐµ…±¥¸è•¹Ñ•Èì4(€‰½àµÍ¡…‘½Üè€À€áÁà€ÈÑÁàÉ‰„ À°À°À°À¸Ô¤ì4)ô4(¹…¹¥µ…Ñ¥½¸µ•áÁ½ÉÐµµ½‘…° Ðì4(€µ…É¥¸è€À€À€ÄÁÁà€Àì4(€½±½Èè€™™ˆÀÀÀì4(€™½¹ÐµÍ¥é”è€ÄÙÁàì4)ô4(¹…¹¥µ…Ñ¥½¸µ•áÁ½ÉÐµµ½‘…°Àì4(€™½¹ÐµÍ¥é”è€ÄÍÁàì4(€±¥¹”µ¡•¥¡Ðè€Ä¸Ôì4(€½±½ÈèÙ…È ´µÑ•áÐµ½±½È°€ŒÄÄÄàÈÜ¤ì4(€µ…É¥¸µ‰½ÑÑ½´è€ÈÁÁàì4)ô4(¹…¹¥µ…Ñ¥½¸µ•áÁ½ÉÐµ…Ñ¥½¹Ìì4(€‘¥ÍÁ±…äè™±•àì4(€…Àè€ÄÉÁàì4(€©ÕÍÑ¥™äµ½¹Ñ•¹Ðè•¹Ñ•Èì4)ô4(¹…¹¥µ…Ñ¥½¸µ•áÁ½ÉÐµ…Ñ¥½¹Ì‰ÕÑÑ½¸ì4(€Á…‘‘¥¹œè€ÙÁà€ÄÙÁàì4(€‰½É‘•Èè€ÅÁàÍ½±¥Ù…È ´µ‰½É‘•Èµ½±½È°€á‘•”à¤ì4(€Ý¥‘Ñ è€ÄÀÀ”€…¥µÁ½ÉÑ…¹Ðì4(€¡•¥¡Ðè€ÄÀÀ”€…¥µÁ½ÉÑ…¹Ðì4(€Ñ½Õ µ…Ñ¥½¸è¹½¹”ì4)ô4(4(¹½µÁ…É”µ¹½Ñ•Ìì4(€µ…É¥¸è€Àì4(€Á…‘‘¥¹œè€áÁàì4(€™½¹ÐµÍ¥é”è€ÄÍÁàì4(€±¥¹”µ¡•¥¡Ðè€Ä¸Ðì4(€½±½Èè€ŒÌÐÐÀÔÐì4)ô4(4(¹…Ñ¥Ù¥ÑäµÉ½Ü±…‰•°ì4(€µ…É¥¸è€Àì4(€™½¹ÐµÍ¥é”è€ÄÑÁàì4)ô4(4(¹…Ñ¥Ù¥ÑäµÉ½Ü‰ÕÑÑ½¸ì4(€¡•¥¡Ðè€ÌÑÁàì4(€Á…‘‘¥¹œè€À€ÄÉÁàì4)ô4(4(¹…Ñ¥Ù¥ÑäµÑ•áÐì4(€µ…É¥¸µÑ½Àè€ÄÉÁàì4(€½±½Èè€ŒÌÐÐÀÔÐì4(€™½¹ÐµÍ¥é”è€ÄÕÁàì4(€±¥¹”µ¡•¥¡Ðè€Ä¸Ôì4)ô4(4(¹•áÁ±…¥¸µÍ¡•±°ì4(€‘¥ÍÁ±…äèÉ¥ì4(€…Àè€ÄÉÁàì4)ô4(4(¹•áÁ±…¥¸µ½¹ÑÉ½±Ìì4(€‘¥ÍÁ±…äè™±•àì4(€™±•àµÝÉ…ÀèÝÉ…Àì4(€…Àè€áÁàì4)ô4(4(¹•áÁ±…¥¸µ½¹ÑÉ½±Ì‰ÕÑÑ½¸ì4(€¡•¥¡Ðè€ÌÉÁàì4(€Á…‘‘¥¹œè€À€ÄÉÁàì4)ô4(4(¹•áÁ±…¥¸µÁÉ½É•ÍÌì4(€¡•¥¡Ðè€áÁàì4(€½Ù•É™±½Üè¡¥‘‘•¸ì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ääåÁàì4(€‰…­É½Õ¹è€”Ñ”Ý•Œì4)ô4(4(¹•áÁ±…¥¸µÁÉ½É•ÍÌÍÁ…¸ì4(€‘¥ÍÁ±…äè‰±½¬ì4(€Ý¥‘Ñ è€À”ì4(€¡•¥¡Ðè€ÄÀÀ”ì4(€‰½É‘•ÈµÉ…‘¥ÕÌè¥¹¡•É¥Ðì4(€‰…­É½Õ¹è±¥¹•…ÈµÉ…‘¥•¹Ð äÁ‘•œ°€ŒÁ•„Õ”ä°€”ÀÀÁŒÜ¤ì4(€ÑÉ…¹Í¥Ñ¥½¸èÝ¥‘Ñ €À¸ÄáÌ±¥¹•…Èì4)ô4(4(¹•áÁ±…¥¸µÍÑ…”ì4(€‘¥ÍÁ±…äèÉ¥ì4(€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹Ìèµ¥¹µ…à À°€Ä¸Ñ™È¤µ¥¹µ…à ÈÈÁÁà°€À¸å™È¤ì4(€…Àè€ÄÑÁàì4(€…±¥¸µ¥Ñ•µÌè•¹Ñ•Èì4(€µ¥¸µ¡•¥¡Ðè€ÄÌÉÁàì4(€Á…‘‘¥¹œè€ÄÑÁàì4(€‰½É‘•Èè€ÅÁàÍ½±¥€á‘•”àì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÙÁàì4(€‰…­É½Õ¹è€˜á™‰™˜ì4)ô4(4(¹•áÁ±…¥¸µÍÑ•Àµ‰…‘”ì4(€‘¥ÍÁ±…äè¥¹±¥¹”µ‰±½¬ì4(€µ…É¥¸µ‰½ÑÑ½´è€áÁàì4(€Á…‘‘¥¹œè€ÍÁà€áÁàì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ääåÁàì4(€‰…­É½Õ¹è€•…˜Í™˜ì4(€½±½Èè€ŒÄÜÕÌì4(€™½¹ÐµÍ¥é”è€ÄÍÁàì4)ô4(4(¹•áÁ±…¥¸µÍÑ…” Ìì4(€µ…É¥¸è€À€À€áÁàì4(€½±½Èè€ŒÄÀÄàÈàì4(€™½¹ÐµÍ¥é”è€ÈÁÁàì4(€™½¹ÐµÝ•¥¡Ðè€ØÀÀì4)ô4(4(¹•áÁ±…¥¸µÍÑ…”Àì4(€µ…É¥¸è€Àì4(€½±½Èè€ŒÌÐÐÀÔÐì4(€™½¹ÐµÍ¥é”è€ÄÕÁàì4(€±¥¹”µ¡•¥¡Ðè€Ä¸ÔÔì4)ô4(4(¹•áÁ±…¥¸µ™½ÉµÕ±„ì4(€µ¥¸µ¡•¥¡Ðè€ÜÉÁàì4(€‘¥ÍÁ±…äèÉ¥ì4(€Á±…”µ¥Ñ•µÌè•¹Ñ•Èì4(€Á…‘‘¥¹œè€ÄÉÁàì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÙÁàì4(€‰…­É½Õ¹è€™™™™™˜ì4(€½±½Èè€ŒÄÄÄàÈÜì4(€™½¹Ðµ™…µ¥±äè€‰Q¥µ•Ì9•ÜI½µ…¸ˆ°Í•É¥˜ì4(€™½¹ÐµÍ¥é”è€ÈÉÁàì4(€Ñ•áÐµ…±¥¸è•¹Ñ•Èì4(€‰½àµÍ¡…‘½Üè¥¹Í•Ð€À€À€À€ÅÁà€”Ñ”Ý•Œì4)ô4(4(¹•áÁ±…¥¸µ…É‘Ìì4(€‘¥ÍÁ±…äèÉ¥ì4(€É¥µÑ•µÁ±…Ñ”µ½±Õµ¹ÌèÉ•Á•…Ð È°µ¥¹µ…à À°€Å™È¤¤ì4(€…Àè€ÄÁÁàì4)ô4(4(¹•áÁ±…¥¸µ…Éì4(€‘¥ÍÁ±…äèÉ¥ì4(€…Àè€ÙÁàì4(€Á…‘‘¥¹œè€ÄÉÁàì4(€‰½É‘•Èè€ÅÁàÍ½±¥€á‘•”àì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÙÁàì4(€‰…­É½Õ¹è€™™™™™˜ì4)ô4(4(¹•áÁ±…¥¸µ…ÉÍÑÉ½¹œì4(€½±½Èè€ŒÄÀÄàÈàì4(€™½¹ÐµÍ¥é”è€ÄÑÁàì4)ô4(4(¹•áÁ±…¥¸µ…ÉÍÁ…¸ì4(€½±½Èè€ŒÐÜÔÐØÜì4(€™½¹ÐµÍ¥é”è€ÄÑÁàì4(€±¥¹”µ¡•¥¡Ðè€Ä¸ÐÔì4)ô4(4(¹ÅÐµÝ¥¹‘½Ü¹Ñ•…¡¥¹œµ™½ÕÌì4(€½ÕÑ±¥¹”è€ÍÁàÍ½±¥É‰„ ÈÌ°€äÈ°€ÈÄÄ°€À¸ÜÈ¤ì4(€½ÕÑ±¥¹”µ½™™Í•Ðè€´ÍÁàì4(€‰½àµÍ¡…‘½Üè€À€À€À€ÕÁàÉ‰„ ÈÌ°€äÈ°€ÈÄÄ°€À¸ÄÐ¤ì4(€ÑÉ…¹Í¥Ñ¥½¸è½ÕÑ±¥¹”µ½±½È€À¸ÌÕÌ•…Í”°‰½àµÍ¡…‘½Ü€À¸ÌÕÌ•…Í”ì4)ô4(4(¹ÅÐµÝ¥¹‘½Ü¹Ñ•…¡¥¹œµ™½ÕÌ€¹Ý¥¹‘½ÜµÑ¥Ñ±”ì4(€½±½Èè€ŒÄÜÕÌì4)ô4(4)…¹Ù…Ìì4(€‘¥ÍÁ±…äè‰±½¬ì4)ô4(4(¹…¹¥µ…Ñ¥½¸µ•áÁ½ÉÐµ½Ù•É±…äì4(€Á½Í¥Ñ¥½¸è…‰Í½±ÕÑ”ì4(€Ñ½Àè€Àì4(€±•™Ðè€Àì4(€É¥¡Ðè€Àì4(€‰½ÑÑ½´è€Àì4(€‰…­É½Õ¹èÉ‰„ À°€À°€À°€À¸Ü¤ì4(€‘¥ÍÁ±…äè™±•àì4(€©ÕÍÑ¥™äµ½¹Ñ•¹Ðè•¹Ñ•Èì4(€…±¥¸µ¥Ñ•µÌè•¹Ñ•Èì4(€èµ¥¹‘•àè€ÄÀÀì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÑÁàì4(€‰…­‘É½Àµ™¥±Ñ•Èè‰±ÕÈ ÍÁà¤ì4)ô4(¹…¹¥µ…Ñ¥½¸µ•áÁ½ÉÐµµ½‘…°ì4(€‰…­É½Õ¹èÙ…È ´µÁ…¹•°µ‰œ°€™™™™™˜¤ì4(€Á…‘‘¥¹œè€ÈÁÁàì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€áÁàì4(€‰½É‘•Èè€ÅÁàÍ½±¥Ù…È ´µ‰½É‘•Èµ½±½È°€á‘•”à¤ì4(€Ý¥‘Ñ è€àÔ”ì4(€Ñ•áÐµ…±¥¸è•¹Ñ•Èì4(€‰½àµÍ¡…‘½Üè€À€áÁà€ÈÑÁàÉ‰„ À°À°À°À¸Ô¤ì4)ô4(¹…¹¥µ…Ñ¥½¸µ•áÁ½ÉÐµµ½‘…° Ðì4(€µ…É¥¸è€À€À€ÄÁÁà€Àì4(€½±½Èè€™™ˆÀÀÀì4(€™½¹ÐµÍ¥é”è€ÄÙÁàì4)ô4(¹…¹¥µ…Ñ¥½¸µ•áÁ½ÉÐµµ½‘…°Àì4(€™½¹ÐµÍ¥é”è€ÄÍÁàì4(€±¥¹”µ¡•¥¡Ðè€Ä¸Ôì4(€½±½ÈèÙ…È ´µÑ•áÐµ½±½È°€ŒÄÄÄàÈÜ¤ì4(€µ…É¥¸µ‰½ÑÑ½´è€ÈÁÁàì4)ô4(¹…¹¥µ…Ñ¥½¸µ•áÁ½ÉÐµ…Ñ¥½¹Ìì4(€‘¥ÍÁ±…äè™±•àì4(€…Àè€ÄÉÁàì4(€©ÕÍÑ¥™äµ½¹Ñ•¹Ðè•¹Ñ•Èì4)ô4(¹…¹¥µ…Ñ¥½¸µ•áÁ½ÉÐµ…Ñ¥½¹Ì‰ÕÑÑ½¸ì4(€Á…‘‘¥¹œè€ÙÁà€ÄÙÁàì4(€‰½É‘•Èè€ÅÁàÍ½±¥Ù…È ´µ‰½É‘•Èµ½±½È°€á‘•”à¤ì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÑÁàì4(€‰…­É½Õ¹èÑÉ…¹ÍÁ…É•¹Ðì4(€½±½ÈèÙ…È ´µÑ•áÐµ½±½È°€ŒÄÄÄàÈÜ¤ì4(€ÕÉÍ½ÈèÁ½¥¹Ñ•Èì4)ô4(¹…¹¥µ…Ñ¥½¸µ•áÁ½ÉÐµ…Ñ¥½¹Ì‰ÕÑÑ½¸¹…Ñ¥Ù”ì4(€‰…­É½Õ¹èÙ…È ´µ‰ÕÑÑ½¸µ‰œµ¡½Ù•È°€ŒÄÜÕÌ¤ì4(€½±½Èè€™™˜ì4(€‰½É‘•Èµ½±½ÈèÙ…È ´µ‰ÕÑÑ½¸µ‰œµ¡½Ù•È°€ŒÄÜÕÌ¤ì4)ô4(4(ÁÉ•‘¥ÑA…¹”¹…Ñ¥Ù¥ÑäµÁ…¹”¹…Ñ¥Ù”ì4(€‘¥ÍÁ±…äè™±•àì4(€™±•àµ‘¥É•Ñ¥½¸è½±Õµ¸ì4)ô4(4(¹ÁÉ•‘¥ÐµÝ½É­ÍÁ…”ì4(€‘¥ÍÁ±…äè™±•àì4(€…Àè€ÄÙÁàì4(€µ…É¥¸µÑ½Àè€ÄÉÁàì4(€™±•àè€Äì4(€µ¥¸µ¡•¥¡Ðè€ÈÔÁÁàì4)ô4(4(¹ÁÉ•‘¥Ðµ‘É…Üµ…É•„°4(¹ÁÉ•‘¥ÐµÉ•ÍÕ±Ðµ…É•„ì4(€™±•àè€Äì4(€‘¥ÍÁ±…äè™±•àì4(€™±•àµ‘¥É•Ñ¥½¸è½±Õµ¸ì4(€‰½É‘•Èè€ÅÁàÍ½±¥€á‘•”àì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÙÁàì4(€½Ù•É™±½Üè¡¥‘‘•¸ì4(€‰…­É½Õ¹è€™™˜ì4(€µ¥¸µÝ¥‘Ñ è€Àì4)ô4(4(¹ÁÉ•‘¥ÐµÑ½½±Ìì4(€Á…‘‘¥¹œè€ÙÁà€ÄÉÁàì4(€‰½É‘•Èµ‰½ÑÑ½´è€ÅÁàÍ½±¥€á‘•”àì4(€‰…­É½Õ¹è€˜á™…™Œì4(€™±•àµÍ¡É¥¹¬è€Àì4(€‘¥ÍÁ±…äè™±•àì4(€…±¥¸µ¥Ñ•µÌè•¹Ñ•Èì4(€…Àè€áÁàì4)ô4(4(¹ÁÉ•‘¥ÐµÑ½½±Ì¥¹ÁÕÑmÑåÁ”ô‰½±½È‰tì4(€Ý¥‘Ñ è€ÌÉÁàì4(€¡•¥¡Ðè€ÈÑÁàì4(€Á…‘‘¥¹œè€Àì4(€‰½É‘•Èè€ÅÁàÍ½±¥€á‘•”àì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÑÁàì4)ô4(4(¹ÁÉ•‘¥ÐµÑ½½±Ì¥¹ÁÕÑmÑåÁ”ô‰É…¹”‰tì4(€Ý¥‘Ñ è€àÁÁàì4)ô4(4(¹ÁÉ•‘¥ÐµÑ½½±Ì‰ÕÑÑ½¸ì4(€¡•¥¡Ðè€ÈÙÁàì4(€Á…‘‘¥¹œè€À€áÁàì4(€™½¹ÐµÍ¥é”è€ÄÍÁàì4(€‰½É‘•Èè€ÅÁàÍ½±¥ÑÉ…¹ÍÁ…É•¹Ðì4(€‰½É‘•ÈµÉ…‘¥ÕÌè€ÑÁàì4(€‰…­É½Õ¹èÑÉ…¹ÍÁ…É•¹Ðì4(€½±½Èè€ŒÐÜÔÐØÜì4(€ÕÉÍ½ÈèÁ½¥¹Ñ•Èì4)ô4(4(¹ÁÉ•‘¥ÐµÑ½½±Ì‰ÕÑÑ½¸¹…Ñ¥Ù”ì4(€½±½Èè€ŒÄÜÕÌì4(€‰…­É½Õ¹è€•…˜Í™˜ì4(€‰½É‘•Èµ½±½Èè€ˆåÍ”àì4)ô4(4(ÁÉ•‘¥Ñ…¹Ù…Ìì4(€™±•àè€Äì4(€Ý¥‘Ñ è€ÄÀÀ”ì4(€¡•¥¡Ðè€ÄÀÀ”ì4(€ÕÉÍ½ÈèÉ½ÍÍ¡…¥Èì4(€Ñ½Õ µ…Ñ¥½¸è¹½¹”ì4(€‰…­É½Õ¹è€4(€€€±¥¹•…ÈµÉ…‘¥•¹Ð¡É‰„ ÈÔÔ°€ÈÔÔ°€ÈÔÔ°€À¸Àà¤€ÅÁà°ÑÉ…¹ÍÁ…É•¹Ð€ÅÁà¤°4(€€€±¥¹•…ÈµÉ…‘¥•¹Ð äÁ‘•œ°É‰„ ÈÔÔ°€ÈÔÔ°€ÈÔÔ°€À¸Àà¤€ÅÁà°ÑÉ…¹ÍÁ…É•¹Ð€ÅÁà¤°4(€€€€ŒÈÈÈì4(€‰…­É½Õ¹µÍ¥é”è€ÈáÁà€ÈáÁàì4)ô4(4(¹ÁÉ•‘¥ÐµÉ•ÍÕ±Ðµ¡•…‘•Èì4(€Á…‘‘¥¹œè€áÁà€ÄÉÁàì4(€‰½É‘•Èµ‰½ÑÑ½´è€ÅÁàÍ½±¥€á‘•”àì4(€‰…­É½Õ¹è€˜á™…™Œì4(€™½¹ÐµÍ¥é”è€ÄÑÁàì4(€™½¹ÐµÝ•¥¡Ðè€ØÀÀì4(€½±½Èè€ŒÄÀÄàÈàì4(€Ñ•áÐµ…±¥¸è•¹Ñ•Èì4)ô4(4(¹ÁÉ•‘¥ÐµÉ•ÍÕ±Ðµ¥µ…”ì4(€™±•àè€Äì4(€‰…­É½Õ¹µ½±½Èè€ŒÈÈÈì4(€‰…­É½Õ¹µÍ¥é”è½¹Ñ…¥¸ì4(€‰…­É½Õ¹µÁ½Í¥Ñ¥½¸è•¹Ñ•Èì4(€‰…­É½Õ¹µÉ•Á•…Ðè¹¼µÉ•Á•…Ðì4)ô4

@@ -1,3 +1,5 @@
+import { initClassroom, initializeClassroomOptions, showClassroomPane } from "./classroom.js";
+
 let presetsForN;
 let el;
 let compareViews;
@@ -59,6 +61,18 @@ export function initActivities(api) {
   redrawPredictCanvas = api.redrawPredictCanvas;
   predictSketchState = api.predictSketchState;
   activityTargets = allOrbitalPresets(6);
+  initClassroom({
+    el,
+    targets: activityTargets,
+    UI,
+    parseTargetValue,
+    applyTarget,
+    renderCompareView,
+    compareViewFor,
+    updateCompareCamera,
+    renderOrbital,
+    resizeAfterLayoutChange,
+  });
 }
 
 function allOrbitalPresets(maxN = 6) {
@@ -85,6 +99,7 @@ function initializeActivityOptions() {
   fillSelectOptions(el.challengeGuess, activityTargets, "2,1,1");
   fillSelectOptions(el.compareA, activityTargets, "2,1,1");
   fillSelectOptions(el.compareB, activityTargets, "3,1,1");
+  initializeClassroomOptions();
 }
 
 function compareViewFor(container) {
@@ -104,11 +119,12 @@ function compareViewFor(container) {
   container.appendChild(rendererObject.domElement);
   const controlsObject = makeFreeRotationControls(cameraObject, rendererObject.domElement);
   bindViewerControlRecovery(container, controlsObject);
-  sceneObject.add(new THREE.AmbientLight(0xffffff, 0.5));
-  const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
-  keyLight.position.set(0, 0, 80);
-  sceneObject.add(keyLight);
-  view = { container, scene: sceneObject, camera: cameraObject, renderer: rendererObject, controls: controlsObject, objects: [], radius: 5, target: new THREE.Vector3(), resizeObserver: null, isLeader: false };
+  sceneObject.add(new THREE.HemisphereLight(0xffffff, 0x182433, 0.78));
+  const keyLight = new THREE.DirectionalLight(0xffffff, 0.78);
+  keyLight.position.set(0, 0, 1);
+  cameraObject.add(keyLight);
+  sceneObject.add(cameraObject);
+  view = { container, scene: sceneObject, camera: cameraObject, renderer: rendererObject, controls: controlsObject, objects: [], radius: 5, target: new THREE.Vector3(), viewDirection: new THREE.Vector3(0, 0, 1), viewUp: new THREE.Vector3(0, 1, 0), resizeObserver: null, isLeader: false };
   controlsObject.addEventListener("start", () => {
     for (const v of compareViews) v.isLeader = false;
     view.isLeader = true;
@@ -149,7 +165,10 @@ function updateCompareCamera(view, radius) {
   view.camera.near = 0.1;
   view.camera.far = Math.max(1000, frustum * 8);
   const target = view.target ?? new THREE.Vector3();
-  view.camera.position.set(target.x, target.y, target.z + cameraDistanceForRadius(frustum, 40));
+  const direction = view.viewDirection?.clone?.().normalize() ?? new THREE.Vector3(0, 0, 1);
+  const distance = cameraDistanceForRadius(frustum, 40);
+  view.camera.position.copy(target).add(direction.multiplyScalar(distance));
+  view.camera.up.copy(view.viewUp ?? new THREE.Vector3(0, 1, 0));
   view.camera.lookAt(target);
   view.camera.updateProjectionMatrix();
   view.controls.target.copy(target);
@@ -186,7 +205,7 @@ function frameCompareObjects(view, objects, fallbackRadius) {
   updateCompareCamera(view, view.radius);
 }
 
-async function renderCompareView(container, value, titleEl, notesEl) {
+async function renderCompareView(container, value, titleEl, notesEl, visualOptions = {}) {
   const view = compareViewFor(container);
   if (!view) return null;
   const params = { ...parseTargetValue(value), z: Number(el.z?.value) || 1 };
@@ -197,9 +216,9 @@ async function renderCompareView(container, value, titleEl, notesEl) {
     iso: matched.iso,
     density,
     radius: matched.radius,
-    opacity: 0.96,
-    smooth: false,
-    wireframe: true,
+    opacity: visualOptions.opacity ?? 0.96,
+    smooth: visualOptions.smooth ?? false,
+    wireframe: visualOptions.wireframe ?? true,
     cutaway: "none",
     showPositive: true,
     showNegative: true,
@@ -207,10 +226,21 @@ async function renderCompareView(container, value, titleEl, notesEl) {
     negativeColor: el.negativeColor.value,
     backgroundColor: el.backgroundColor?.value || "#000000",
   };
+  if (params.l === 1 && params.m === 0) {
+    view.viewDirection.set(0, 1, 0);
+    view.viewUp.set(0, 0, 1);
+  } else {
+    view.viewDirection.set(0, 0, 1);
+    view.viewUp.set(0, 1, 0);
+  }
   view.scene.background = new THREE.Color(options.backgroundColor);
   clearCompareView(view);
   const positive = await makeMarchingCubes(0, params, options, 1, options.positiveColor);
   const negative = await makeMarchingCubes(1, params, options, -1, options.negativeColor);
+  if (visualOptions.matte) {
+    applyClassroomMatteMaterial(positive);
+    applyClassroomMatteMaterial(negative);
+  }
   const scale = displayRadius / Math.max(1, matched.radius);
   positive.scale.multiplyScalar(scale);
   negative.scale.multiplyScalar(scale);
@@ -222,6 +252,24 @@ async function renderCompareView(container, value, titleEl, notesEl) {
   if (titleEl) titleEl.textContent = label;
   if (notesEl) notesEl.textContent = `${nodeSummary(params.n, params.l)}；n=${params.n}, l=${params.l}, |m|=${Math.abs(params.m)}`;
   return { params, label, nodes: nodeSummary(params.n, params.l) };
+}
+
+function applyClassroomMatteMaterial(object) {
+  object?.traverse?.((child) => {
+    if (!child.material) return;
+    const source = Array.isArray(child.material) ? child.material : [child.material];
+    const materials = source.map((material) => {
+      const clone = material.clone();
+      if ("roughness" in clone) clone.roughness = 0.58;
+      if ("metalness" in clone) clone.metalness = 0;
+      if ("emissiveIntensity" in clone) clone.emissiveIntensity = 0.018;
+      if ("shininess" in clone) clone.shininess = 18;
+      clone.userData = { ...clone.userData, pooled: false };
+      clone.needsUpdate = true;
+      return clone;
+    });
+    child.material = Array.isArray(child.material) ? materials : materials[0];
+  });
 }
 
 async function renderOrbitalComparison() {
@@ -254,7 +302,7 @@ function applyTarget(value) {
   el.sinType.checked = target.m < 0;
   readParams();
   applyDesktopDefaultsToControls();
-  renderOrbital();
+  return renderOrbital();
 }
 
 function loadCompareTargetToMain(value, slot) {
@@ -296,6 +344,8 @@ function showActivityPaneLegacy(mode) {
 }
 
 function showActivityPane(mode) {
+  return showClassroomPane(mode);
+  /* Legacy activity flow retained below for rollback compatibility. */
   if (!el.activityWindow) return;
   const activeMode = mode || "predict";
   el.activityWindow.classList.remove("closed", "minimized");
