@@ -378,7 +378,38 @@ export function chooseBackgroundColor() {
     Object.assign(el.backgroundColor.style, {
       position: "fixed",
       left: "-120px",
-      to€Æ≠¢Gß≤⁄Óù∆≠y– browserFullscreenActive = true;
+      top: "0",
+      width: "1px",
+      height: "1px",
+      opacity: "0",
+      pointerEvents: "none",
+    });
+  }
+  try {
+    if (typeof el.backgroundColor.showPicker === "function") {
+      el.backgroundColor.showPicker();
+    } else {
+      el.backgroundColor.click();
+    }
+  } catch {
+    el.backgroundColor.click();
+  }
+}
+
+export function syncFullscreenUi(active) {
+  document.body.classList.toggle("app-fullscreen", active);
+  fullscreenExitButton.hidden = !active;
+  resizeAfterLayoutChange();
+}
+
+export async function enterAppFullscreen() {
+  closeMenu();
+  syncFullscreenUi(true);
+  const requestFullscreen = document.documentElement.requestFullscreen?.bind(document.documentElement);
+  if (!requestFullscreen) return;
+  try {
+    await requestFullscreen();
+    browserFullscreenActive = true;
   } catch {
     browserFullscreenActive = false;
   }
